@@ -43,6 +43,8 @@ function forceOpenInBrowser(url) {
         return;
     }
     
+    console.log('forceOpenInBrowser called with:', url);
+    
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     const isAndroid = /android/i.test(ua);
@@ -55,33 +57,40 @@ function forceOpenInBrowser(url) {
         ua.indexOf('Threads') > -1
     );
     
-    console.log('Opening URL:', url, 'isInAppBrowser:', isInAppBrowser, 'isIOS:', isIOS, 'isAndroid:', isAndroid);
+    console.log('Browser detection - isInAppBrowser:', isInAppBrowser, 'isIOS:', isIOS, 'isAndroid:', isAndroid);
     
-    // Always use link element method - works best across all platforms
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    
-    // For iOS in-app browsers, add special attribute
-    if (isIOS && isInAppBrowser) {
-        link.setAttribute('data-safariviewcontroller', 'false');
+    // Method 1: Standard window.open (works for most cases)
+    try {
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+        console.log('window.open result:', newWindow);
+    } catch (e) {
+        console.error('window.open failed:', e);
     }
     
-    // Add to DOM, click, and remove
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Method 2: Create and click link element (backup)
+    setTimeout(() => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        
+        // For iOS in-app browsers
+        if (isIOS) {
+            link.setAttribute('data-safariviewcontroller', 'false');
+        }
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        console.log('Link click method executed');
+    }, 50);
     
-    // Additional method for in-app browsers
+    // Method 3: For stubborn in-app browsers, try direct location
     if (isInAppBrowser) {
         setTimeout(() => {
-            try {
-                window.open(url, '_blank', 'noopener,noreferrer');
-            } catch (e) {
-                console.log('window.open failed:', e);
-            }
-        }, 100);
+            console.log('Trying location.href as last resort');
+            window.location.href = url;
+        }, 500);
     }
 }
 
