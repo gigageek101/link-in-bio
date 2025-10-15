@@ -38,7 +38,7 @@ Open `index.html` and edit:
 
 ### 3. Add Your Links
 
-In `index.html`, find the links section and update:
+In `index.html`, find the  i links section and update:
 ```html
 <a href="https://example.com/link1" class="link-button" target="_blank" rel="noopener noreferrer">
     <span class="link-icon">🔗</span>

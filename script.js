@@ -25,68 +25,75 @@ function hideAgeWarning() {
 
 function confirmAge() {
     if (pendingUrl) {
-        // Close modal first
         hideAgeWarning();
         
-        // Small delay to ensure modal is closed, then open link with deep linking
+        // Open link immediately with enhanced deep linking
         setTimeout(() => {
             forceOpenInBrowser(pendingUrl);
-        }, 100);
+        }, 50);
     } else {
         hideAgeWarning();
     }
 }
 
-// Enhanced deep linking function - more aggressive approach
+// Enhanced deep linking - specifically for Threads, Instagram, Facebook
 function forceOpenInBrowser(url) {
-    // Try multiple methods to break out of in-app browsers
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const isAndroid = /android/i.test(ua);
     
-    // Method 1: Create and click a link element (works best on mobile)
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
+    // Detect if in Threads/Instagram/Facebook in-app browser
+    const isInAppBrowser = (
+        ua.indexOf('Instagram') > -1 ||
+        ua.indexOf('FBAV') > -1 ||
+        ua.indexOf('FBAN') > -1 ||
+        ua.indexOf('Threads') > -1
+    );
     
-    // For iOS devices - add specific attributes
-    if (/(iPhone|iPod|iPad)/i.test(navigator.userAgent)) {
-        link.setAttribute('data-safariviewcontroller', 'false');
-    }
-    
-    // Append to body, click, and remove
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Method 2: Also try window.open as backup (desktop/some mobile browsers)
-    setTimeout(() => {
-        try {
-            window.open(url, '_blank', 'noopener,noreferrer');
-        } catch (e) {
-            console.log('Fallback open failed:', e);
-        }
-    }, 50);
-    
-    // Method 3: For Instagram/Facebook in-app browser - try to force external browser
-    if (isInAppBrowser()) {
+    if (isIOS && isInAppBrowser) {
+        // iOS Threads/Instagram: Try to open in Safari
+        // Method 1: Use Safari URL scheme
+        const safariUrl = 'x-safari-https://' + url.replace('https://', '');
+        window.location.href = safariUrl;
+        
+        // Method 2: Fallback to direct URL after delay
         setTimeout(() => {
             window.location.href = url;
+        }, 500);
+        
+    } else if (isAndroid && isInAppBrowser) {
+        // Android: Use intent to open in Chrome/default browser
+        const intentUrl = 'intent://' + url.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+        window.location.href = intentUrl;
+        
+        // Fallback
+        setTimeout(() => {
+            window.location.href = url;
+        }, 500);
+        
+    } else {
+        // Standard approach for other browsers
+        // Method 1: Create link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        
+        // Append, click, remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Method 2: window.open as backup
+        setTimeout(() => {
+            try {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (e) {
+                // Final fallback
+                window.location.href = url;
+            }
         }, 100);
     }
-}
-
-// Detect if running in an in-app browser
-function isInAppBrowser() {
-    const ua = navigator.userAgent || navigator.vendor || window.opera;
-    
-    // Check for common in-app browsers
-    return (
-        ua.indexOf('FBAN') > -1 || // Facebook App
-        ua.indexOf('FBAV') > -1 || // Facebook App
-        ua.indexOf('Instagram') > -1 || // Instagram
-        ua.indexOf('Threads') > -1 || // Threads
-        ua.indexOf('Twitter') > -1 || // Twitter
-        ua.indexOf('Line') > -1 // Line
-    );
 }
 
 // Deep Link Handler - For other links (non-age-gated)
