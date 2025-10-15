@@ -38,6 +38,11 @@ function confirmAge() {
 
 // Enhanced deep linking - specifically for Threads, Instagram, Facebook
 function forceOpenInBrowser(url) {
+    if (!url) {
+        console.error('No URL provided to forceOpenInBrowser');
+        return;
+    }
+    
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     const isAndroid = /android/i.test(ua);
@@ -50,47 +55,31 @@ function forceOpenInBrowser(url) {
         ua.indexOf('Threads') > -1
     );
     
+    console.log('Opening URL:', url, 'isInAppBrowser:', isInAppBrowser, 'isIOS:', isIOS, 'isAndroid:', isAndroid);
+    
+    // Always use link element method - works best across all platforms
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    
+    // For iOS in-app browsers, add special attribute
     if (isIOS && isInAppBrowser) {
-        // iOS Threads/Instagram: Try to open in Safari
-        // Method 1: Use Safari URL scheme
-        const safariUrl = 'x-safari-https://' + url.replace('https://', '');
-        window.location.href = safariUrl;
-        
-        // Method 2: Fallback to direct URL after delay
-        setTimeout(() => {
-            window.location.href = url;
-        }, 500);
-        
-    } else if (isAndroid && isInAppBrowser) {
-        // Android: Use intent to open in Chrome/default browser
-        const intentUrl = 'intent://' + url.replace(/https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
-        window.location.href = intentUrl;
-        
-        // Fallback
-        setTimeout(() => {
-            window.location.href = url;
-        }, 500);
-        
-    } else {
-        // Standard approach for other browsers
-        // Method 1: Create link element
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        
-        // Append, click, remove
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Method 2: window.open as backup
+        link.setAttribute('data-safariviewcontroller', 'false');
+    }
+    
+    // Add to DOM, click, and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Additional method for in-app browsers
+    if (isInAppBrowser) {
         setTimeout(() => {
             try {
                 window.open(url, '_blank', 'noopener,noreferrer');
             } catch (e) {
-                // Final fallback
-                window.location.href = url;
+                console.log('window.open failed:', e);
             }
         }, 100);
     }
