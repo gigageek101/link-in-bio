@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    {
+      "source": "/allisonsundress",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/allisonsundress/(.*)",
+      "destination": "/$1"
+    }
+  ]
+}
+
