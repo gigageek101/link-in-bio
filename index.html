@@ -30,9 +30,40 @@
     
     <!-- Vercel Analytics -->
     <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
+    
+    <!-- IMMEDIATE redirect for in-app browsers - Must run before page loads -->
+    <script>
+        (function() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isAndroid = /android/i.test(ua);
+            
+            // Detect Threads/Instagram/Facebook in-app browser
+            const isInAppBrowser = (
+                ua.indexOf('Instagram') > -1 ||
+                ua.indexOf('FBAV') > -1 ||
+                ua.indexOf('FBAN') > -1 ||
+                ua.indexOf('Barcelona') > -1 || // Threads internal code name
+                ua.indexOf('Threads') > -1
+            );
+            
+            if (isInAppBrowser) {
+                const currentUrl = window.location.href;
+                
+                if (isAndroid) {
+                    // Android: Force open in Chrome using intent URL
+                    const cleanUrl = currentUrl.replace('https://', '').replace('http://', '');
+                    window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+                } else if (isIOS) {
+                    // iOS: Force open in Safari using x-safari scheme
+                    window.location.href = currentUrl.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                }
+            }
+        })();
+    </script>
     
     <link rel="stylesheet" href="styles.css">
 </head>

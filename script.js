@@ -56,7 +56,7 @@ function confirmAge() {
     }
 }
 
-// Enhanced deep linking - specifically for Threads, Instagram, Facebook
+// Enhanced deep linking with x-safari and intent:// URLs for Threads/Instagram
 function forceOpenInBrowser(url) {
     if (!url) {
         console.error('No URL provided to forceOpenInBrowser');
@@ -74,43 +74,43 @@ function forceOpenInBrowser(url) {
         ua.indexOf('Instagram') > -1 ||
         ua.indexOf('FBAV') > -1 ||
         ua.indexOf('FBAN') > -1 ||
+        ua.indexOf('Barcelona') > -1 || // Threads internal name
         ua.indexOf('Threads') > -1
     );
     
     console.log('Browser detection - isInAppBrowser:', isInAppBrowser, 'isIOS:', isIOS, 'isAndroid:', isAndroid);
+    console.log('User Agent:', ua);
     
-    // Method 1: Standard window.open (works for most cases)
-    try {
-        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-        console.log('window.open result:', newWindow);
-    } catch (e) {
-        console.error('window.open failed:', e);
+    // FORCE external browser opening for in-app browsers
+    if (isInAppBrowser) {
+        if (isAndroid) {
+            // Android: Use intent:// URL to force Chrome
+            const cleanUrl = url.replace('https://', '').replace('http://', '');
+            const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+            console.log('🚀 ANDROID: Forcing Chrome with intent URL:', intentUrl);
+            window.location.href = intentUrl;
+            return;
+        } else if (isIOS) {
+            // iOS: Use x-safari-https:// scheme to force Safari
+            const safariUrl = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+            console.log('🚀 iOS: Forcing Safari with x-safari scheme:', safariUrl);
+            window.location.href = safariUrl;
+            return;
+        }
     }
     
-    // Method 2: Create and click link element (backup)
-    setTimeout(() => {
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        
-        // For iOS in-app browsers
-        if (isIOS) {
-            link.setAttribute('data-safariviewcontroller', 'false');
-        }
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        console.log('Link click method executed');
-    }, 50);
-    
-    // Method 3: For stubborn in-app browsers, try direct location
-    if (isInAppBrowser) {
-        setTimeout(() => {
-            console.log('Trying location.href as last resort');
+    // For normal browsers, use standard methods
+    console.log('Normal browser detected, using window.open');
+    try {
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            // Fallback to direct navigation
+            console.log('window.open blocked, using location.href');
             window.location.href = url;
-        }, 500);
+        }
+    } catch (e) {
+        console.error('window.open failed:', e);
+        window.location.href = url;
     }
 }
 
