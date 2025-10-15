@@ -9,6 +9,11 @@ function showAgeWarning(event, url) {
     
     console.log('Stored pendingUrl:', pendingUrl);
     
+    // Track age warning shown in Vercel Analytics
+    if (window.va) {
+        window.va('event', { name: 'age_warning_shown' });
+    }
+    
     const modal = document.getElementById('age-warning-modal');
     if (modal) {
         modal.classList.add('active');
@@ -34,6 +39,11 @@ function confirmAge() {
         // Store URL before clearing it
         const urlToOpen = pendingUrl;
         console.log('Will open URL:', urlToOpen);
+        
+        // Track age verification acceptance in Vercel Analytics
+        if (window.va) {
+            window.va('event', { name: 'age_verification_accepted' });
+        }
         
         // Clear modal
         hideAgeWarning();
@@ -108,6 +118,20 @@ function forceOpenInBrowser(url) {
 function openInBrowser(event, url) {
     if (event) {
         event.preventDefault();
+        
+        // Get link name from event
+        const target = event.target.closest('a');
+        if (target) {
+            const linkText = target.querySelector('.link-text')?.textContent || 'unknown';
+            
+            // Track link click in Vercel Analytics
+            if (window.va) {
+                window.va('event', { 
+                    name: 'link_click',
+                    data: { link: linkText, url: url }
+                });
+            }
+        }
     }
     
     // Use the enhanced deep linking function
