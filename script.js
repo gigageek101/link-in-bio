@@ -2,8 +2,12 @@
 let pendingUrl = null;
 
 function showAgeWarning(event, url) {
+    console.log('showAgeWarning - url:', url);
+    
     event.preventDefault();
-    pendingUrl = url;
+    pendingUrl = url || 'https://onlyfans.com/allison-gray/c35';
+    
+    console.log('Stored pendingUrl:', pendingUrl);
     
     const modal = document.getElementById('age-warning-modal');
     if (modal) {
@@ -24,14 +28,20 @@ function hideAgeWarning() {
 }
 
 function confirmAge() {
+    console.log('confirmAge called - pendingUrl:', pendingUrl);
+    
     if (pendingUrl) {
+        // Store URL before clearing it
+        const urlToOpen = pendingUrl;
+        console.log('Will open URL:', urlToOpen);
+        
+        // Clear modal
         hideAgeWarning();
         
-        // Open link immediately with enhanced deep linking
-        setTimeout(() => {
-            forceOpenInBrowser(pendingUrl);
-        }, 50);
+        // Open link immediately
+        forceOpenInBrowser(urlToOpen);
     } else {
+        console.error('No pendingUrl found!');
         hideAgeWarning();
     }
 }
