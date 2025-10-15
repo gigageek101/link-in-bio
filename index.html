@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Allison 😇</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Slideshow Section -->
+        <div class="slideshow-container" id="slideshow-container">
+            <div class="slideshow-wrapper">
+                <div class="slide-item active" data-index="0">
+                    <video src="images/0.MOV" muted playsinline></video>
+                </div>
+                <div class="slide-item" data-index="1">
+                    <img src="images/1.png" alt="Slide 1">
+                </div>
+                <div class="slide-item" data-index="2">
+                    <img src="images/2.jpg" alt="Slide 2">
+                </div>
+                <div class="slide-item" data-index="3">
+                    <img src="images/3.jpg" alt="Slide 3">
+                </div>
+                <div class="slide-item" data-index="4">
+                    <img src="images/4.jpg" alt="Slide 4">
+                </div>
+                <div class="slide-item" data-index="5">
+                    <img src="images/5.jpg" alt="Slide 5">
+                </div>
+            </div>
+            
+            <!-- Slideshow dots -->
+            <div class="slideshow-dots">
+                <span class="dot active" data-slide="0"></span>
+                <span class="dot" data-slide="1"></span>
+                <span class="dot" data-slide="2"></span>
+                <span class="dot" data-slide="3"></span>
+                <span class="dot" data-slide="4"></span>
+                <span class="dot" data-slide="5"></span>
+            </div>
+        </div>
+
+        <!-- Decorative Section -->
+        <div class="decorative-section">
+            <div class="heart-icons">
+                <span class="icon-heart">❤️</span>
+                <span class="icon-kiss">💋</span>
+            </div>
+            <div class="decorative-line"></div>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <h1 class="profile-name">Allison 😇</h1>
+            <div class="status-section">
+                <p class="status-online">
+                    <span class="online-dot"></span>
+                    <span>Online Now</span>
+                    <span class="status-divider">⏱️</span>
+                    <span>Responds in 2 minutes</span>
+                </p>
+                <p class="travel-text">
+                    <span class="travel-emoji">✈️</span>
+                    <span id="travel-message">Travelling to your city tomorrow</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Links Section -->
+        <div class="links-container">
+            <a href="https://onlyfans.com/allison-gray/c35" class="link-button link-of" target="_blank" rel="noopener noreferrer" onclick="return showAgeWarning(event, this.href)">
+                <span class="link-text">My Exclusive Content 🥰</span>
+            </a>
+            
+            <a href="https://t.me/allisonsundress" class="link-button link-telegram" target="_blank" rel="noopener noreferrer" onclick="openInBrowser(event, this.href)">
+                <span class="link-icon">✈️</span>
+                <span class="link-text">Send me a message on Telegram 💌</span>
+            </a>
+            
+            <a href="https://x.com/Allisonxgrayy" class="link-button link-twitter" target="_blank" rel="noopener noreferrer" onclick="openInBrowser(event, this.href)">
+                <span class="link-icon">𝕏</span>
+                <span class="link-text">My Private X 😘</span>
+            </a>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <p class="cta-text">Get access to my exclusive content now which you will see nowhere else</p>
+        </div>
+    </div>
+
+    <!-- Age Verification Modal -->
+    <div id="age-warning-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="warning-icon">⚠️</span>
+                <h2>18+ Content Warning</h2>
+            </div>
+            
+            <div class="modal-body">
+                <p class="warning-text">
+                    <strong>You must be 18 years or older to access this content.</strong>
+                </p>
+                <p class="disclaimer-text">
+                    This link contains adult content intended for mature audiences only. By clicking "I'm 18 or Older", you confirm that:
+                </p>
+                <ul class="disclaimer-list">
+                    <li>You are at least 18 years of age or the legal age of majority in your jurisdiction</li>
+                    <li>You agree to view adult/sensitive content</li>
+                    <li>You understand this content may contain explicit material</li>
+                    <li>Viewing such content is legal in your location</li>
+                </ul>
+                <p class="disclaimer-footer">
+                    This warning is provided in compliance with platform policies and applicable laws.
+                </p>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn-confirm" id="age-confirm-btn">I'm 18 or Older</button>
+                <button class="btn-cancel" id="age-cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+
