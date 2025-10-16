@@ -309,6 +309,7 @@ module.exports = async function handler(req, res) {
     
     try {
         const timeRange = req.query.range || '24h';
+        const sourceFilter = req.query.source || null;
         
         // Initialize database if needed (first run)
         try {
@@ -319,11 +320,13 @@ module.exports = async function handler(req, res) {
         
         // Get analytics data
         const summary = await getAnalyticsSummary(timeRange);
-        const recentEvents = await getRecentEvents(20);
+        const recentEvents = await getRecentEvents(50, sourceFilter);
+        const userJourneys = await getUserJourneys(sourceFilter);
         
         return res.status(200).json({
             summary,
             recentEvents,
+            userJourneys,
             timeRange
         });
         
