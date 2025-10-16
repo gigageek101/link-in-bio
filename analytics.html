@@ -1663,12 +1663,20 @@
         }
         
         function getCountryFlag(countryCode) {
-            if (!countryCode || countryCode.length !== 2) return '🌍';
-            const codePoints = countryCode
-                .toUpperCase()
-                .split('')
-                .map(char => 127397 + char.charCodeAt());
-            return String.fromCodePoint(...codePoints);
+            // Use emoji flags directly
+            const flags = {
+                'US': '🇺🇸', 'DE': '🇩🇪', 'EG': '🇪🇬', 'GB': '🇬🇧', 'FR': '🇫🇷',
+                'ES': '🇪🇸', 'IT': '🇮🇹', 'CA': '🇨🇦', 'AU': '🇦🇺', 'BR': '🇧🇷',
+                'JP': '🇯🇵', 'CN': '🇨🇳', 'IN': '🇮🇳', 'RU': '🇷🇺', 'MX': '🇲🇽',
+                'NL': '🇳🇱', 'CH': '🇨🇭', 'SE': '🇸🇪', 'NO': '🇳🇴', 'DK': '🇩🇰',
+                'FI': '🇫🇮', 'PL': '🇵🇱', 'AT': '🇦🇹', 'BE': '🇧🇪', 'GR': '🇬🇷',
+                'PT': '🇵🇹', 'TR': '🇹🇷', 'AR': '🇦🇷', 'KR': '🇰🇷', 'SG': '🇸🇬',
+                'TH': '🇹🇭', 'VN': '🇻🇳', 'PH': '🇵🇭', 'ID': '🇮🇩', 'MY': '🇲🇾',
+                'AE': '🇦🇪', 'SA': '🇸🇦', 'ZA': '🇿🇦', 'NG': '🇳🇬', 'IL': '🇮🇱',
+                'NZ': '🇳🇿', 'IE': '🇮🇪', 'CZ': '🇨🇿', 'HU': '🇭🇺', 'RO': '🇷🇴'
+            };
+            
+            return flags[countryCode?.toUpperCase()] || '🌍';
         }
         
         function getCountryCodeFromName(countryName) {
@@ -1748,13 +1756,20 @@
         
         function updateWorldMap() {
             const mapElement = document.getElementById('worldMap');
-            if (!mapElement) return;
+            if (!mapElement) {
+                console.error('World map element not found');
+                return;
+            }
             
-            // Count visitors by location
+            // Count visitors by location from all page view events
             const locationCounts = {};
-            allEvents.filter(e => e.event_type === 'page_view' && e.city && e.country).forEach(event => {
-                const location = `${event.city}, ${event.country}`;
-                locationCounts[location] = (locationCounts[location] || 0) + 1;
+            const pageViews = allEvents.filter(e => e.event_type === 'page_view');
+            
+            pageViews.forEach(event => {
+                if (event.city && event.country) {
+                    const location = `${event.city}, ${event.country}`;
+                    locationCounts[location] = (locationCounts[location] || 0) + 1;
+                }
             });
             
             // Expanded coordinate mapping (approximations based on % from left, % from top)
@@ -1813,24 +1828,37 @@
             // Create background grid
             let mapHtml = '<div class="map-background"></div>';
             
-            if (Object.keys(locationCounts).length === 0) {
-                mapHtml += '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); font-size: 16px; text-align: center;">🌍<br>No visitors yet</div>';
+            const totalLocations = Object.keys(locationCounts).length;
+            
+            if (totalLocations === 0) {
+                mapHtml += '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.4); font-size: 18px; text-align: center; font-weight: 600;">🌍<br><br>World Map<br><span style="font-size: 14px; opacity: 0.6;">No visitors yet</span></div>';
             } else {
+                let markersAdded = 0;
                 Object.entries(locationCounts).forEach(([location, count]) => {
                     const coords = coordinates[location];
                     if (coords) {
-                        const size = Math.min(24, 14 + count * 3);
-                        const flag = getCountryFlag(getCountryCodeFromName(location.split(', ')[1]));
+                        const size = Math.min(28, 14 + count * 4);
+                        const country = location.split(', ')[1] || '';
+                        const countryCode = getCountryCodeFromName(country);
+                        const flag = getCountryFlag(countryCode);
+                        
                         mapHtml += `
                             <div class="map-marker" 
                                  style="left: ${coords.x}%; top: ${coords.y}%; width: ${size}px; height: ${size}px;"
                                  data-location="${location}"
                                  data-count="${count}"
+                                 onmouseover="this.style.transform='translate(-50%, -50%) scale(1.5)'"
+                                 onmouseout="this.style.transform='translate(-50%, -50%) scale(1)'"
                                  title="${flag} ${location}: ${count} visitor${count > 1 ? 's' : ''}">
                             </div>
                         `;
+                        markersAdded++;
                     }
                 });
+                
+                if (markersAdded === 0) {
+                    mapHtml += '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.4); font-size: 16px; text-align: center;">🌍<br><br>Visitors from unmapped locations</div>';
+                }
             }
             
             mapElement.innerHTML = mapHtml;
