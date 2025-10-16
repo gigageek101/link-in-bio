@@ -67,6 +67,13 @@ async function sendTelegramNotification(type, data) {
                 status: response.status,
                 result
             });
+            
+            // Show detailed error to help debug
+            if (result.details) {
+                console.error('🚨 ERROR DETAILS:', result.details);
+                console.error('🚨 This means: Environment variables are NOT set in Vercel!');
+                console.error('📋 Go to: Vercel Dashboard → Settings → Environment Variables');
+            }
         } else {
             console.log('✅ Tracking sent successfully:', result);
         }
