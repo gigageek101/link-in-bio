@@ -983,7 +983,7 @@
         .toast-container {
             position: fixed;
             top: 30px;
-            right: 30px;
+            left: 30px;
             z-index: 10000;
             display: flex;
             flex-direction: column;
@@ -1007,7 +1007,7 @@
         @keyframes toastSlideIn {
             from {
                 opacity: 0;
-                transform: translateX(100px);
+                transform: translateX(-100px);
             }
             to {
                 opacity: 1;
@@ -1168,10 +1168,6 @@
                     <span id="themeIcon">🌙</span>
                 </button>
                 <button class="refresh-btn" onclick="manualRefresh()" title="Refresh">🔄</button>
-                <button class="notification-btn" title="Notifications">
-                    🔔
-                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
-                </button>
             </div>
         </div>
 
@@ -1286,6 +1282,7 @@
         let lastEventCount = 0;
         let allEvents = [];
         let allJourneys = [];
+        let expandedJourneys = new Set();
         
         // Theme management
         const savedTheme = localStorage.getItem('theme') || 'light';
@@ -1366,7 +1363,7 @@
         // Filter by source
         function filterBySource() {
             currentSourceFilter = document.getElementById('sourceFilter').value;
-            updateDisplay(allEvents, allJourneys);
+            fetchAnalytics();
         }
 
         // Manual refresh
@@ -1401,9 +1398,6 @@
                 if (allEvents.length > lastEventCount) {
                     const newCount = allEvents.length - lastEventCount;
                     showNotification('New Activity', `${newCount} new event${newCount > 1 ? 's' : ''}`);
-                    const badge = document.getElementById('notificationBadge');
-                    badge.style.display = 'flex';
-                    badge.textContent = (parseInt(badge.textContent) || 0) + newCount;
                 }
                 lastEventCount = allEvents.length;
                 
@@ -1630,9 +1624,18 @@
                 const flag = getCountryFlag(getCountryCodeFromName(country));
                 const percentage = ((count / total) * 100).toFixed(0);
                 
-                ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
-                ctx.fillStyle = '#2d3748';
+                // Draw text with shadow for better visibility
+                ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.textAlign = labelX > centerX ? 'left' : 'right';
+                
+                // White shadow/outline for contrast
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.lineWidth = 4;
+                ctx.strokeText(`${flag} ${percentage}%`, labelX, labelY);
+                
+                // Main text color (adapts to theme)
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                ctx.fillStyle = isDarkMode ? '#e8e8e8' : '#2d3748';
                 ctx.fillText(`${flag} ${percentage}%`, labelX, labelY);
                 
                 currentAngle += sliceAngle;
@@ -1726,6 +1729,7 @@
                 const country = journey.location.split(', ')[1] || 'Unknown';
                 const flag = country !== 'Unknown' ? getCountryFlag(getCountryCodeFromName(country)) : '🤖';
                 const duration = Math.round((new Date(journey.lastSeen) - new Date(journey.firstSeen)) / 1000);
+                const isExpanded = expandedJourneys.has(journey.visitorId);
                 
                 const timelineHtml = journey.events.map(event => {
                     const icon = getEventIcon(event.event_type);
@@ -1755,7 +1759,7 @@
                 }).join('');
                 
                 return `
-                    <div class="journey-card" onclick="toggleJourney(this)">
+                    <div class="journey-card ${isExpanded ? 'expanded' : ''}" data-visitor-id="${journey.visitorId}" onclick="toggleJourney(this)">
                         <div class="journey-header">
                             <div class="journey-visitor">
                                 <div class="journey-avatar">${flag}</div>
@@ -1823,7 +1827,15 @@
 
         // Helper functions
         function toggleJourney(card) {
-            card.classList.toggle('expanded');
+            const visitorId = card.getAttribute('data-visitor-id');
+            
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded');
+                expandedJourneys.delete(visitorId);
+            } else {
+                card.classList.add('expanded');
+                expandedJourneys.add(visitorId);
+            }
         }
 
         function getEventIcon(eventType) {
