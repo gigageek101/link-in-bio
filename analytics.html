@@ -374,9 +374,19 @@
         /* Charts Grid */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
+        }
+        
+        .platform-chart {
+            grid-column: span 2;
+        }
+        
+        @media (max-width: 1200px) {
+            .platform-chart {
+                grid-column: span 1;
+            }
         }
         
         .chart-card {
@@ -609,6 +619,10 @@
 
         <!-- Charts Grid -->
         <div class="charts-grid">
+            <div class="chart-card platform-chart">
+                <h3>🌐 Traffic Sources</h3>
+                <div id="trafficSources" class="no-data">No traffic data yet</div>
+            </div>
             <div class="chart-card">
                 <h3>🔗 Link Clicks</h3>
                 <div id="linkClicks" class="no-data">No link clicks yet</div>
@@ -748,6 +762,25 @@
             document.getElementById('conversionRate').textContent = summary.conversionRate + '%';
             document.getElementById('bounceRate').textContent = summary.bounceRate + '%';
             document.getElementById('avgTime').textContent = Math.round(summary.avgTimeToClick || 0) + 's';
+
+            // Calculate traffic sources from recent events
+            const platformCounts = {};
+            recentEvents.filter(e => e.event_type === 'page_view').forEach(event => {
+                const platform = getPlatform(event);
+                platformCounts[platform] = (platformCounts[platform] || 0) + 1;
+            });
+            
+            const sortedPlatforms = Object.entries(platformCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            const trafficHtml = sortedPlatforms.length > 0 ? sortedPlatforms.map(([platform, count]) => `
+                <div class="chart-item">
+                    <div class="name">${platform}</div>
+                    <div class="value">${count}</div>
+                </div>
+            `).join('') : '<div class="no-data">No traffic data yet</div>';
+            document.getElementById('trafficSources').innerHTML = trafficHtml;
 
             // Update link clicks
             const linkClicksHtml = summary.linkClicks.length > 0 ? summary.linkClicks.map(link => `
@@ -919,13 +952,28 @@
             return icons[type] || '📊';
         }
 
+        function getPlatform(event) {
+            // Detect platform from user agent or referrer
+            const ua = event.user_agent || '';
+            const ref = event.referrer || '';
+            
+            if (ua.includes('Instagram') || ref.includes('instagram')) return '📸 Instagram';
+            if (ua.includes('Barcelona') || ua.includes('Threads') || ref.includes('threads')) return '🧵 Threads';
+            if (ua.includes('FBAV') || ua.includes('FBAN') || ref.includes('facebook')) return '📘 Facebook';
+            if (ua.includes('Twitter') || ref.includes('twitter') || ref.includes('x.com')) return '𝕏 X/Twitter';
+            if (ref && ref !== 'Direct') return '🔗 ' + new URL(ref).hostname;
+            
+            return '🌐 Direct';
+        }
+
         function getEventTitle(event) {
             const visitorName = getVisitorName(event.visitor_id);
+            const platform = getPlatform(event);
             
             const titles = {
                 page_view: event.is_new_visitor ? 
-                    `New: <span class="visitor-name">${visitorName}</span>` : 
-                    `<span class="visitor-name">${visitorName}</span> Returned`,
+                    `New: <span class="visitor-name">${visitorName}</span> from ${platform}` : 
+                    `<span class="visitor-name">${visitorName}</span> Returned from ${platform}`,
                 link_click: `<span class="visitor-name">${visitorName}</span> clicked: ${event.link_name || 'Link'}`,
                 bounce: `<span class="visitor-name">${visitorName}</span> Bounced`,
                 session_end: `<span class="visitor-name">${visitorName}</span> Left`,
@@ -935,11 +983,12 @@
         }
 
         function getEventMeta(event) {
-            const location = event.city && event.country ? `${event.city}, ${event.country}` : 'Unknown';
-            const device = event.device_type || 'Unknown';
+            const location = event.city && event.country ? `${event.city}, ${event.country}` : 'Unknown Location';
+            const device = event.device_type || 'Unknown Device';
+            const browser = event.browser || 'Unknown Browser';
             const time = new Date(event.created_at).toLocaleTimeString();
             const visitorId = event.visitor_id ? event.visitor_id.substring(0, 8) : 'unknown';
-            return `${location} • ${device} • ${time} • ID: ${visitorId}`;
+            return `${location} • ${device} • ${browser} • ${time} • ID: ${visitorId}`;
         }
 
         // Cleanup interval on page unload
