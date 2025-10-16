@@ -1,12 +1,17 @@
 // Analytics API Endpoint
-const { neon } = require('@neondatabase/serverless');
+const postgres = require('postgres');
 
 // Get the connection string (Supabase uses prefixed vars)
 const connectionString = process.env.POSTGRES_URL_POSTGRES_URL || 
                         process.env.POSTGRES_URL || 
                         process.env.DATABASE_URL;
 
-const sql = neon(connectionString);
+// Create connection with pooling for better performance
+const sql = postgres(connectionString, {
+    ssl: 'require',
+    max: 1,
+    idle_timeout: 20
+});
 
 // Simplified inline functions for Neon compatibility
 async function initDatabase() {

@@ -1,5 +1,5 @@
 // One-time database setup for Supabase
-const { neon } = require('@neondatabase/serverless');
+const postgres = require('postgres');
 
 module.exports = async function handler(req, res) {
     // Get the connection string (Supabase uses prefixed vars)
@@ -7,7 +7,10 @@ module.exports = async function handler(req, res) {
                             process.env.POSTGRES_URL || 
                             process.env.DATABASE_URL;
     
-    const sql = neon(connectionString);
+    const sql = postgres(connectionString, {
+        ssl: 'require',
+        max: 1
+    });
     try {
         // Create analytics table
         await sql`
@@ -63,6 +66,8 @@ module.exports = async function handler(req, res) {
             error: error.message,
             stack: error.stack
         });
+    } finally {
+        await sql.end();
     }
 }
 

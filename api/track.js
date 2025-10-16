@@ -1,5 +1,5 @@
 // Vercel Serverless Function - Telegram Visitor Tracking + Database
-const { neon } = require('@neondatabase/serverless');
+const postgres = require('postgres');
 const { getVisitorName } = require('../lib/names.js');
 
 // Get the connection string (Supabase uses prefixed vars)
@@ -7,7 +7,12 @@ const connectionString = process.env.POSTGRES_URL_POSTGRES_URL ||
                         process.env.POSTGRES_URL || 
                         process.env.DATABASE_URL;
 
-const sql = neon(connectionString);
+// Create connection with pooling for better performance
+const sql = postgres(connectionString, {
+    ssl: 'require',
+    max: 1,
+    idle_timeout: 20
+});
 
 // Simplified save function with proper null handling
 async function saveEvent(eventData) {
