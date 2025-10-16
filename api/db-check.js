@@ -1,4 +1,4 @@
-// Simple database diagnostic
+// Database diagnostic - Supabase connection test
 const { sql } = require('@vercel/postgres');
 
 module.exports = async function handler(req, res) {
