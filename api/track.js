@@ -1,7 +1,35 @@
 // Vercel Serverless Function - Telegram Visitor Tracking + Database
-import { saveEvent, initDatabase } from '../lib/db.js';
+const { sql } = require('@vercel/postgres');
 
-export default async function handler(req, res) {
+// Simplified save function
+async function saveEvent(eventData) {
+    try {
+        await sql`
+            INSERT INTO analytics (
+                event_type, visitor_id, is_new_visitor, visit_count,
+                city, country, country_code, ip,
+                device_type, browser, platform, screen_resolution, viewport, language, is_touch,
+                referrer, source_platform, page_url,
+                time_on_page, time_to_interaction, session_duration,
+                link_name, link_url, age_verified,
+                user_agent
+            ) VALUES (
+                ${eventData.event_type}, ${eventData.visitor_id}, ${eventData.is_new_visitor}, ${eventData.visit_count},
+                ${eventData.city}, ${eventData.country}, ${eventData.country_code}, ${eventData.ip},
+                ${eventData.device_type}, ${eventData.browser}, ${eventData.platform}, ${eventData.screen_resolution}, 
+                ${eventData.viewport}, ${eventData.language}, ${eventData.is_touch},
+                ${eventData.referrer}, ${eventData.source_platform}, ${eventData.page_url},
+                ${eventData.time_on_page}, ${eventData.time_to_interaction}, ${eventData.session_duration},
+                ${eventData.link_name}, ${eventData.link_url}, ${eventData.age_verified},
+                ${eventData.user_agent}
+            )
+        `;
+    } catch (error) {
+        console.error('Save error:', error.message);
+    }
+}
+
+module.exports = async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

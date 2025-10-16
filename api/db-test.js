@@ -1,7 +1,7 @@
 // Database Connection Test
-import { sql } from '@vercel/postgres';
+const { sql } = require('@vercel/postgres');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     try {
         // Test basic connection
         const result = await sql`SELECT NOW()`;
