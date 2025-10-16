@@ -184,12 +184,13 @@ async function getAnalyticsSummary(timeRange = '24h') {
     }
 }
 
-async function getRecentEvents(limit = 20) {
+async function getRecentEvents(limit = 50) {
     try {
         const events = await sql`
             SELECT 
-                id, event_type, city, country, device_type, browser,
-                link_name, time_on_page, session_duration, is_new_visitor,
+                id, event_type, visitor_id, city, country, device_type, browser,
+                link_name, link_url, referrer, user_agent, source_platform,
+                time_on_page, session_duration, is_new_visitor, visit_count,
                 created_at
             FROM analytics
             ORDER BY created_at DESC
