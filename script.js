@@ -50,7 +50,6 @@ async function getLocationForTracking() {
         };
         return userLocation;
     } catch (error) {
-        console.error('Location fetch error:', error);
         return { city: 'Unknown', country: 'Unknown', ip: 'Unknown' };
     }
 }
@@ -85,8 +84,6 @@ function getBrowserName() {
 // Send tracking data to Telegram
 async function sendTelegramNotification(type, data) {
     try {
-        console.log('📤 Sending tracking data:', { type, data });
-        
         const response = await fetch('/api/track', {
             method: 'POST',
             headers: {
@@ -97,28 +94,11 @@ async function sendTelegramNotification(type, data) {
         
         const result = await response.json();
         
-        if (!response.ok) {
-            console.error('❌ Tracking API error:', {
-                status: response.status,
-                result
-            });
-            
-            // Show detailed error to help debug
-            if (result.details) {
-                console.error('🚨 ERROR DETAILS:', result.details);
-                console.error('🚨 This means: Environment variables are NOT set in Vercel!');
-                console.error('📋 Go to: Vercel Dashboard → Settings → Environment Variables');
-            }
-        } else {
-            console.log('✅ Tracking sent successfully:', result);
-        }
-        
+        // Silent tracking - no console logs for security
         return result;
     } catch (error) {
-        console.error('❌ Tracking notification error:', {
-            message: error.message,
-            stack: error.stack
-        });
+        // Silent failure - don't expose tracking errors to users
+        return null;
     }
 }
 
@@ -185,13 +165,9 @@ let pendingUrl = null;
 let pendingLinkName = null;
 
 function showAgeWarning(event, url, linkName) {
-    console.log('showAgeWarning - url:', url, 'linkName:', linkName);
-    
     event.preventDefault();
     pendingUrl = url || 'https://onlyfans.com/allison-gray/c35';
     pendingLinkName = linkName || 'My Exclusive Content';
-    
-    console.log('Stored pendingUrl:', pendingUrl, 'pendingLinkName:', pendingLinkName);
     
     // Track age warning shown in Vercel Analytics
     if (window.va) {
@@ -236,13 +212,10 @@ function hideAgeWarning() {
 }
 
 function confirmAge() {
-    console.log('confirmAge called - pendingUrl:', pendingUrl);
-    
     if (pendingUrl) {
         // Store URL and link name before clearing
         const urlToOpen = pendingUrl;
         const linkName = pendingLinkName;
-        console.log('Will open URL:', urlToOpen, 'Link:', linkName);
         
         // Track age verification acceptance in Vercel Analytics
         if (window.va) {
@@ -258,7 +231,6 @@ function confirmAge() {
         // Open link in new tab (deep linking disabled)
         window.open(urlToOpen, '_blank', 'noopener,noreferrer');
     } else {
-        console.error('No pendingUrl found!');
         hideAgeWarning();
     }
 }

@@ -18,18 +18,9 @@ export default async function handler(req, res) {
     const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
     const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-    console.log('Environment check:', {
-        hasToken: !!TELEGRAM_BOT_TOKEN,
-        hasChatId: !!TELEGRAM_CHAT_ID,
-        tokenPreview: TELEGRAM_BOT_TOKEN ? TELEGRAM_BOT_TOKEN.substring(0, 10) + '...' : 'missing',
-        chatId: TELEGRAM_CHAT_ID || 'missing'
-    });
-
     if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-        console.error('Missing Telegram credentials');
         return res.status(500).json({ 
-            error: 'Server configuration error',
-            details: 'Environment variables not set in Vercel'
+            error: 'Server configuration error'
         });
     }
 
@@ -113,11 +104,8 @@ export default async function handler(req, res) {
         }
 
         if (!message) {
-            console.error('Invalid tracking type:', type);
-            return res.status(400).json({ error: 'Invalid tracking type', type });
+            return res.status(400).json({ error: 'Invalid tracking type' });
         }
-
-        console.log('Sending to Telegram:', { type, messageLength: message.length });
 
         // Send to Telegram
         const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -137,26 +125,14 @@ export default async function handler(req, res) {
         const responseData = await telegramResponse.json();
 
         if (!telegramResponse.ok) {
-            console.error('Telegram API error:', {
-                status: telegramResponse.status,
-                statusText: telegramResponse.statusText,
-                data: responseData
-            });
-            throw new Error(`Telegram API error: ${JSON.stringify(responseData)}`);
+            throw new Error('Telegram API error');
         }
 
-        console.log('✅ Message sent successfully to Telegram');
-        return res.status(200).json({ success: true, telegram: responseData });
+        return res.status(200).json({ success: true });
         
     } catch (error) {
-        console.error('Tracking error:', {
-            message: error.message,
-            stack: error.stack,
-            type: req.body?.type
-        });
         return res.status(500).json({ 
-            error: 'Failed to track event',
-            message: error.message
+            error: 'Failed to track event'
         });
     }
 }
