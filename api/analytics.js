@@ -115,8 +115,20 @@ async function getAnalyticsSummary(timeRange = '24h') {
             AND country != 'Unknown'
         `;
         
+        const visitorsWhoClicked = await sql`
+            SELECT COUNT(DISTINCT visitor_id) as count
+            FROM analytics
+            WHERE event_type = 'link_click'
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
+        `;
+        
         const bounces = await sql`
-            SELECT COUNT(*) as count
+            SELECT COUNT(DISTINCT visitor_id) as count
             FROM analytics
             WHERE event_type = 'bounce'
             AND city IS NOT NULL 
@@ -200,18 +212,22 @@ async function getAnalyticsSummary(timeRange = '24h') {
             ORDER BY count DESC
         `;
         
+        const totalVisitorsCount = parseInt(totalVisitors.rows[0]?.count || 0);
+        const visitorsWhoClickedCount = parseInt(visitorsWhoClicked.rows[0]?.count || 0);
+        const bouncesCount = parseInt(bounces.rows[0]?.count || 0);
+        
         return {
-            totalVisitors: parseInt(totalVisitors.rows[0]?.count || 0),
+            totalVisitors: totalVisitorsCount,
             newVisitors: parseInt(newVisitors.rows[0]?.count || 0),
-            returningVisitors: parseInt(totalVisitors.rows[0]?.count || 0) - parseInt(newVisitors.rows[0]?.count || 0),
+            returningVisitors: totalVisitorsCount - parseInt(newVisitors.rows[0]?.count || 0),
             totalClicks: parseInt(totalClicks.rows[0]?.count || 0),
-            bounces: parseInt(bounces.rows[0]?.count || 0),
+            bounces: bouncesCount,
             avgTimeToClick: parseFloat(avgTime.rows[0]?.avg_seconds || 0),
-            conversionRate: totalVisitors.rows[0]?.count > 0 
-                ? ((totalClicks.rows[0]?.count / totalVisitors.rows[0]?.count) * 100).toFixed(1)
+            conversionRate: totalVisitorsCount > 0 
+                ? Math.min(((visitorsWhoClickedCount / totalVisitorsCount) * 100), 100).toFixed(1)
                 : 0,
-            bounceRate: totalVisitors.rows[0]?.count > 0
-                ? ((bounces.rows[0]?.count / totalVisitors.rows[0]?.count) * 100).toFixed(1)
+            bounceRate: totalVisitorsCount > 0
+                ? Math.min(((bouncesCount / totalVisitorsCount) * 100), 100).toFixed(1)
                 : 0,
             topLocations: topLocs.rows,
             linkClicks: links.rows,
