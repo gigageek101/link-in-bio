@@ -69,7 +69,7 @@ async function getAnalyticsSummary(timeRange = '24h') {
             )
         `;
         
-        if (!tableCheck.rows[0].exists) {
+        if (!tableCheck[0].exists) {
             return {
                 totalVisitors: 0,
                 newVisitors: 0,
@@ -224,27 +224,27 @@ async function getAnalyticsSummary(timeRange = '24h') {
             ORDER BY count DESC
         `;
         
-        const totalVisitorsCount = parseInt(totalVisitors.rows[0]?.count || 0);
-        const visitorsWhoClickedCount = parseInt(visitorsWhoClicked.rows[0]?.count || 0);
-        const bouncesCount = parseInt(bounces.rows[0]?.count || 0);
+        const totalVisitorsCount = parseInt(totalVisitors[0]?.count || 0);
+        const visitorsWhoClickedCount = parseInt(visitorsWhoClicked[0]?.count || 0);
+        const bouncesCount = parseInt(bounces[0]?.count || 0);
         
         return {
             totalVisitors: totalVisitorsCount,
-            newVisitors: parseInt(newVisitors.rows[0]?.count || 0),
-            returningVisitors: totalVisitorsCount - parseInt(newVisitors.rows[0]?.count || 0),
-            totalClicks: parseInt(totalClicks.rows[0]?.count || 0),
+            newVisitors: parseInt(newVisitors[0]?.count || 0),
+            returningVisitors: totalVisitorsCount - parseInt(newVisitors[0]?.count || 0),
+            totalClicks: parseInt(totalClicks[0]?.count || 0),
             bounces: bouncesCount,
-            avgTimeToClick: parseFloat(avgTime.rows[0]?.avg_seconds || 0),
+            avgTimeToClick: parseFloat(avgTime[0]?.avg_seconds || 0),
             conversionRate: totalVisitorsCount > 0 
                 ? Math.min(((visitorsWhoClickedCount / totalVisitorsCount) * 100), 100).toFixed(1)
                 : 0,
             bounceRate: totalVisitorsCount > 0
                 ? Math.min(((bouncesCount / totalVisitorsCount) * 100), 100).toFixed(1)
                 : 0,
-            topLocations: topLocs.rows,
-            linkClicks: links.rows,
-            devices: devices.rows,
-            browsers: browsers.rows
+            topLocations: topLocs,
+            linkClicks: links,
+            devices: devices,
+            browsers: browsers
         };
     } catch (error) {
         console.error('Summary error:', error.message);
@@ -304,7 +304,7 @@ async function getRecentEvents(limit = 50, sourceFilter = null) {
                 LIMIT ${limit}
             `;
         }
-        return events.rows;
+        return events;
     } catch (error) {
         return [];
     }
@@ -350,7 +350,7 @@ async function getUserJourneys(sourceFilter = null) {
         
         // Group events by visitor_id
         const journeys = {};
-        events.rows.forEach(event => {
+        events.forEach(event => {
             if (!event.visitor_id) return;
             
             if (!journeys[event.visitor_id]) {

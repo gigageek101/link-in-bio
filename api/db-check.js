@@ -29,7 +29,7 @@ module.exports = async function handler(req, res) {
             const timeTest = await sql`SELECT NOW() as current_time`;
             results.connection = {
                 status: 'Connected',
-                time: timeTest.rows[0].current_time
+                time: timeTest[0].current_time
             };
         } catch (err) {
             results.connection = {
@@ -47,20 +47,20 @@ module.exports = async function handler(req, res) {
                 )
             `;
             results.table = {
-                exists: tableCheck.rows[0].exists
+                exists: tableCheck[0].exists
             };
             
             // 4. If table exists, count records
-            if (tableCheck.rows[0].exists) {
+            if (tableCheck[0].exists) {
                 const count = await sql`SELECT COUNT(*) as total FROM analytics`;
-                results.table.totalRecords = count.rows[0].total;
+                results.table.totalRecords = parseInt(count[0].total);
                 
                 const recentCount = await sql`
                     SELECT COUNT(*) as recent 
                     FROM analytics 
                     WHERE created_at > NOW() - INTERVAL '24 hours'
                 `;
-                results.table.last24Hours = recentCount.rows[0].recent;
+                results.table.last24Hours = parseInt(recentCount[0].recent);
             }
         } catch (err) {
             results.table = {

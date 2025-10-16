@@ -57,7 +57,7 @@ module.exports = async function handler(req, res) {
             success: true,
             message: 'Database setup complete!',
             tableCreated: true,
-            currentRecords: check.rows[0].count
+            currentRecords: parseInt(check[0].count)
         });
         
     } catch (error) {
