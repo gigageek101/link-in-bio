@@ -1,15 +1,11 @@
 // Database diagnostic - Supabase connection test
-const { createPool } = require('@vercel/postgres');
-
-// Get the correct connection string (Supabase uses prefixed vars)
-const connectionString = process.env.POSTGRES_URL_POSTGRES_URL || 
-                        process.env.POSTGRES_URL || 
-                        process.env.DATABASE_URL;
-
-const pool = createPool({ connectionString });
-const sql = pool.sql;
+const { sql } = require('@vercel/postgres');
 
 module.exports = async function handler(req, res) {
+    // Set the connection string as env var if not set (Supabase uses prefixed vars)
+    if (!process.env.POSTGRES_URL && process.env.POSTGRES_URL_POSTGRES_URL) {
+        process.env.POSTGRES_URL = process.env.POSTGRES_URL_POSTGRES_URL;
+    }
     const results = {};
     
     try {
@@ -18,7 +14,7 @@ module.exports = async function handler(req, res) {
             POSTGRES_URL_POSTGRES_URL: !!process.env.POSTGRES_URL_POSTGRES_URL,
             POSTGRES_URL: !!process.env.POSTGRES_URL,
             DATABASE_URL: !!process.env.DATABASE_URL,
-            connectionStringUsed: !!connectionString
+            usingSupabase: !!process.env.POSTGRES_URL_POSTGRES_URL
         };
         
         // 2. Test connection

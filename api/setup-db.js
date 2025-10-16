@@ -1,15 +1,11 @@
 // One-time database setup for Supabase
-const { createPool } = require('@vercel/postgres');
-
-// Get the correct connection string
-const connectionString = process.env.POSTGRES_URL_POSTGRES_URL || 
-                        process.env.POSTGRES_URL || 
-                        process.env.DATABASE_URL;
-
-const pool = createPool({ connectionString });
-const sql = pool.sql;
+const { sql } = require('@vercel/postgres');
 
 module.exports = async function handler(req, res) {
+    // Set the connection string as env var if not set
+    if (!process.env.POSTGRES_URL && process.env.POSTGRES_URL_POSTGRES_URL) {
+        process.env.POSTGRES_URL = process.env.POSTGRES_URL_POSTGRES_URL;
+    }
     try {
         // Create analytics table
         await sql`
