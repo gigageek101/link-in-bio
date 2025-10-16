@@ -2,197 +2,719 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchForMyLinks - Traffic-Friendly Link in Bio | Meta-Compliant & Analytics-Powered</title>
+    <meta name="description" content="The first link-in-bio that opens directly in destination apps—no traffic theft. Meta-compliant for Instagram & Threads. Intelligence-grade analytics reveal where revenue comes from. Zero transaction fees. Built for serious influencers.">
+    <meta name="keywords" content="link in bio, link in bio tool, Instagram link in bio, Linktree alternative, bio link, social media tools, influencer marketing, traffic attribution, Meta compliant, conversion optimization">
     
-    <!-- Force external browser meta tags -->
-    <meta property="al:ios:url" content="https://www.searchformylinks.com/allisonsundress">
-    <meta property="al:ios:app_store_id" content="">
-    <meta property="al:ios:app_name" content="Safari">
-    <meta property="al:android:url" content="https://www.searchformylinks.com/allisonsundress">
-    <meta property="al:android:package" content="com.android.chrome">
-    <meta property="al:android:app_name" content="Chrome">
-    <meta property="al:web:url" content="https://www.searchformylinks.com/allisonsundress">
-    <meta property="al:web:should_fallback" content="true">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.searchformylinks.com/">
+    <meta property="og:title" content="SearchForMyLinks - The First Traffic-Friendly Link in Bio">
+    <meta property="og:description" content="Unlike platforms that steal your traffic, SearchForMyLinks opens links directly in destination apps. Meta-compliant, zero fees, intelligence-grade analytics.">
     
-    <!-- Twitter Card to force browser -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:app:url:iphone" content="https://www.searchformylinks.com/allisonsundress">
-    <meta name="twitter:app:url:ipad" content="https://www.searchformylinks.com/allisonsundress">
-    <meta name="twitter:app:url:googleplay" content="https://www.searchformylinks.com/allisonsundress">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.searchformylinks.com/">
+    <meta property="twitter:title" content="SearchForMyLinks - The First Traffic-Friendly Link in Bio">
+    <meta property="twitter:description" content="Unlike platforms that steal your traffic, SearchForMyLinks opens links directly in destination apps. Meta-compliant, zero fees, intelligence-grade analytics.">
     
-    <title>Allison 😇</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
+    <link rel="canonical" href="https://www.searchformylinks.com/">
     
-    <!-- Favicon - Angel Emoji -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😇</text></svg>">
-    
-    <!-- Vercel Analytics -->
-    <script>
-        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "SearchForMyLinks",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "The first traffic-friendly link-in-bio platform that opens links directly in destination apps. Meta-compliant, zero transaction fees, and intelligence-grade analytics for serious influencers.",
+      "url": "https://www.searchformylinks.com/",
+      "author": {
+        "@type": "Organization",
+        "name": "SearchForMyLinks"
+      },
+      "featureList": [
+        "Direct link opening in destination apps",
+        "Meta-compliant for Instagram and Threads",
+        "Intelligence-grade traffic attribution",
+        "Zero transaction fees",
+        "Mobile-first design",
+        "Conversion optimization"
+      ]
+    }
     </script>
-    <script defer src="/_vercel/insights/script.js"></script>
-    <!-- Supabase connected -->
     
-    <!-- HIDDEN: Deep linking - Forces external browser (uncomment to re-enable) -->
-    <!--
-    <script>
-        (function() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-            const isAndroid = /android/i.test(ua);
-            
-            // Detect Threads/Instagram/Facebook in-app browser
-            const isInAppBrowser = (
-                ua.indexOf('Instagram') > -1 ||
-                ua.indexOf('FBAV') > -1 ||
-                ua.indexOf('FBAN') > -1 ||
-                ua.indexOf('Barcelona') > -1 || // Threads internal code name
-                ua.indexOf('Threads') > -1
-            );
-            
-            if (isInAppBrowser) {
-                const currentUrl = window.location.href;
-                
-                if (isAndroid) {
-                    // Android: Force open in Chrome using intent URL
-                    const cleanUrl = currentUrl.replace('https://', '').replace('http://', '');
-                    window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
-                } else if (isIOS) {
-                    // iOS: Force open in Safari using x-safari scheme
-                    window.location.href = currentUrl.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
-                }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b9d;
+            --primary-light: #ff8fb3;
+            --primary-dark: #e85589;
+            --accent: #4da7ff;
+            --bg: #f8f9fa;
+            --bg-soft: #fff;
+            --text: #2d3748;
+            --text-secondary: #718096;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe8f5 50%, #ffd4e8 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 107, 157, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-30px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 500;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(255, 107, 157, 0.3);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(255, 107, 157, 0.4);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: var(--bg-soft);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: var(--text);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* Video Showcase */
+        .showcase {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe8f5 100%);
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .video-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .video-container h3 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .video-container p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .phone-mockup {
+            position: relative;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .phone-frame {
+            position: relative;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .phone-screen {
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #1a1a1a;
+            border-radius: 0 0 15px 15px;
+            z-index: 10;
+        }
+
+        .video-embed {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Beta Signup */
+        .beta-signup {
+            padding: 100px 0;
+            background: var(--bg-soft);
+        }
+
+        .signup-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .signup-container h2 {
+            font-size: 36px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .signup-container .subtitle {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(255, 107, 157, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(255, 107, 157, 0.4);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                min-height: auto;
+                padding: 80px 0;
             }
-        })();
-    </script>
-    -->
-    
-    <link rel="stylesheet" href="styles.css">
+
+            .features, .showcase, .beta-signup {
+                padding: 60px 0;
+            }
+
+            .signup-container {
+                padding: 40px 24px;
+            }
+
+            .showcase-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .phone-mockup {
+                max-width: 250px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Slideshow Section -->
-        <div class="slideshow-container" id="slideshow-container">
-            <div class="slideshow-wrapper">
-                <div class="slide-item active" data-index="0">
-                    <img src="images/0.jpg" alt="Slide 0">
-                </div>
-                <div class="slide-item" data-index="1">
-                    <img src="images/1.png" alt="Slide 1">
-                </div>
-                <div class="slide-item" data-index="2">
-                    <img src="images/2.jpg" alt="Slide 2">
-                </div>
-                <div class="slide-item" data-index="3">
-                    <img src="images/3.jpg" alt="Slide 3">
-                </div>
-                <div class="slide-item" data-index="4">
-                    <img src="images/4.jpg" alt="Slide 4">
-                </div>
-                <div class="slide-item" data-index="5">
-                    <img src="images/5.jpg" alt="Slide 5">
-                </div>
-            </div>
-            
-            <!-- Slideshow dots -->
-            <div class="slideshow-dots">
-                <span class="dot active" data-slide="0"></span>
-                <span class="dot" data-slide="1"></span>
-                <span class="dot" data-slide="2"></span>
-                <span class="dot" data-slide="3"></span>
-                <span class="dot" data-slide="4"></span>
-                <span class="dot" data-slide="5"></span>
-            </div>
-        </div>
-
-        <!-- Decorative Section -->
-        <div class="decorative-section">
-            <div class="heart-icons">
-                <span class="icon-heart">❤️</span>
-                <span class="icon-kiss">💋</span>
-            </div>
-            <div class="decorative-line"></div>
-        </div>
-
-        <!-- Profile Section -->
-        <div class="profile-section">
-            <h1 class="profile-name">Allison 😇</h1>
-            <div class="status-section">
-                <p class="status-online">
-                    <span class="online-dot"></span>
-                    <span>Online Now</span>
-                    <span class="status-divider">⏱️</span>
-                    <span>Responds in 2 minutes</span>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>The First Traffic-Friendly Link in Bio Built for Serious Influencers</h1>
+                <p class="subtitle">
+                    While 79.95% of creators use platforms that trap their traffic, 
+                    SearchForMyLinks opens links <span class="highlight">directly in destination apps</span>—no walled gardens, 
+                    no stolen conversions. <span class="highlight">Meta-compliant, analytics-powered, and conversion-optimized</span> 
+                    for influencers who take their business seriously.
                 </p>
-                <!-- HIDDEN: Travel location message (uncomment to re-enable) -->
-                <!--
-                <p class="travel-text">
-                    <span class="travel-emoji">✈️</span>
-                    <span id="travel-message">Travelling to your city tomorrow</span>
-                </p>
-                -->
+                <a href="#beta-signup" class="cta-button">
+                    <span>Join Beta for Free</span>
+                    <span>🚀</span>
+                </a>
             </div>
         </div>
+    </section>
 
-        <!-- Links Section -->
-        <div class="links-container">
-            <a href="https://onlyfans.com/allison-gray/c35" class="link-button link-of" target="_blank" rel="noopener noreferrer" onclick="return showAgeWarning(event, this.href, 'My Exclusive Content 🥰')">
-                <span class="link-text">My Exclusive Content 🥰</span>
-            </a>
-            
-            <a href="https://t.me/allisonsworld" class="link-button link-telegram" target="_blank" rel="noopener noreferrer" onclick="return handleLinkClick(event, this.href, 'Send me a message on Telegram 💌')">
-                <span class="link-icon">✈️</span>
-                <span class="link-text">Send me a message on Telegram 💌</span>
-            </a>
-            
-            <a href="https://x.com/girlie_allie" class="link-button link-twitter" target="_blank" rel="noopener noreferrer" onclick="return handleLinkClick(event, this.href, 'My Private X 😘')">
-                <span class="link-icon">𝕏</span>
-                <span class="link-text">My Private X 😘</span>
-            </a>
-        </div>
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why 31 Million Creators Need a Traffic-Friendly Solution</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🚀</span>
+                    <h3>Links Open Directly—Zero Traffic Theft</h3>
+                    <p>The brutal truth: traditional platforms create "decision fatigue" by trapping visitors in their ecosystem. SearchForMyLinks opens links directly in destination apps—YouTube videos play in YouTube, shop links open in browsers, booking pages load instantly. No intermediate pages. No branding competition. Up to 350% higher click-through rates.</p>
+                </div>
 
-        <!-- CTA Section -->
-        <div class="cta-section">
-            <p class="cta-text">Get access to my exclusive content now which you will see nowhere else</p>
-        </div>
-    </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3>Analytics That Reveal Where Revenue Comes From</h3>
+                    <p>Stop guessing. Know exactly which platform drives conversions—Instagram, Threads, TikTok, Twitter, or direct traffic. Track bounce rates (industry average: 40-60%), time-to-click, conversion funnels, and new vs. returning visitors. With influencer marketing delivering $5.78 ROI per dollar invested, proper attribution is non-negotiable.</p>
+                </div>
 
-    <!-- Age Verification Modal -->
-    <div id="age-warning-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="warning-icon">⚠️</span>
-                <h2>18+ Content Warning</h2>
-            </div>
-            
-            <div class="modal-body">
-                <p class="warning-text">
-                    <strong>You must be 18 years or older to access this content.</strong>
-                </p>
-                <p class="disclaimer-text">
-                    This link contains adult content intended for mature audiences only. By clicking "I'm 18 or Older", you confirm that:
-                </p>
-                <ul class="disclaimer-list">
-                    <li>You are at least 18 years of age or the legal age of majority in your jurisdiction</li>
-                    <li>You agree to view adult/sensitive content</li>
-                    <li>You understand this content may contain explicit material</li>
-                    <li>Viewing such content is legal in your location</li>
-                </ul>
-                <p class="disclaimer-footer">
-                    This warning is provided in compliance with platform policies and applicable laws.
-                </p>
-            </div>
-            
-            <div class="modal-buttons">
-                <button class="btn-confirm" id="age-confirm-btn">I'm 18 or Older</button>
-                <button class="btn-cancel" id="age-cancel-btn">Cancel</button>
+                <div class="feature-card">
+                    <span class="feature-icon">✅</span>
+                    <h3>Meta Compliant—Protect Your Reach</h3>
+                    <p>In 2025, Meta confirmed posts without external links see 97.3% higher visibility. SearchForMyLinks' traffic-friendly approach respects Instagram and Threads policies—links flow seamlessly to destinations without triggering algorithmic penalties. No shadowbans. No account warnings. Just compliant growth.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">💎</span>
+                    <h3>Mobile-First Design That Converts</h3>
+                    <p>86% of top landing pages are mobile-optimized—yours should be too. Get stunning sliding galleries, smooth animations, touch-friendly buttons (44x44px minimum), and layouts that load in under 2 seconds. Every millisecond matters when one-second delays cut conversions by 7%.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">💰</span>
+                    <h3>Zero Transaction Fees Forever</h3>
+                    <p>While competitors charge up to 10% on every sale, SearchForMyLinks takes $0. Your revenue is your revenue. Whether you're selling courses, merchandise, coaching sessions, or subscriptions—keep 100% of what you earn.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Conversion-Optimized by Design</h3>
+                    <p>Built on proven best practices: clear action-oriented CTAs (increase clicks by 14.9%), strategic visual hierarchy, optimal 5-7 link structure to prevent decision paralysis, and A/B testing capabilities. Every element engineered to turn clicks into customers.</p>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <script src="script.js"></script>
+    <!-- Video Showcase -->
+    <section class="showcase">
+        <div class="container">
+            <h2 class="section-title">See What Makes SearchForMyLinks Different</h2>
+            <div class="showcase-grid">
+                <!-- Analytics Preview -->
+                <div class="video-container">
+                    <h3>📊 Intelligence-Grade Analytics Dashboard</h3>
+                    <p>Go beyond basic click counts. Track traffic source attribution, conversion funnels, bounce rates, time-to-click patterns, and ROI by platform. See exactly which Instagram post, TikTok video, or Twitter thread drives your highest-converting visitors.</p>
+                    <div class="video-embed">
+                        <video controls autoplay muted loop playsinline>
+                            <source src="analyticsnew.mp4" type="video/mp4">
+                            Your browser does not support video.
+                        </video>
+                    </div>
+                </div>
+
+                <!-- Link Preview -->
+                <div class="video-container">
+                    <h3>🔗 Link Pages That Actually Convert</h3>
+                    <p>Mobile-first design with sliding galleries, smooth animations, and touch-optimized buttons. Every element crafted to reduce friction and maximize conversions. This isn't just another Linktree clone—it's a professional landing page that respects your brand.</p>
+                    <div class="phone-mockup">
+                        <div class="phone-frame">
+                            <div class="phone-notch"></div>
+                            <div class="phone-screen">
+                                <video controls autoplay muted loop playsinline>
+                                    <source src="linkpreview.mov" type="video/mp4">
+                                    Your browser does not support video.
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why Serious Influencers Switch from Linktree & Beacons</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🆚</span>
+                    <h3>Linktree: Market Leader, Mediocre Results</h3>
+                    <p>79.95% market share doesn't equal best performance. Linktree traps traffic in their branded ecosystem, limits customization on free plans, and charges up to 10% transaction fees. Generic pages that look identical to millions of others.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🆚</span>
+                    <h3>Beacons: High Fees, Complex Setup</h3>
+                    <p>Built-in monetization sounds great until you see the 9% transaction fees and $8-$50/month pricing. Complex interface makes quick updates difficult. Still keeps visitors trapped instead of flowing traffic directly.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">✨</span>
+                    <h3>SearchForMyLinks: Built Different</h3>
+                    <p>Zero transaction fees forever. Links open directly in destination apps—no traffic theft. Meta-compliant architecture protects your reach. Intelligence-grade analytics reveal true ROI. Professional design that stands out.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">The Hidden Cost of Traffic-Stealing Platforms</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">⚠️</span>
+                    <h3>79.95% of Creators Use Linktree</h3>
+                    <p>Market dominance doesn't mean best solution. Traditional platforms trap visitors in branded intermediary pages, creating decision fatigue that kills conversions. Every extra click costs you customers.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📉</span>
+                    <h3>Average CTR: 1-5%</h3>
+                    <p>Most link-in-bio pages severely underperform because they prioritize platform branding over your conversions. With proper optimization, CTR can reach 5-8%+—that's up to 350% improvement.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">💸</span>
+                    <h3>Transaction Fees Up to 10%</h3>
+                    <p>Platforms charging fees on every sale add up fast. On $10,000 monthly revenue, that's $1,000 gone—$12,000 annually. SearchForMyLinks charges $0 forever.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🔍</span>
+                    <h3>Only 35% Can Prove ROI</h3>
+                    <p>Without proper attribution, you can't optimize. Basic click counts don't reveal which platform drives revenue, which campaigns convert, or where to invest effort. Intelligence-grade analytics change everything.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">⏱️</span>
+                    <h3>Bounce Rates: 40-60%</h3>
+                    <p>Industry average bounce rates signal poor user experience. When platforms trap traffic instead of flowing it directly to destinations, visitors abandon. SearchForMyLinks targets under 30% bounce rates.</p>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">📱</span>
+                    <h3>Meta Algorithm Penalties</h3>
+                    <p>Posts without external links see 97.3% higher visibility on Meta platforms. Links that create poor experiences or trap traffic trigger algorithmic suppression. Compliance isn't optional—it's critical for growth.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Beta Signup Section -->
+    <section class="beta-signup" id="beta-signup">
+        <div class="container">
+            <div class="signup-container">
+                <h2>Stop Losing Traffic. Start Converting More.</h2>
+                <p class="subtitle">Join the SearchForMyLinks beta and be among the first creators to experience a link-in-bio that actually respects your business. Limited spots available—early adopters get lifetime discounts on premium features.</p>
+                
+                <form id="betaForm">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="name" required placeholder="Your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" name="email" required placeholder="your@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Instagram Handle</label>
+                        <input type="text" name="instagram" placeholder="@yourhandle (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Audience Size</label>
+                        <select name="reach">
+                            <option value="">Select your reach</option>
+                            <option value="<10k">Under 10K followers</option>
+                            <option value="10k-50k">10K - 50K followers</option>
+                            <option value="50k-100k">50K - 100K followers</option>
+                            <option value="100k-500k">100K - 500K followers</option>
+                            <option value="500k+">500K+ followers</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>What's your biggest challenge with current link-in-bio tools? *</label>
+                        <textarea name="message" required placeholder="Example: 'My Linktree has a 2% click-through rate and I can't figure out which platform drives actual sales...'"></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="submitButton">
+                        Get Early Access 🚀
+                    </button>
+                </form>
+
+                <div id="successMessage" class="success-message" style="display: none;">
+                    <p>🎉 You're in! Check your email within 24 hours for your beta access details and setup guide.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 SearchForMyLinks. The traffic-friendly link in bio for serious influencers.</p>
+            <p style="margin-top: 12px;">
+                <a href="/preview">Live Example</a> | 
+                <a href="/analytics">Analytics Dashboard Demo</a>
+            </p>
+            <p style="margin-top: 16px; font-size: 14px; opacity: 0.9;">
+                Built for Instagram, TikTok, Threads & Twitter creators who deserve better than Linktree
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('betaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitButton = document.getElementById('submitButton');
+            const form = document.getElementById('betaForm');
+            const successMessage = document.getElementById('successMessage');
+            
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                instagram: formData.get('instagram') || 'Not provided',
+                reach: formData.get('reach') || 'Not provided',
+                message: formData.get('message')
+            };
+            
+            try {
+                const response = await fetch('/api/beta-signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    form.style.display = 'none';
+                    successMessage.style.display = 'block';
+                } else {
+                    alert('There was an error. Please try again or email us directly.');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Join Beta Waitlist 🚀';
+                }
+            } catch (error) {
+                alert('There was an error. Please try again or email us directly.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Join Beta Waitlist 🚀';
+            }
+        });
+
+        // Smooth scroll for CTA
+        document.querySelector('.cta-button').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('beta-signup').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
 </body>
 </html>
-
-

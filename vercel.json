@@ -1,12 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/home.html"
-    },
-    {
       "source": "/allisonsundress",
-      "destination": "/index.html"
+      "destination": "/allisonsundress.html"
     },
     {
       "source": "/allisonsundress/(.*)",
