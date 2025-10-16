@@ -590,6 +590,22 @@
             line-height: 1;
         }
         
+        /* Online indicator pulse */
+        #currentlyOnline {
+            animation: onlinePulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes onlinePulse {
+            0%, 100% { 
+                opacity: 1;
+                text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            }
+            50% { 
+                opacity: 0.8;
+                text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+            }
+        }
+        
         .stat-card .label {
             color: rgba(255, 255, 255, 0.4);
             font-size: 13px;
@@ -826,6 +842,11 @@
 
         <!-- Stats Grid -->
         <div class="stats-grid">
+            <div class="stat-card" style="border: 2px solid rgba(255, 182, 193, 0.5);">
+                <h3>🔴 Currently Online</h3>
+                <div class="value" id="currentlyOnline" style="color: #ff6b6b;">0</div>
+                <div class="label">active now</div>
+            </div>
             <div class="stat-card">
                 <h3>Total Visitors</h3>
                 <div class="value" id="totalVisitors">0</div>
@@ -909,6 +930,14 @@
         let lastEventCount = 0;
         let userIP = '';
         let allJourneys = [];
+        
+        // Store previous values to prevent flickering
+        let previousValues = {
+            totalVisitors: 0,
+            newVisitors: 0,
+            totalClicks: 0,
+            currentlyOnline: 0
+        };
 
         // Check for saved password on load
         window.addEventListener('DOMContentLoaded', async () => {
@@ -992,41 +1021,69 @@
             });
         }
 
-        async function fetchAnalytics() {
+        async function fetchAnalytics(silent = false) {
             try {
                 const sourceParam = currentSource !== 'all' ? `&source=${currentSource}` : '';
                 const response = await fetch(`/api/analytics?range=${currentRange}&password=${password}${sourceParam}`);
                 
                 if (response.status === 401) {
-                    showLoginError('Incorrect password');
-                    // Clear saved password
-                    localStorage.removeItem(`analytics_pass_${userIP}`);
+                    if (!silent) {
+                        showLoginError('Incorrect password');
+                        // Clear saved password
+                        localStorage.removeItem(`analytics_pass_${userIP}`);
+                    }
                     return;
                 }
                 
                 const data = await response.json();
                 
                 if (data.error) {
-                    showLoginError(data.error);
+                    if (!silent) showLoginError(data.error);
                     return;
                 }
 
-                showDashboard();
-                updateDashboard(data);
+                if (!silent) showDashboard();
+                updateDashboard(data, silent);
                 
             } catch (error) {
-                console.error('Failed to load analytics:', error);
+                if (!silent) console.error('Failed to load analytics:', error);
             }
         }
 
-        function updateDashboard(data) {
+        function updateDashboard(data, silent = false) {
             const { summary, recentEvents, userJourneys } = data;
             allJourneys = userJourneys || [];
 
-            // Update stats with animation
-            animateValue('totalVisitors', summary.totalVisitors || 0);
-            animateValue('newVisitors', summary.newVisitors || 0);
-            animateValue('totalClicks', summary.totalClicks || 0);
+            // Calculate currently online (users active in last 2 minutes)
+            const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+            const onlineUsers = new Set();
+            recentEvents.forEach(event => {
+                const eventTime = new Date(event.created_at);
+                if (eventTime > twoMinutesAgo && event.visitor_id) {
+                    onlineUsers.add(event.visitor_id);
+                }
+            });
+            const currentlyOnline = onlineUsers.size;
+
+            // Only animate if values actually changed (prevents flickering)
+            if (previousValues.totalVisitors !== (summary.totalVisitors || 0)) {
+                animateValue('totalVisitors', summary.totalVisitors || 0);
+                previousValues.totalVisitors = summary.totalVisitors || 0;
+            }
+            if (previousValues.newVisitors !== (summary.newVisitors || 0)) {
+                animateValue('newVisitors', summary.newVisitors || 0);
+                previousValues.newVisitors = summary.newVisitors || 0;
+            }
+            if (previousValues.totalClicks !== (summary.totalClicks || 0)) {
+                animateValue('totalClicks', summary.totalClicks || 0);
+                previousValues.totalClicks = summary.totalClicks || 0;
+            }
+            if (previousValues.currentlyOnline !== currentlyOnline) {
+                animateValue('currentlyOnline', currentlyOnline);
+                previousValues.currentlyOnline = currentlyOnline;
+            }
+            
+            // Update non-animated values
             document.getElementById('conversionRate').textContent = summary.conversionRate + '%';
             document.getElementById('bounceRate').textContent = summary.bounceRate + '%';
             document.getElementById('avgTime').textContent = Math.round(summary.avgTimeToClick || 0) + 's';
@@ -1086,8 +1143,8 @@
             `).join('') : '<div class="no-data">No browser data yet</div>';
             document.getElementById('browsers').innerHTML = browsersHtml;
 
-            // Update recent events and check for new ones
-            if (recentEvents.length > lastEventCount) {
+            // Update recent events and check for new ones (only if not silent)
+            if (!silent && recentEvents.length > lastEventCount && lastEventCount > 0) {
                 // New event detected!
                 const newEvent = recentEvents[0];
                 showNotification(newEvent);
