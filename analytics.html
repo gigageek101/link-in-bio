@@ -1167,11 +1167,6 @@
                 <p>Real-time visitor insights & performance</p>
             </div>
             <div class="header-right">
-                <div class="time-range">
-                    <button class="active" onclick="changeTimeRange('24h')">24h</button>
-                    <button onclick="changeTimeRange('7d')">7d</button>
-                    <button onclick="changeTimeRange('30d')">30d</button>
-                </div>
                 <select class="source-filter" id="sourceFilter" onchange="filterBySource()">
                     <option value="all">All Sources</option>
                     <option value="Threads">Threads</option>
@@ -1186,7 +1181,16 @@
                 <button class="refresh-btn" onclick="manualRefresh()" title="Refresh">🔄</button>
             </div>
         </div>
+        
+        <!-- View Tabs -->
+        <div class="view-tabs">
+            <button class="view-tab active" onclick="switchView('overview')">📊 Overview</button>
+            <button class="view-tab" onclick="switchView('trends')">📈 Trends</button>
+        </div>
 
+        <!-- Overview View -->
+        <div id="overviewView" class="view-container active">
+        
         <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card hover-card" onclick="toggleTooltip(this)">
@@ -1269,6 +1273,128 @@
                 <div class="no-data">No recent activity</div>
             </div>
         </div>
+        
+        </div>
+        <!-- End Overview View -->
+        
+        <!-- Trends View -->
+        <div id="trendsView" class="view-container">
+            
+            <!-- Trend Period Selection -->
+            <div class="header" style="margin-bottom: 30px;">
+                <div class="header-left">
+                    <h2 style="font-size: 24px; color: #2d3748; margin-bottom: 5px;">📈 Performance Trends</h2>
+                    <p style="font-size: 14px; color: rgba(45, 55, 72, 0.5);">Compare periods and track growth</p>
+                </div>
+                <div class="time-range">
+                    <button class="active" onclick="changeTrendPeriod('7d')">Last 7 Days</button>
+                    <button onclick="changeTrendPeriod('14d')">Last 14 Days</button>
+                    <button onclick="changeTrendPeriod('30d')">Last 30 Days</button>
+                    <button onclick="changeTrendPeriod('90d')">Last 90 Days</button>
+                </div>
+            </div>
+            
+            <!-- Trend Stats Grid -->
+            <div class="stats-grid" style="margin-bottom: 40px;">
+                <div class="trend-stat-card">
+                    <div class="trend-stat-header">
+                        <span class="icon">👥</span>
+                        <span>Total Visitors</span>
+                    </div>
+                    <div class="trend-stat-value" id="trendVisitors">0</div>
+                    <div class="trend-stat-change" id="trendVisitorsChange">
+                        <span>--</span>
+                    </div>
+                    <div class="trend-comparison" id="trendVisitorsComparison">vs previous period</div>
+                </div>
+                
+                <div class="trend-stat-card">
+                    <div class="trend-stat-header">
+                        <span class="icon">✨</span>
+                        <span>New Visitors</span>
+                    </div>
+                    <div class="trend-stat-value" id="trendNewVisitors">0</div>
+                    <div class="trend-stat-change" id="trendNewVisitorsChange">
+                        <span>--</span>
+                    </div>
+                    <div class="trend-comparison" id="trendNewVisitorsComparison">vs previous period</div>
+                </div>
+                
+                <div class="trend-stat-card">
+                    <div class="trend-stat-header">
+                        <span class="icon">🎯</span>
+                        <span>Total Clicks</span>
+                    </div>
+                    <div class="trend-stat-value" id="trendClicks">0</div>
+                    <div class="trend-stat-change" id="trendClicksChange">
+                        <span>--</span>
+                    </div>
+                    <div class="trend-comparison" id="trendClicksComparison">vs previous period</div>
+                </div>
+                
+                <div class="trend-stat-card">
+                    <div class="trend-stat-header">
+                        <span class="icon">💫</span>
+                        <span>Conversion Rate</span>
+                    </div>
+                    <div class="trend-stat-value" id="trendConversion">0%</div>
+                    <div class="trend-stat-change" id="trendConversionChange">
+                        <span>--</span>
+                    </div>
+                    <div class="trend-comparison" id="trendConversionComparison">vs previous period</div>
+                </div>
+                
+                <div class="trend-stat-card">
+                    <div class="trend-stat-header">
+                        <span class="icon">🚪</span>
+                        <span>Bounce Rate</span>
+                    </div>
+                    <div class="trend-stat-value" id="trendBounce">0%</div>
+                    <div class="trend-stat-change" id="trendBounceChange">
+                        <span>--</span>
+                    </div>
+                    <div class="trend-comparison" id="trendBounceComparison">vs previous period</div>
+                </div>
+                
+                <div class="trend-stat-card">
+                    <div class="trend-stat-header">
+                        <span class="icon">⏱️</span>
+                        <span>Avg. Time to Click</span>
+                    </div>
+                    <div class="trend-stat-value" id="trendAvgTime">0s</div>
+                    <div class="trend-stat-change" id="trendAvgTimeChange">
+                        <span>--</span>
+                    </div>
+                    <div class="trend-comparison" id="trendAvgTimeComparison">vs previous period</div>
+                </div>
+            </div>
+            
+            <!-- Trend Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>📊 Daily Visitors Trend</h3>
+                    <div id="dailyVisitorsTrend"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>🎯 Daily Clicks Trend</h3>
+                    <div id="dailyClicksTrend"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>💫 Daily Conversion Rate</h3>
+                    <div id="dailyConversionTrend"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <h3>🌐 Traffic Source Growth</h3>
+                    <div id="sourceGrowthTrend"></div>
+                </div>
+            </div>
+            
+        </div>
+        <!-- End Trends View -->
+        
     </div>
 
     <!-- Toast Container -->
@@ -1298,6 +1424,8 @@
         let allEvents = [];
         let allJourneys = [];
         let expandedJourneys = new Set();
+        let currentView = 'overview';
+        let currentTrendPeriod = '7d';
         
         // Theme management
         const savedTheme = localStorage.getItem('theme') || 'light';
@@ -1367,12 +1495,33 @@
             }
         });
 
-        // Change time range
-        function changeTimeRange(range) {
-            currentTimeRange = range;
-            document.querySelectorAll('.time-range button').forEach(btn => btn.classList.remove('active'));
+        // Switch view
+        function switchView(view) {
+            currentView = view;
+            
+            // Update tabs
+            document.querySelectorAll('.view-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
-            fetchAnalytics();
+            
+            // Update views
+            document.querySelectorAll('.view-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            if (view === 'overview') {
+                document.getElementById('overviewView').classList.add('active');
+            } else if (view === 'trends') {
+                document.getElementById('trendsView').classList.add('active');
+                updateTrends();
+            }
+        }
+        
+        // Change trend period
+        function changeTrendPeriod(period) {
+            currentTrendPeriod = period;
+            document.querySelectorAll('#trendsView .time-range button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateTrends();
         }
 
         // Filter by source
@@ -1877,6 +2026,247 @@
                 });
             }
         });
+        
+        // Update trends
+        function updateTrends() {
+            if (!allEvents || allEvents.length === 0) return;
+            
+            // Calculate period duration in days
+            const periodDays = {
+                '7d': 7,
+                '14d': 14,
+                '30d': 30,
+                '90d': 90
+            }[currentTrendPeriod];
+            
+            const now = new Date();
+            const currentPeriodStart = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+            const previousPeriodStart = new Date(currentPeriodStart.getTime() - periodDays * 24 * 60 * 60 * 1000);
+            
+            // Filter events by source
+            let filteredEvents = allEvents;
+            if (currentSourceFilter !== 'all') {
+                filteredEvents = allEvents.filter(e => e.source_platform === currentSourceFilter);
+            }
+            
+            // Split events into current and previous periods
+            const currentPeriodEvents = filteredEvents.filter(e => 
+                new Date(e.created_at) >= currentPeriodStart
+            );
+            const previousPeriodEvents = filteredEvents.filter(e => 
+                new Date(e.created_at) >= previousPeriodStart && new Date(e.created_at) < currentPeriodStart
+            );
+            
+            // Calculate metrics for both periods
+            const currentMetrics = calculatePeriodMetrics(currentPeriodEvents);
+            const previousMetrics = calculatePeriodMetrics(previousPeriodEvents);
+            
+            // Update trend stats
+            updateTrendStat('trendVisitors', currentMetrics.visitors, previousMetrics.visitors);
+            updateTrendStat('trendNewVisitors', currentMetrics.newVisitors, previousMetrics.newVisitors);
+            updateTrendStat('trendClicks', currentMetrics.clicks, previousMetrics.clicks);
+            updateTrendStat('trendConversion', currentMetrics.conversion, previousMetrics.conversion, '%');
+            updateTrendStat('trendBounce', currentMetrics.bounce, previousMetrics.bounce, '%', true);
+            updateTrendStat('trendAvgTime', currentMetrics.avgTime, previousMetrics.avgTime, 's', true);
+            
+            // Update daily trends
+            updateDailyTrends(filteredEvents, periodDays);
+        }
+        
+        function calculatePeriodMetrics(events) {
+            const pageViews = events.filter(e => e.event_type === 'page_view');
+            const uniqueVisitors = new Set(pageViews.map(e => e.visitor_id)).size;
+            const newVisitors = pageViews.filter(e => e.is_new_visitor).length;
+            const clicks = events.filter(e => e.event_type === 'link_click').length;
+            const bounces = events.filter(e => e.event_type === 'bounce').length;
+            
+            const clickEvents = events.filter(e => e.event_type === 'link_click' && e.time_to_interaction);
+            const avgTime = clickEvents.length > 0 
+                ? clickEvents.reduce((sum, e) => sum + (e.time_to_interaction || 0), 0) / clickEvents.length 
+                : 0;
+            
+            return {
+                visitors: uniqueVisitors,
+                newVisitors: newVisitors,
+                clicks: clicks,
+                conversion: uniqueVisitors > 0 ? ((clicks / uniqueVisitors) * 100).toFixed(1) : 0,
+                bounce: uniqueVisitors > 0 ? ((bounces / uniqueVisitors) * 100).toFixed(1) : 0,
+                avgTime: Math.round(avgTime)
+            };
+        }
+        
+        function updateTrendStat(prefix, currentValue, previousValue, suffix = '', reverseColors = false) {
+            // Update value
+            document.getElementById(prefix).textContent = currentValue + suffix;
+            
+            // Calculate change
+            const changeElement = document.getElementById(prefix + 'Change');
+            const comparisonElement = document.getElementById(prefix + 'Comparison');
+            
+            if (previousValue === 0) {
+                if (currentValue === 0) {
+                    changeElement.innerHTML = '<span>No change</span>';
+                    changeElement.className = 'trend-stat-change neutral';
+                } else {
+                    changeElement.innerHTML = '<span>↑ New data</span>';
+                    changeElement.className = 'trend-stat-change positive';
+                }
+            } else {
+                const change = ((currentValue - previousValue) / previousValue * 100).toFixed(1);
+                const absChange = Math.abs(change);
+                const isPositive = change > 0;
+                const arrow = isPositive ? '↑' : change < 0 ? '↓' : '→';
+                
+                // Determine color class
+                let colorClass = 'neutral';
+                if (reverseColors) {
+                    // For metrics where lower is better (bounce rate, avg time)
+                    colorClass = isPositive ? 'negative' : change < 0 ? 'positive' : 'neutral';
+                } else {
+                    // For metrics where higher is better
+                    colorClass = isPositive ? 'positive' : change < 0 ? 'negative' : 'neutral';
+                }
+                
+                changeElement.innerHTML = `<span>${arrow} ${absChange}%</span>`;
+                changeElement.className = 'trend-stat-change ' + colorClass;
+            }
+            
+            comparisonElement.textContent = `${previousValue}${suffix} in previous period`;
+        }
+        
+        function updateDailyTrends(events, periodDays) {
+            const now = new Date();
+            const startDate = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+            
+            // Group events by day
+            const dailyData = {};
+            for (let i = 0; i < periodDays; i++) {
+                const date = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
+                const dateKey = date.toISOString().split('T')[0];
+                dailyData[dateKey] = {
+                    visitors: new Set(),
+                    clicks: 0,
+                    pageViews: 0
+                };
+            }
+            
+            events.forEach(event => {
+                const dateKey = event.created_at.split('T')[0];
+                if (dailyData[dateKey]) {
+                    if (event.event_type === 'page_view' && event.visitor_id) {
+                        dailyData[dateKey].visitors.add(event.visitor_id);
+                        dailyData[dateKey].pageViews++;
+                    } else if (event.event_type === 'link_click') {
+                        dailyData[dateKey].clicks++;
+                    }
+                }
+            });
+            
+            // Convert to arrays
+            const dates = Object.keys(dailyData).sort();
+            const visitorCounts = dates.map(date => dailyData[date].visitors.size);
+            const clickCounts = dates.map(date => dailyData[date].clicks);
+            const conversionRates = dates.map(date => {
+                const visitors = dailyData[date].visitors.size;
+                const clicks = dailyData[date].clicks;
+                return visitors > 0 ? ((clicks / visitors) * 100).toFixed(1) : 0;
+            });
+            
+            // Display as simple charts
+            displayDailyTrend('dailyVisitorsTrend', dates, visitorCounts, 'visitors');
+            displayDailyTrend('dailyClicksTrend', dates, clickCounts, 'clicks');
+            displayDailyTrend('dailyConversionTrend', dates, conversionRates, '%');
+            displaySourceGrowth(events, periodDays);
+        }
+        
+        function displayDailyTrend(elementId, dates, values, unit) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const maxValue = Math.max(...values, 1);
+            const formattedDates = dates.map(d => {
+                const date = new Date(d);
+                return `${date.getMonth() + 1}/${date.getDate()}`;
+            });
+            
+            let html = '<div style="padding: 20px;">';
+            
+            // Bar chart representation
+            values.forEach((value, index) => {
+                const percentage = (value / maxValue) * 100;
+                const color = value > 0 ? '#81c7d4' : 'rgba(129, 199, 212, 0.2)';
+                
+                html += `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <div style="width: 70px; font-size: 12px; color: rgba(45, 55, 72, 0.6);">${formattedDates[index]}</div>
+                        <div style="flex: 1; height: 30px; background: rgba(129, 199, 212, 0.1); border-radius: 8px; overflow: hidden; position: relative;">
+                            <div style="width: ${percentage}%; height: 100%; background: ${color}; border-radius: 8px; transition: width 0.5s ease;"></div>
+                        </div>
+                        <div style="width: 60px; text-align: right; font-weight: 600; color: #81c7d4;">${value}${unit}</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            element.innerHTML = html;
+        }
+        
+        function displaySourceGrowth(events, periodDays) {
+            const element = document.getElementById('sourceGrowthTrend');
+            if (!element) return;
+            
+            // Group by source
+            const sourceData = {};
+            events.filter(e => e.event_type === 'page_view').forEach(event => {
+                const source = event.source_platform || 'Direct';
+                if (!sourceData[source]) {
+                    sourceData[source] = new Set();
+                }
+                if (event.visitor_id) {
+                    sourceData[source].add(event.visitor_id);
+                }
+            });
+            
+            const sources = Object.entries(sourceData)
+                .map(([source, visitors]) => ({
+                    source,
+                    count: visitors.size
+                }))
+                .sort((a, b) => b.count - a.count);
+            
+            if (sources.length === 0) {
+                element.innerHTML = '<div class="no-data">No traffic source data yet</div>';
+                return;
+            }
+            
+            const maxCount = sources[0].count;
+            
+            let html = '<div style="padding: 20px;">';
+            sources.forEach(({source, count}) => {
+                const percentage = (count / maxCount) * 100;
+                const sourceEmojis = {
+                    'Threads': '🧵',
+                    'Instagram': '📷',
+                    'Facebook': '👥',
+                    'X/Twitter': '🐦',
+                    'Direct': '🔗'
+                };
+                const emoji = sourceEmojis[source] || '🌐';
+                
+                html += `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <div style="width: 100px; font-size: 14px; color: rgba(45, 55, 72, 0.8);">${emoji} ${source}</div>
+                        <div style="flex: 1; height: 30px; background: rgba(129, 199, 212, 0.1); border-radius: 8px; overflow: hidden;">
+                            <div style="width: ${percentage}%; height: 100%; background: linear-gradient(135deg, #81c7d4, #9b8fc9); border-radius: 8px;"></div>
+                        </div>
+                        <div style="width: 60px; text-align: right; font-weight: 600; color: #81c7d4;">${count}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            element.innerHTML = html;
+        }
 
         // Update user journeys
         function updateUserJourneys(journeys) {
