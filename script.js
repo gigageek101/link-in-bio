@@ -260,12 +260,7 @@ function handleLinkClick(event, url, linkName) {
 
 // Enhanced deep linking with x-safari and intent:// URLs for Threads/Instagram
 function forceOpenInBrowser(url) {
-    if (!url) {
-        console.error('No URL provided to forceOpenInBrowser');
-        return;
-    }
-    
-    console.log('forceOpenInBrowser called with:', url);
+    if (!url) return;
     
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
@@ -280,38 +275,29 @@ function forceOpenInBrowser(url) {
         ua.indexOf('Threads') > -1
     );
     
-    console.log('Browser detection - isInAppBrowser:', isInAppBrowser, 'isIOS:', isIOS, 'isAndroid:', isAndroid);
-    console.log('User Agent:', ua);
-    
     // FORCE external browser opening for in-app browsers
     if (isInAppBrowser) {
         if (isAndroid) {
             // Android: Use intent:// URL to force Chrome
             const cleanUrl = url.replace('https://', '').replace('http://', '');
             const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
-            console.log('🚀 ANDROID: Forcing Chrome with intent URL:', intentUrl);
             window.location.href = intentUrl;
             return;
         } else if (isIOS) {
             // iOS: Use x-safari-https:// scheme to force Safari
             const safariUrl = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
-            console.log('🚀 iOS: Forcing Safari with x-safari scheme:', safariUrl);
             window.location.href = safariUrl;
             return;
         }
     }
     
     // For normal browsers, use standard methods
-    console.log('Normal browser detected, using window.open');
     try {
         const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
         if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-            // Fallback to direct navigation
-            console.log('window.open blocked, using location.href');
             window.location.href = url;
         }
     } catch (e) {
-        console.error('window.open failed:', e);
         window.location.href = url;
     }
 }
@@ -360,7 +346,7 @@ async function getUserLocation() {
             };
         }
     } catch (error) {
-        console.log('Primary location API failed, trying backup...');
+        // Primary API failed, trying backup
     }
     
     try {
@@ -377,7 +363,7 @@ async function getUserLocation() {
             };
         }
     } catch (error) {
-        console.log('Backup location API failed');
+        // Backup API failed
     }
     
     // Fallback if both APIs fail
@@ -442,7 +428,7 @@ function showSlide(index) {
                 stopAutoSlide(); // Stop the timer while video plays
                 
                 video.currentTime = 0; // Start from beginning
-                video.play().catch(err => console.log('Video play failed:', err));
+                video.play().catch(err => {});
                 
                 // When video ends, advance to next slide
                 video.onended = () => {
