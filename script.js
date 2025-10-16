@@ -48,13 +48,15 @@ function confirmAge() {
         // Clear modal
         hideAgeWarning();
         
-        // Open link immediately
-        forceOpenInBrowser(urlToOpen);
+        // Open link in new tab (deep linking disabled)
+        window.open(urlToOpen, '_blank', 'noopener,noreferrer');
     } else {
         console.error('No pendingUrl found!');
         hideAgeWarning();
     }
 }
+
+/* HIDDEN: Deep linking functions (uncomment to re-enable external browser forcing)
 
 // Enhanced deep linking with x-safari and intent:// URLs for Threads/Instagram
 function forceOpenInBrowser(url) {
@@ -139,6 +141,8 @@ function openInBrowser(event, url) {
     
     return false;
 }
+
+END OF HIDDEN DEEP LINKING CODE */
 
 // Get user's location based on IP
 async function getUserLocation() {

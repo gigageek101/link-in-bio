@@ -34,7 +34,8 @@
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
     
-    <!-- IMMEDIATE redirect for in-app browsers - Must run before page loads -->
+    <!-- HIDDEN: Deep linking - Forces external browser (uncomment to re-enable) -->
+    <!--
     <script>
         (function() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
@@ -64,6 +65,7 @@
             }
         })();
     </script>
+    -->
     
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -138,12 +140,14 @@
                 <span class="link-text">My Exclusive Content 🥰</span>
             </a>
             
-            <a href="https://t.me/allisonsworld" class="link-button link-telegram" target="_blank" rel="noopener noreferrer" onclick="openInBrowser(event, this.href)">
+            <!-- HIDDEN: onclick="openInBrowser(event, this.href)" removed (add back for deep linking) -->
+            <a href="https://t.me/allisonsworld" class="link-button link-telegram" target="_blank" rel="noopener noreferrer">
                 <span class="link-icon">✈️</span>
                 <span class="link-text">Send me a message on Telegram 💌</span>
             </a>
             
-            <a href="https://x.com/girlie_allie" class="link-button link-twitter" target="_blank" rel="noopener noreferrer" onclick="openInBrowser(event, this.href)">
+            <!-- HIDDEN: onclick="openInBrowser(event, this.href)" removed (add back for deep linking) -->
+            <a href="https://x.com/girlie_allie" class="link-button link-twitter" target="_blank" rel="noopener noreferrer">
                 <span class="link-icon">𝕏</span>
                 <span class="link-text">My Private X 😘</span>
             </a>
