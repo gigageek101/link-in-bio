@@ -131,48 +131,40 @@
 
         .hero-content {
             position: relative;
+            z-index: 2;
             text-align: center;
             max-width: 1000px;
             width: 100%;
-            min-height: 700px;
-            padding-bottom: 40px;
         }
 
         .hero-title-section {
-            position: relative;
-            z-index: 10;
-            padding-top: 40px;
-            padding-bottom: 60px;
+            margin-bottom: 50px;
         }
 
         .hero-video-container {
-            position: absolute;
-            top: 180px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1;
-            max-width: 900px;
-            width: 90%;
-            border-radius: 24px;
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 20px 80px rgba(255, 107, 157, 0.3);
-            animation: fadeInUp 1s ease-out, pulse 3s ease-in-out infinite;
+            box-shadow: 0 15px 60px rgba(255, 107, 157, 0.25);
+            animation: fadeInUp 1s ease-out;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .hero-video-container:hover {
-            transform: translateX(-50%) translateY(-10px) scale(1.02);
-            box-shadow: 0 30px 100px rgba(255, 107, 157, 0.4);
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 20px 70px rgba(255, 107, 157, 0.35);
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateX(-50%) translateY(30px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
-                transform: translateX(-50%) translateY(0);
+                transform: translateY(0);
             }
         }
 
@@ -189,7 +181,7 @@
             width: 100%;
             height: auto;
             display: block;
-            border-radius: 24px;
+            border-radius: 20px;
         }
 
         h1 {
@@ -200,7 +192,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.9));
         }
 
         .subtitle {
@@ -211,7 +202,6 @@
             margin-left: auto;
             margin-right: auto;
             font-weight: 500;
-            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.95), 0 0 20px rgba(255, 255, 255, 0.8);
         }
 
         .highlight {
@@ -234,8 +224,6 @@
             box-shadow: 0 8px 24px rgba(255, 107, 157, 0.3);
             transition: all 0.3s ease;
             text-decoration: none;
-            position: relative;
-            z-index: 10;
         }
 
         .cta-button:hover {
@@ -488,18 +476,13 @@
                 padding: 60px 20px;
             }
 
-            .hero-content {
-                min-height: 600px;
-            }
-
             .hero-title-section {
-                padding-top: 20px;
-                padding-bottom: 40px;
+                margin-bottom: 30px;
             }
 
             .hero-video-container {
-                top: 140px;
-                width: 95%;
+                max-width: 100%;
+                margin-bottom: 30px;
             }
 
             h1 {
@@ -543,7 +526,7 @@
             </div>
             
             <div class="hero-video-container">
-                <video controls autoplay muted loop playsinline>
+                <video autoplay muted loop playsinline>
                     <source src="linkpreview.mov" type="video/mp4">
                     Your browser does not support video.
                 </video>
