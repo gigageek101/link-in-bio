@@ -1,18 +1,133 @@
+// Telegram Tracking System
+let userLocation = null;
+
+// Get user location for tracking
+async function getLocationForTracking() {
+    if (userLocation) return userLocation;
+    
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        userLocation = {
+            city: data.city || 'Unknown',
+            country: data.country_name || 'Unknown',
+            countryCode: data.country_code
+        };
+        return userLocation;
+    } catch (error) {
+        console.error('Location fetch error:', error);
+        return { city: 'Unknown', country: 'Unknown' };
+    }
+}
+
+// Detect device type
+function getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/iPad/.test(ua)) return 'iPad';
+    if (/iPhone/.test(ua)) return 'iPhone';
+    if (/Android/.test(ua) && /Mobile/.test(ua)) return 'Android Phone';
+    if (/Android/.test(ua)) return 'Android Tablet';
+    if (/Mac/.test(ua)) return 'Mac';
+    if (/Windows/.test(ua)) return 'Windows PC';
+    if (/Linux/.test(ua)) return 'Linux';
+    return 'Unknown Device';
+}
+
+// Detect browser
+function getBrowserName() {
+    const ua = navigator.userAgent;
+    if (ua.includes('Instagram')) return 'Instagram (in-app)';
+    if (ua.includes('Barcelona') || ua.includes('Threads')) return 'Threads (in-app)';
+    if (ua.includes('FBAV') || ua.includes('FBAN')) return 'Facebook (in-app)';
+    if (ua.includes('Twitter')) return 'X/Twitter (in-app)';
+    if (ua.includes('Chrome')) return 'Chrome';
+    if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+    if (ua.includes('Firefox')) return 'Firefox';
+    if (ua.includes('Edge')) return 'Edge';
+    return 'Unknown Browser';
+}
+
+// Send tracking data to Telegram
+async function sendTelegramNotification(type, data) {
+    try {
+        await fetch('/api/track', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ type, data })
+        });
+    } catch (error) {
+        console.error('Tracking notification error:', error);
+    }
+}
+
+// Track page view
+async function trackPageView() {
+    const location = await getLocationForTracking();
+    const device = getDeviceType();
+    const browser = getBrowserName();
+    const referrer = document.referrer || 'Direct';
+    const timestamp = new Date().toLocaleString('en-US', { 
+        timeZone: 'UTC',
+        hour12: true,
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    await sendTelegramNotification('page_view', {
+        location,
+        device,
+        browser,
+        referrer,
+        timestamp,
+        userAgent: navigator.userAgent
+    });
+}
+
+// Track link click
+async function trackLinkClick(linkName, linkUrl, ageVerified = undefined) {
+    const location = await getLocationForTracking();
+    const timestamp = new Date().toLocaleString('en-US', { 
+        timeZone: 'UTC',
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    
+    await sendTelegramNotification('link_click', {
+        linkName,
+        linkUrl,
+        location,
+        ageVerified,
+        timestamp
+    });
+}
+
 // Age Warning Modal
 let pendingUrl = null;
+let pendingLinkName = null;
 
-function showAgeWarning(event, url) {
-    console.log('showAgeWarning - url:', url);
+function showAgeWarning(event, url, linkName) {
+    console.log('showAgeWarning - url:', url, 'linkName:', linkName);
     
     event.preventDefault();
     pendingUrl = url || 'https://onlyfans.com/allison-gray/c35';
+    pendingLinkName = linkName || 'My Exclusive Content';
     
-    console.log('Stored pendingUrl:', pendingUrl);
+    console.log('Stored pendingUrl:', pendingUrl, 'pendingLinkName:', pendingLinkName);
     
     // Track age warning shown in Vercel Analytics
     if (window.va) {
         window.va('event', { name: 'age_warning_shown' });
     }
+    
+    // Track age warning in Telegram
+    trackAgeWarning();
     
     const modal = document.getElementById('age-warning-modal');
     if (modal) {
@@ -21,6 +136,22 @@ function showAgeWarning(event, url) {
     }
     
     return false;
+}
+
+// Track age warning shown
+async function trackAgeWarning() {
+    const location = await getLocationForTracking();
+    const timestamp = new Date().toLocaleString('en-US', { 
+        timeZone: 'UTC',
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    await sendTelegramNotification('age_warning', {
+        location,
+        timestamp
+    });
 }
 
 function hideAgeWarning() {
@@ -36,14 +167,18 @@ function confirmAge() {
     console.log('confirmAge called - pendingUrl:', pendingUrl);
     
     if (pendingUrl) {
-        // Store URL before clearing it
+        // Store URL and link name before clearing
         const urlToOpen = pendingUrl;
-        console.log('Will open URL:', urlToOpen);
+        const linkName = pendingLinkName;
+        console.log('Will open URL:', urlToOpen, 'Link:', linkName);
         
         // Track age verification acceptance in Vercel Analytics
         if (window.va) {
             window.va('event', { name: 'age_verification_accepted' });
         }
+        
+        // Track link click with age verification in Telegram
+        trackLinkClick(linkName, urlToOpen, true);
         
         // Clear modal
         hideAgeWarning();
@@ -54,6 +189,27 @@ function confirmAge() {
         console.error('No pendingUrl found!');
         hideAgeWarning();
     }
+}
+
+// Handler for non-age-gated links
+function handleLinkClick(event, url, linkName) {
+    event.preventDefault();
+    
+    // Track link click in Telegram
+    trackLinkClick(linkName, url);
+    
+    // Track in Vercel Analytics
+    if (window.va) {
+        window.va('event', { 
+            name: 'link_click',
+            data: { link: linkName, url: url }
+        });
+    }
+    
+    // Open link
+    window.open(url, '_blank', 'noopener,noreferrer');
+    
+    return false;
 }
 
 /* HIDDEN: Deep linking functions (uncomment to re-enable external browser forcing)
@@ -420,6 +576,9 @@ function initSlideshow() {
 document.addEventListener('DOMContentLoaded', function() {
     initSlideshow();
     updateLocationMessages();
+    
+    // Track page view in Telegram
+    trackPageView();
     
     // Setup age warning modal buttons
     const confirmBtn = document.getElementById('age-confirm-btn');
