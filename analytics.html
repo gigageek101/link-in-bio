@@ -984,8 +984,10 @@
             document.getElementById('login').classList.add('hidden');
             setTimeout(() => {
                 document.getElementById('dashboard').classList.add('active');
-                // Start auto-refresh every 10 seconds
-                refreshInterval = setInterval(fetchAnalytics, 10000);
+                // Start auto-refresh every 5 seconds for real-time updates
+                refreshInterval = setInterval(() => {
+                    fetchAnalytics(true); // Silent refresh
+                }, 5000);
             }, 500);
         }
 
