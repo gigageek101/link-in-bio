@@ -1,5 +1,13 @@
 // Analytics API Endpoint
-const { sql } = require('@vercel/postgres');
+const { createPool } = require('@vercel/postgres');
+
+// Get the correct connection string (Supabase uses prefixed vars)
+const connectionString = process.env.POSTGRES_URL_POSTGRES_URL || 
+                        process.env.POSTGRES_URL || 
+                        process.env.DATABASE_URL;
+
+const pool = createPool({ connectionString });
+const sql = pool.sql;
 
 // Simplified inline functions for Neon compatibility
 async function initDatabase() {
