@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 
         if (type === 'page_view') {
             // Page visit notification
-            const { location, device, browser, referrer, timestamp, userAgent, isNewVisitor, visitCount, visitorId } = data;
+            const { location, device, deviceInfo, browser, referrer, timestamp, userAgent, isNewVisitor, visitCount, visitorId, pageUrl } = data;
             
             // Detect platform from user agent or referrer
             let platform = 'Direct';
@@ -62,7 +62,18 @@ export default async function handler(req, res) {
             message += `📱 <b>Device:</b> ${device || 'Unknown'}\n`;
             message += `🌐 <b>Browser:</b> ${browser || 'Unknown'}\n`;
             message += `🔗 <b>From:</b> ${platform}\n`;
-            message += `⏰ <b>Time:</b> ${timestamp}\n`;
+            
+            // Device details
+            if (deviceInfo) {
+                message += `\n📊 <b>Device Info:</b>\n`;
+                message += `  • Screen: ${deviceInfo.screen || 'Unknown'}\n`;
+                message += `  • Viewport: ${deviceInfo.viewport || 'Unknown'}\n`;
+                message += `  • Language: ${deviceInfo.language || 'Unknown'}\n`;
+                message += `  • Touch: ${deviceInfo.touchScreen ? 'Yes' : 'No'}\n`;
+                message += `  • Online: ${deviceInfo.online ? 'Yes' : 'No'}\n`;
+            }
+            
+            message += `\n⏰ <b>Time:</b> ${timestamp}\n`;
             
             if (!isNewVisitor && visitCount > 1) {
                 message += `\n👤 <b>Visitor ID:</b> <code>${visitorId}</code>\n`;
@@ -70,7 +81,7 @@ export default async function handler(req, res) {
             
         } else if (type === 'link_click') {
             // Link click notification
-            const { linkName, linkUrl, location, ageVerified, timestamp, isNewVisitor, visitorId, visitCount } = data;
+            const { linkName, linkUrl, location, ageVerified, timestamp, isNewVisitor, visitorId, visitCount, timeOnPage, timeToClick } = data;
             
             let emoji = '🔗';
             if (linkName.includes('Exclusive') || linkName.includes('OnlyFans')) emoji = '💗';
@@ -88,6 +99,11 @@ export default async function handler(req, res) {
                 message += `👤 <b>Visitor:</b> 🔄 Returning (Visit #${visitCount})\n`;
             }
             
+            // Time to click
+            if (timeToClick) {
+                message += `⏱️ <b>Time to Click:</b> ${timeToClick}\n`;
+            }
+            
             if (ageVerified !== undefined) {
                 message += `✅ <b>Age verified:</b> ${ageVerified ? 'Yes' : 'Cancelled'}\n`;
             }
@@ -96,11 +112,55 @@ export default async function handler(req, res) {
             
         } else if (type === 'age_warning') {
             // Age warning shown
-            const { location, timestamp } = data;
+            const { location, timestamp, timeOnPage, timeToInteraction } = data;
             
             message = `⚠️ <b>Age Warning Shown</b>\n\n`;
             message += `📍 <b>Visitor from:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            
+            if (timeToInteraction) {
+                message += `⏱️ <b>Time on page:</b> ${timeToInteraction}\n`;
+            }
+            
             message += `⏰ <b>Time:</b> ${timestamp}\n`;
+            
+        } else if (type === 'bounce') {
+            // Bounce notification (user left without clicking)
+            const { location, timestamp, timeOnPage, sessionDuration, isNewVisitor, visitorId } = data;
+            
+            message = `🚪 <b>BOUNCE!</b> (No clicks)\n\n`;
+            message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            
+            if (isNewVisitor) {
+                message += `👤 <b>Visitor:</b> 🆕 New\n`;
+            } else {
+                message += `👤 <b>Visitor:</b> 🔄 Returning\n`;
+            }
+            
+            if (sessionDuration) {
+                message += `⏱️ <b>Time on page:</b> ${sessionDuration}\n`;
+            }
+            
+            message += `⏰ <b>Left at:</b> ${timestamp}\n`;
+            
+        } else if (type === 'session_end') {
+            // Session end notification (user left after clicking)
+            const { location, timestamp, timeOnPage, sessionDuration, hadInteraction, isNewVisitor, visitorId } = data;
+            
+            message = `👋 <b>Session Ended</b>\n\n`;
+            message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            
+            if (isNewVisitor) {
+                message += `👤 <b>Visitor:</b> 🆕 New\n`;
+            } else {
+                message += `👤 <b>Visitor:</b> 🔄 Returning\n`;
+            }
+            
+            if (sessionDuration) {
+                message += `⏱️ <b>Session duration:</b> ${sessionDuration}\n`;
+            }
+            
+            message += `✅ <b>Had interaction:</b> Yes\n`;
+            message += `⏰ <b>Left at:</b> ${timestamp}\n`;
         }
 
         if (!message) {

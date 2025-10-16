@@ -1,6 +1,10 @@
 // Telegram Tracking System
 let userLocation = null;
 let visitorInfo = null;
+let pageLoadTime = Date.now();
+let firstInteraction = null;
+let hasInteracted = false;
+let sessionActive = true;
 
 // Check if visitor is new or returning
 function getVisitorType() {
@@ -54,17 +58,34 @@ async function getLocationForTracking() {
     }
 }
 
-// Detect device type
-function getDeviceType() {
+// Get comprehensive device and browser info
+function getDeviceInfo() {
     const ua = navigator.userAgent;
-    if (/iPad/.test(ua)) return 'iPad';
-    if (/iPhone/.test(ua)) return 'iPhone';
-    if (/Android/.test(ua) && /Mobile/.test(ua)) return 'Android Phone';
-    if (/Android/.test(ua)) return 'Android Tablet';
-    if (/Mac/.test(ua)) return 'Mac';
-    if (/Windows/.test(ua)) return 'Windows PC';
-    if (/Linux/.test(ua)) return 'Linux';
-    return 'Unknown Device';
+    let deviceType = 'Unknown Device';
+    
+    if (/iPad/.test(ua)) deviceType = 'iPad';
+    else if (/iPhone/.test(ua)) deviceType = 'iPhone';
+    else if (/Android/.test(ua) && /Mobile/.test(ua)) deviceType = 'Android Phone';
+    else if (/Android/.test(ua)) deviceType = 'Android Tablet';
+    else if (/Mac/.test(ua)) deviceType = 'Mac';
+    else if (/Windows/.test(ua)) deviceType = 'Windows PC';
+    else if (/Linux/.test(ua)) deviceType = 'Linux';
+    
+    return {
+        type: deviceType,
+        screen: `${window.screen.width}x${window.screen.height}`,
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        language: navigator.language || 'Unknown',
+        platform: navigator.platform || 'Unknown',
+        cookiesEnabled: navigator.cookieEnabled,
+        online: navigator.onLine,
+        touchScreen: 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    };
+}
+
+// Detect device type (legacy function for compatibility)
+function getDeviceType() {
+    return getDeviceInfo().type;
 }
 
 // Detect browser
@@ -102,10 +123,23 @@ async function sendTelegramNotification(type, data) {
     }
 }
 
+// Calculate time on page
+function getTimeOnPage() {
+    return Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+}
+
+// Format duration
+function formatDuration(seconds) {
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}m ${secs}s`;
+}
+
 // Track page view
 async function trackPageView() {
     const location = await getLocationForTracking();
-    const device = getDeviceType();
+    const deviceInfo = getDeviceInfo();
     const browser = getBrowserName();
     const referrer = document.referrer || 'Direct';
     const visitorType = getVisitorType();
@@ -123,7 +157,8 @@ async function trackPageView() {
     
     await sendTelegramNotification('page_view', {
         location,
-        device,
+        device: deviceInfo.type,
+        deviceInfo,
         browser,
         referrer,
         timestamp,
@@ -131,7 +166,8 @@ async function trackPageView() {
         isNewVisitor: visitorType.isNewVisitor,
         visitorId: visitorType.visitorId,
         visitCount: visitCount,
-        firstVisit: visitorType.firstVisit
+        firstVisit: visitorType.firstVisit,
+        pageUrl: window.location.href
     });
 }
 
@@ -139,6 +175,13 @@ async function trackPageView() {
 async function trackLinkClick(linkName, linkUrl, ageVerified = undefined) {
     const location = await getLocationForTracking();
     const visitorType = getVisitorType();
+    const timeOnPage = getTimeOnPage();
+    
+    // Track first interaction time
+    if (!firstInteraction) {
+        firstInteraction = Date.now();
+    }
+    hasInteracted = true;
     
     const timestamp = new Date().toLocaleString('en-US', { 
         timeZone: 'UTC',
@@ -156,7 +199,9 @@ async function trackLinkClick(linkName, linkUrl, ageVerified = undefined) {
         timestamp,
         isNewVisitor: visitorType.isNewVisitor,
         visitorId: visitorType.visitorId,
-        visitCount: visitorType.totalVisits
+        visitCount: visitorType.totalVisits,
+        timeOnPage: timeOnPage,
+        timeToClick: formatDuration(timeOnPage)
     });
 }
 
@@ -189,6 +234,13 @@ function showAgeWarning(event, url, linkName) {
 // Track age warning shown
 async function trackAgeWarning() {
     const location = await getLocationForTracking();
+    const timeOnPage = getTimeOnPage();
+    
+    // Track first interaction
+    if (!firstInteraction) {
+        firstInteraction = Date.now();
+    }
+    
     const timestamp = new Date().toLocaleString('en-US', { 
         timeZone: 'UTC',
         hour12: true,
@@ -198,8 +250,65 @@ async function trackAgeWarning() {
     
     await sendTelegramNotification('age_warning', {
         location,
-        timestamp
+        timestamp,
+        timeOnPage: timeOnPage,
+        timeToInteraction: formatDuration(timeOnPage)
     });
+}
+
+// Track bounce (user leaving without clicking)
+async function trackBounce() {
+    if (hasInteracted || !sessionActive) return;
+    
+    const location = await getLocationForTracking();
+    const timeOnPage = getTimeOnPage();
+    const visitorType = getVisitorType();
+    
+    const timestamp = new Date().toLocaleString('en-US', { 
+        timeZone: 'UTC',
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    await sendTelegramNotification('bounce', {
+        location,
+        timestamp,
+        timeOnPage: timeOnPage,
+        sessionDuration: formatDuration(timeOnPage),
+        isNewVisitor: visitorType.isNewVisitor,
+        visitorId: visitorType.visitorId
+    });
+    
+    sessionActive = false;
+}
+
+// Track session end (with interaction)
+async function trackSessionEnd() {
+    if (!hasInteracted || !sessionActive) return;
+    
+    const location = await getLocationForTracking();
+    const timeOnPage = getTimeOnPage();
+    const visitorType = getVisitorType();
+    
+    const timestamp = new Date().toLocaleString('en-US', { 
+        timeZone: 'UTC',
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    await sendTelegramNotification('session_end', {
+        location,
+        timestamp,
+        timeOnPage: timeOnPage,
+        sessionDuration: formatDuration(timeOnPage),
+        hadInteraction: true,
+        isNewVisitor: visitorType.isNewVisitor,
+        visitorId: visitorType.visitorId
+    });
+    
+    sessionActive = false;
 }
 
 function hideAgeWarning() {
@@ -636,6 +745,34 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             hideAgeWarning();
+        }
+    });
+    
+    // Track bounces and session ends
+    // Detect when user is leaving the page
+    window.addEventListener('beforeunload', function() {
+        if (hasInteracted) {
+            trackSessionEnd();
+        } else {
+            trackBounce();
+        }
+    });
+    
+    // Detect when tab is closed or hidden for extended period
+    let hiddenTime = null;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            hiddenTime = Date.now();
+        } else {
+            // If tab was hidden for more than 30 seconds, consider it a bounce/session end
+            if (hiddenTime && (Date.now() - hiddenTime) > 30000) {
+                if (hasInteracted) {
+                    trackSessionEnd();
+                } else if (getTimeOnPage() > 3) { // Only track bounce if they were here for 3+ seconds
+                    trackBounce();
+                }
+            }
+            hiddenTime = null;
         }
     });
 });
