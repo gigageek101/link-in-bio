@@ -1714,18 +1714,60 @@
                 locationCounts[location] = (locationCounts[location] || 0) + 1;
             });
             
-            // Simple coordinate mapping (approximations)
+            // Expanded coordinate mapping (approximations based on % from left, % from top)
             const coordinates = {
-                'Berlin, Germany': { x: 52, y: 35 },
-                'Cairo, Egypt': { x: 53, y: 52 },
+                // Americas
                 'Euless, United States': { x: 25, y: 42 },
-                'London, United Kingdom': { x: 48, y: 32 },
                 'New York, United States': { x: 28, y: 38 },
                 'Los Angeles, United States': { x: 18, y: 42 },
+                'Chicago, United States': { x: 26, y: 40 },
+                'Miami, United States': { x: 30, y: 48 },
+                'Toronto, Canada': { x: 28, y: 36 },
+                'Mexico City, Mexico': { x: 22, y: 50 },
+                'São Paulo, Brazil': { x: 35, y: 68 },
+                'Buenos Aires, Argentina': { x: 33, y: 72 },
+                
+                // Europe
+                'London, United Kingdom': { x: 48, y: 32 },
+                'Berlin, Germany': { x: 52, y: 33 },
                 'Paris, France': { x: 50, y: 36 },
+                'Madrid, Spain': { x: 48, y: 40 },
+                'Rome, Italy': { x: 52, y: 40 },
+                'Amsterdam, Netherlands': { x: 50, y: 32 },
+                'Zurich, Switzerland': { x: 51, y: 36 },
+                'Stockholm, Sweden': { x: 53, y: 28 },
+                'Moscow, Russia': { x: 60, y: 30 },
+                'Vienna, Austria': { x: 53, y: 36 },
+                'Warsaw, Poland': { x: 54, y: 32 },
+                'Athens, Greece': { x: 56, y: 42 },
+                
+                // Africa & Middle East
+                'Cairo, Egypt': { x: 54, y: 52 },
+                'Lagos, Nigeria': { x: 50, y: 58 },
+                'Johannesburg, South Africa': { x: 55, y: 70 },
+                'Dubai, UAE': { x: 59, y: 48 },
+                'Tel Aviv, Israel': { x: 56, y: 46 },
+                'Riyadh, Saudi Arabia': { x: 58, y: 48 },
+                
+                // Asia
                 'Tokyo, Japan': { x: 85, y: 42 },
+                'Seoul, South Korea': { x: 83, y: 40 },
+                'Beijing, China': { x: 80, y: 40 },
+                'Shanghai, China': { x: 82, y: 44 },
+                'Hong Kong, China': { x: 81, y: 48 },
+                'Singapore, Singapore': { x: 78, y: 55 },
+                'Bangkok, Thailand': { x: 77, y: 52 },
+                'Mumbai, India': { x: 68, y: 50 },
+                'Delhi, India': { x: 70, y: 46 },
+                'Bangalore, India': { x: 70, y: 52 },
+                
+                // Oceania
                 'Sydney, Australia': { x: 88, y: 72 },
-                'Mumbai, India': { x: 66, y: 52 }
+                'Melbourne, Australia': { x: 86, y: 74 },
+                'Auckland, New Zealand': { x: 92, y: 76 },
+                
+                // Default for unknown locations
+                'Unknown, Unknown': { x: 50, y: 50 }
             };
             
             let markersHtml = '<div class="map-placeholder" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); font-size: 14px;">🌍 World Map</div>';
@@ -1745,23 +1787,54 @@
         }
         
         function updatePieCharts(summary) {
-            // Geographic Distribution
-            drawPieChart('geoCanvas', summary.topLocations.map(l => ({
-                label: `${l.city}, ${l.country}`,
-                value: l.visits
-            })));
+            // Geographic Distribution - count from all page views
+            const locationCounts = {};
+            allEvents.filter(e => e.event_type === 'page_view').forEach(event => {
+                const location = event.city && event.country ? 
+                    `${event.city}, ${event.country}` : 
+                    'Unknown, Unknown';
+                locationCounts[location] = (locationCounts[location] || 0) + 1;
+            });
             
-            // Device Distribution
-            drawPieChart('deviceCanvas', summary.devices.map(d => ({
-                label: d.device_type || 'Unknown',
-                value: d.count
-            })));
+            const geoData = Object.entries(locationCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([location, count]) => ({
+                    label: location,
+                    value: count
+                }));
             
-            // Browser Distribution
-            drawPieChart('browserCanvas', summary.browsers.map(b => ({
-                label: b.browser || 'Unknown',
-                value: b.count
-            })));
+            // Device Distribution - count from all page views
+            const deviceCounts = {};
+            allEvents.filter(e => e.event_type === 'page_view').forEach(event => {
+                const device = event.device_type || 'Unknown Device';
+                deviceCounts[device] = (deviceCounts[device] || 0) + 1;
+            });
+            
+            const deviceData = Object.entries(deviceCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([device, count]) => ({
+                    label: device,
+                    value: count
+                }));
+            
+            // Browser Distribution - count from all page views
+            const browserCounts = {};
+            allEvents.filter(e => e.event_type === 'page_view').forEach(event => {
+                const browser = event.browser || 'Unknown Browser';
+                browserCounts[browser] = (browserCounts[browser] || 0) + 1;
+            });
+            
+            const browserData = Object.entries(browserCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([browser, count]) => ({
+                    label: browser,
+                    value: count
+                }));
+            
+            drawPieChart('geoCanvas', geoData);
+            drawPieChart('deviceCanvas', deviceData);
+            drawPieChart('browserCanvas', browserData);
         }
         
         function drawPieChart(canvasId, data) {
@@ -1771,7 +1844,7 @@
             const ctx = canvas.getContext('2d');
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const radius = Math.min(centerX, centerY) - 10;
+            const radius = Math.min(centerX, centerY) - 20;
             
             // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1780,11 +1853,21 @@
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
                 ctx.font = '14px -apple-system';
                 ctx.textAlign = 'center';
-                ctx.fillText('No data', centerX, centerY);
+                ctx.fillText('No data yet', centerX, centerY);
                 return;
             }
             
-            const total = data.reduce((sum, item) => sum + item.value, 0);
+            // Filter out zero values
+            const validData = data.filter(item => item.value > 0);
+            if (validData.length === 0) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.font = '14px -apple-system';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data yet', centerX, centerY);
+                return;
+            }
+            
+            const total = validData.reduce((sum, item) => sum + item.value, 0);
             const colors = [
                 '#FFB6C1', '#FFD700', '#87CEEB', '#98FB98', '#DDA0DD',
                 '#F0E68C', '#FFE4B5', '#AFEEEE', '#FFA07A', '#D3D3D3'
@@ -1792,7 +1875,7 @@
             
             let currentAngle = -Math.PI / 2;
             
-            data.forEach((item, index) => {
+            validData.forEach((item, index) => {
                 const sliceAngle = (item.value / total) * 2 * Math.PI;
                 
                 // Draw slice
@@ -1803,18 +1886,26 @@
                 ctx.closePath();
                 ctx.fill();
                 
-                // Draw percentage
-                const percentage = ((item.value / total) * 100).toFixed(1);
-                if (percentage > 5) { // Only show label if slice is big enough
+                // Draw border
+                ctx.strokeStyle = '#1a1a2e';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw percentage in center of slice
+                const percentage = ((item.value / total) * 100);
+                if (percentage >= 5) { // Only show label if slice is big enough
                     const labelAngle = currentAngle + sliceAngle / 2;
-                    const labelX = centerX + Math.cos(labelAngle) * (radius * 0.7);
-                    const labelY = centerY + Math.sin(labelAngle) * (radius * 0.7);
+                    const labelX = centerX + Math.cos(labelAngle) * (radius * 0.6);
+                    const labelY = centerY + Math.sin(labelAngle) * (radius * 0.6);
                     
-                    ctx.fillStyle = '#1a1a2e';
-                    ctx.font = 'bold 12px -apple-system';
+                    ctx.fillStyle = '#fff';
+                    ctx.strokeStyle = '#1a1a2e';
+                    ctx.lineWidth = 3;
+                    ctx.font = 'bold 14px -apple-system';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText(`${percentage}%`, labelX, labelY);
+                    ctx.strokeText(`${percentage.toFixed(1)}%`, labelX, labelY);
+                    ctx.fillText(`${percentage.toFixed(1)}%`, labelX, labelY);
                 }
                 
                 currentAngle += sliceAngle;
@@ -1823,15 +1914,16 @@
             // Add legend below canvas
             const legendContainer = canvas.parentElement;
             let legendHtml = '<div class="chart-legend">';
-            data.forEach((item, index) => {
+            validData.forEach((item, index) => {
                 const percentage = ((item.value / total) * 100).toFixed(1);
+                const count = item.value;
                 legendHtml += `
                     <div class="legend-item">
                         <div style="display: flex; align-items: center;">
                             <div class="legend-color" style="background: ${colors[index % colors.length]}"></div>
                             <div class="legend-label">${item.label}</div>
                         </div>
-                        <div class="legend-value">${percentage}%</div>
+                        <div class="legend-value">${count} (${percentage}%)</div>
                     </div>
                 `;
             });
