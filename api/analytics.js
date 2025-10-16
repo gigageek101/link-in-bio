@@ -81,45 +81,39 @@ async function getAnalyticsSummary(timeRange = '24h') {
         const totalVisitors = await sql`
             SELECT COUNT(DISTINCT visitor_id) as count
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'page_view'
+            WHERE event_type = 'page_view'
         `;
         
         const newVisitors = await sql`
             SELECT COUNT(*) as count
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'page_view'
+            WHERE event_type = 'page_view'
             AND is_new_visitor = true
         `;
         
         const totalClicks = await sql`
             SELECT COUNT(*) as count
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'link_click'
+            WHERE event_type = 'link_click'
         `;
         
         const bounces = await sql`
             SELECT COUNT(*) as count
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'bounce'
+            WHERE event_type = 'bounce'
         `;
         
         const avgTime = await sql`
             SELECT AVG(time_to_interaction) as avg_seconds
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'link_click'
+            WHERE event_type = 'link_click'
             AND time_to_interaction IS NOT NULL
         `;
         
         const topLocs = await sql`
             SELECT city, country, COUNT(*) as visits
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'page_view'
+            WHERE event_type = 'page_view'
             AND city IS NOT NULL
             GROUP BY city, country
             ORDER BY visits DESC
@@ -129,8 +123,8 @@ async function getAnalyticsSummary(timeRange = '24h') {
         const links = await sql`
             SELECT link_name, COUNT(*) as clicks
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'link_click'
+            WHERE event_type = 'link_click'
+            AND link_name IS NOT NULL
             GROUP BY link_name
             ORDER BY clicks DESC
         `;
@@ -138,8 +132,8 @@ async function getAnalyticsSummary(timeRange = '24h') {
         const devices = await sql`
             SELECT device_type, COUNT(*) as count
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'page_view'
+            WHERE event_type = 'page_view'
+            AND device_type IS NOT NULL
             GROUP BY device_type
             ORDER BY count DESC
         `;
@@ -147,8 +141,8 @@ async function getAnalyticsSummary(timeRange = '24h') {
         const browsers = await sql`
             SELECT browser, COUNT(*) as count
             FROM analytics
-            WHERE created_at > NOW() - INTERVAL ${interval}
-            AND event_type = 'page_view'
+            WHERE event_type = 'page_view'
+            AND browser IS NOT NULL
             GROUP BY browser
             ORDER BY count DESC
         `;
