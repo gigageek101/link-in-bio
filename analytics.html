@@ -930,13 +930,17 @@
         let lastEventCount = 0;
         let userIP = '';
         let allJourneys = [];
+        let isLoading = false;
         
         // Store previous values to prevent flickering
         let previousValues = {
             totalVisitors: 0,
             newVisitors: 0,
             totalClicks: 0,
-            currentlyOnline: 0
+            currentlyOnline: 0,
+            conversionRate: '0%',
+            bounceRate: '0%',
+            avgTime: '0s'
         };
 
         // Check for saved password on load
@@ -992,13 +996,15 @@
         }
 
         function changeTimeRange(range) {
+            if (isLoading) return; // Prevent multiple simultaneous requests
             currentRange = range;
             document.querySelectorAll('.time-range button').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            fetchAnalytics();
+            fetchAnalytics(false, true); // Not silent, but smooth transition
         }
 
         function changeSource() {
+            if (isLoading) return; // Prevent multiple simultaneous requests
             const select = document.getElementById('sourceFilter');
             currentSource = select.value;
             
@@ -1012,26 +1018,29 @@
             };
             
             document.getElementById('filterStatus').textContent = statusMap[currentSource] || currentSource;
-            fetchAnalytics();
+            fetchAnalytics(false, true); // Not silent, but smooth transition
         }
 
-        function refreshData() {
+        async function refreshData() {
+            if (isLoading) return; // Prevent multiple clicks
             const btn = document.querySelector('.refresh-btn');
             btn.classList.add('loading');
-            fetchAnalytics().then(() => {
-                setTimeout(() => btn.classList.remove('loading'), 1000);
-            });
+            await fetchAnalytics(true); // Silent refresh
+            setTimeout(() => btn.classList.remove('loading'), 1000);
         }
 
-        async function fetchAnalytics(silent = false) {
+        async function fetchAnalytics(silent = false, smoothTransition = false) {
+            if (isLoading) return; // Prevent concurrent requests
+            
             try {
+                isLoading = true;
                 const sourceParam = currentSource !== 'all' ? `&source=${currentSource}` : '';
                 const response = await fetch(`/api/analytics?range=${currentRange}&password=${password}${sourceParam}`);
                 
                 if (response.status === 401) {
+                    isLoading = false;
                     if (!silent) {
                         showLoginError('Incorrect password');
-                        // Clear saved password
                         localStorage.removeItem(`analytics_pass_${userIP}`);
                     }
                     return;
@@ -1040,14 +1049,17 @@
                 const data = await response.json();
                 
                 if (data.error) {
+                    isLoading = false;
                     if (!silent) showLoginError(data.error);
                     return;
                 }
 
-                if (!silent) showDashboard();
-                updateDashboard(data, silent);
+                if (!silent && !smoothTransition) showDashboard();
+                updateDashboard(data, silent || smoothTransition);
+                isLoading = false;
                 
             } catch (error) {
+                isLoading = false;
                 if (!silent) console.error('Failed to load analytics:', error);
             }
         }
@@ -1068,27 +1080,63 @@
             const currentlyOnline = onlineUsers.size;
 
             // Only animate if values actually changed (prevents flickering)
-            if (previousValues.totalVisitors !== (summary.totalVisitors || 0)) {
-                animateValue('totalVisitors', summary.totalVisitors || 0);
-                previousValues.totalVisitors = summary.totalVisitors || 0;
+            const newTotalVisitors = summary.totalVisitors || 0;
+            const newNewVisitors = summary.newVisitors || 0;
+            const newTotalClicks = summary.totalClicks || 0;
+            const newConversionRate = summary.conversionRate + '%';
+            const newBounceRate = summary.bounceRate + '%';
+            const newAvgTime = Math.round(summary.avgTimeToClick || 0) + 's';
+            
+            // Animated values - only update if changed
+            if (previousValues.totalVisitors !== newTotalVisitors) {
+                if (!silent && Math.abs(previousValues.totalVisitors - newTotalVisitors) > 0) {
+                    animateValue('totalVisitors', newTotalVisitors);
+                } else {
+                    document.getElementById('totalVisitors').textContent = newTotalVisitors;
+                }
+                previousValues.totalVisitors = newTotalVisitors;
             }
-            if (previousValues.newVisitors !== (summary.newVisitors || 0)) {
-                animateValue('newVisitors', summary.newVisitors || 0);
-                previousValues.newVisitors = summary.newVisitors || 0;
+            
+            if (previousValues.newVisitors !== newNewVisitors) {
+                if (!silent && Math.abs(previousValues.newVisitors - newNewVisitors) > 0) {
+                    animateValue('newVisitors', newNewVisitors);
+                } else {
+                    document.getElementById('newVisitors').textContent = newNewVisitors;
+                }
+                previousValues.newVisitors = newNewVisitors;
             }
-            if (previousValues.totalClicks !== (summary.totalClicks || 0)) {
-                animateValue('totalClicks', summary.totalClicks || 0);
-                previousValues.totalClicks = summary.totalClicks || 0;
+            
+            if (previousValues.totalClicks !== newTotalClicks) {
+                if (!silent && Math.abs(previousValues.totalClicks - newTotalClicks) > 0) {
+                    animateValue('totalClicks', newTotalClicks);
+                } else {
+                    document.getElementById('totalClicks').textContent = newTotalClicks;
+                }
+                previousValues.totalClicks = newTotalClicks;
             }
+            
             if (previousValues.currentlyOnline !== currentlyOnline) {
-                animateValue('currentlyOnline', currentlyOnline);
+                if (!silent && Math.abs(previousValues.currentlyOnline - currentlyOnline) > 0) {
+                    animateValue('currentlyOnline', currentlyOnline);
+                } else {
+                    document.getElementById('currentlyOnline').textContent = currentlyOnline;
+                }
                 previousValues.currentlyOnline = currentlyOnline;
             }
             
-            // Update non-animated values
-            document.getElementById('conversionRate').textContent = summary.conversionRate + '%';
-            document.getElementById('bounceRate').textContent = summary.bounceRate + '%';
-            document.getElementById('avgTime').textContent = Math.round(summary.avgTimeToClick || 0) + 's';
+            // Non-animated values - update only if changed
+            if (previousValues.conversionRate !== newConversionRate) {
+                document.getElementById('conversionRate').textContent = newConversionRate;
+                previousValues.conversionRate = newConversionRate;
+            }
+            if (previousValues.bounceRate !== newBounceRate) {
+                document.getElementById('bounceRate').textContent = newBounceRate;
+                previousValues.bounceRate = newBounceRate;
+            }
+            if (previousValues.avgTime !== newAvgTime) {
+                document.getElementById('avgTime').textContent = newAvgTime;
+                previousValues.avgTime = newAvgTime;
+            }
 
             // Calculate traffic sources from recent events
             const platformCounts = {};
@@ -1301,10 +1349,14 @@
             const element = document.getElementById(id);
             const current = parseInt(element.textContent) || 0;
             
-            if (current === value) return;
+            if (current === value) {
+                element.textContent = value;
+                return;
+            }
             
-            const duration = 1000;
-            const stepTime = 20;
+            // Faster animation for filter changes
+            const duration = 600;
+            const stepTime = 30;
             const steps = duration / stepTime;
             const increment = (value - current) / steps;
             let currentValue = current;
