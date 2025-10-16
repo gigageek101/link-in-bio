@@ -50,15 +50,33 @@ function getBrowserName() {
 // Send tracking data to Telegram
 async function sendTelegramNotification(type, data) {
     try {
-        await fetch('/api/track', {
+        console.log('📤 Sending tracking data:', { type, data });
+        
+        const response = await fetch('/api/track', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ type, data })
         });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            console.error('❌ Tracking API error:', {
+                status: response.status,
+                result
+            });
+        } else {
+            console.log('✅ Tracking sent successfully:', result);
+        }
+        
+        return result;
     } catch (error) {
-        console.error('Tracking notification error:', error);
+        console.error('❌ Tracking notification error:', {
+            message: error.message,
+            stack: error.stack
+        });
     }
 }
 
