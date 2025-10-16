@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics Dashboard - Allison</title>
+    <title>Allison Link Tracker</title>
     <style>
         * {
             margin: 0;
@@ -12,89 +12,179 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
             min-height: 100vh;
-            padding: 20px;
+            color: #fff;
         }
         
+        /* Login Screen */
         .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            z-index: 1000;
+            transition: opacity 0.5s, visibility 0.5s;
         }
         
-        .login-container h1 {
+        .login-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            box-shadow: 0 30px 80px rgba(255, 192, 203, 0.1);
+            animation: fadeInUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-box h1 {
             text-align: center;
-            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FFB6C1, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .login-box p {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
             margin-bottom: 30px;
+            font-size: 14px;
         }
         
-        .login-container input {
+        .login-box input {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 18px 24px;
+            border: 2px solid rgba(255, 192, 203, 0.3);
+            border-radius: 15px;
             font-size: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
             margin-bottom: 20px;
+            transition: all 0.3s;
         }
         
-        .login-container button {
+        .login-box input:focus {
+            outline: none;
+            border-color: #FFB6C1;
+            box-shadow: 0 0 20px rgba(255, 182, 193, 0.3);
+        }
+        
+        .login-box button {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 18px;
+            background: linear-gradient(135deg, #FFB6C1, #FFD700);
+            color: #1a1a2e;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
         }
         
-        .login-container button:hover {
+        .login-box button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
         }
         
-        .dashboard {
+        .error-msg {
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
             display: none;
-            max-width: 1400px;
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s;
+            padding: 30px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
         .dashboard.active {
-            display: block;
+            opacity: 1;
+            visibility: visible;
         }
         
+        /* Header */
         .header {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+            animation: slideDown 0.6s ease-out;
         }
         
-        .header h1 {
-            color: #667eea;
-            font-size: 32px;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header-left h1 {
+            font-size: 36px;
+            background: linear-gradient(135deg, #FFB6C1, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .header-left p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
         .time-range {
             display: flex;
             gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 15px;
         }
         
         .time-range button {
             padding: 10px 20px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
@@ -102,62 +192,214 @@
         }
         
         .time-range button.active {
-            background: #667eea;
-            color: white;
+            background: linear-gradient(135deg, #FFB6C1, #FFD700);
+            color: #1a1a2e;
         }
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        .stat-card h3 {
-            color: #666;
-            font-size: 14px;
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 192, 203, 0.3);
+            color: #FFB6C1;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
             font-weight: 600;
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
         }
         
-        .stat-card .value {
-            font-size: 36px;
+        .refresh-btn:hover {
+            background: rgba(255, 192, 203, 0.1);
+            transform: rotate(180deg);
+        }
+        
+        .refresh-btn.loading {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Notification Bell */
+        .notification-bell {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 192, 203, 0.3);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .notification-bell:hover {
+            background: rgba(255, 192, 203, 0.1);
+        }
+        
+        .notification-bell.active {
+            animation: ringBell 0.5s ease-in-out;
+        }
+        
+        @keyframes ringBell {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff6b6b;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
             font-weight: 700;
-            color: #667eea;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .notification-toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 182, 193, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px 25px;
+            border-radius: 15px;
+            color: #1a1a2e;
+            font-weight: 600;
+            box-shadow: 0 10px 40px rgba(255, 182, 193, 0.4);
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            max-width: 350px;
+        }
+        
+        .notification-toast.show {
+            transform: translateX(0);
+        }
+        
+        .notification-toast .toast-title {
+            font-size: 14px;
             margin-bottom: 5px;
         }
         
-        .stat-card .label {
-            color: #999;
-            font-size: 14px;
+        .notification-toast .toast-details {
+            font-size: 12px;
+            opacity: 0.8;
         }
         
-        .chart-grid {
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            transition: all 0.3s;
+            animation: fadeIn 0.6s ease-out backwards;
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card:nth-child(5) { animation-delay: 0.5s; }
+        .stat-card:nth-child(6) { animation-delay: 0.6s; }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 182, 193, 0.2);
+        }
+        
+        .stat-card h3 {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-card .value {
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFB6C1, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+        
+        .stat-card .label {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         
         .chart-card {
-            background: white;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.6s ease-out backwards;
         }
         
+        .chart-card:nth-child(1) { animation-delay: 0.7s; }
+        .chart-card:nth-child(2) { animation-delay: 0.8s; }
+        .chart-card:nth-child(3) { animation-delay: 0.9s; }
+        .chart-card:nth-child(4) { animation-delay: 1.0s; }
+        
         .chart-card h3 {
-            color: #667eea;
-            margin-bottom: 20px;
+            color: #FFB6C1;
             font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .chart-item {
@@ -165,58 +407,87 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
             margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .chart-item:hover {
+            background: rgba(255, 182, 193, 0.1);
+            transform: translateX(5px);
         }
         
         .chart-item .name {
             font-weight: 600;
-            color: #333;
+            color: #fff;
         }
         
         .chart-item .value {
-            color: #667eea;
+            color: #FFB6C1;
             font-weight: 700;
+            font-size: 18px;
         }
         
+        .no-data {
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            padding: 30px;
+            font-style: italic;
+        }
+        
+        /* Recent Events */
         .recent-events {
-            background: white;
-            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.6s ease-out 1.1s backwards;
         }
         
         .recent-events h3 {
-            color: #667eea;
-            margin-bottom: 20px;
+            color: #FFB6C1;
             font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .event {
             display: flex;
             align-items: center;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            margin-bottom: 12px;
             gap: 15px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .event:hover {
+            background: rgba(255, 182, 193, 0.1);
+            border-color: rgba(255, 192, 203, 0.3);
+            transform: translateX(5px);
         }
         
         .event-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 24px;
             flex-shrink: 0;
         }
         
-        .event-icon.page_view { background: #e3f2fd; }
-        .event-icon.link_click { background: #fce4ec; }
-        .event-icon.bounce { background: #fff3e0; }
+        .event-icon.page_view { background: rgba(100, 149, 237, 0.2); }
+        .event-icon.link_click { background: rgba(255, 182, 193, 0.2); }
+        .event-icon.bounce { background: rgba(255, 165, 0, 0.2); }
+        .event-icon.age_warning { background: rgba(255, 215, 0, 0.2); }
         
         .event-details {
             flex: 1;
@@ -224,42 +495,44 @@
         
         .event-details .title {
             font-weight: 600;
-            color: #333;
+            color: #fff;
             margin-bottom: 5px;
+            font-size: 15px;
         }
         
         .event-details .meta {
-            color: #999;
+            color: rgba(255, 255, 255, 0.5);
             font-size: 13px;
         }
         
-        .error {
-            background: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: white;
-            font-size: 18px;
+        .visitor-name {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(255, 182, 193, 0.2);
+            border-radius: 6px;
+            font-weight: 700;
+            color: #FFB6C1;
+            font-size: 13px;
         }
         
         @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
             .stats-grid {
                 grid-template-columns: 1fr;
             }
             
-            .chart-grid {
+            .charts-grid {
                 grid-template-columns: 1fr;
             }
             
-            .header {
-                flex-direction: column;
-                gap: 20px;
+            .notification-toast {
+                right: 15px;
+                left: 15px;
+                max-width: none;
             }
         }
     </style>
@@ -267,29 +540,40 @@
 <body>
     <!-- Login Screen -->
     <div class="login-container" id="login">
-        <h1>🔒 Analytics Login</h1>
-        <input type="password" id="password" placeholder="Enter password" onkeypress="if(event.key==='Enter') login()">
-        <button onclick="login()">Access Dashboard</button>
-        <div id="login-error" style="color: #c62828; margin-top: 10px; display: none;"></div>
+        <div class="login-box">
+            <h1>🔐 Allison Link Tracker</h1>
+            <p>Enter password to access analytics</p>
+            <input type="password" id="password" placeholder="Password" onkeypress="if(event.key==='Enter') login()">
+            <button onclick="login()">🚀 Access Dashboard</button>
+            <div class="error-msg" id="login-error"></div>
+        </div>
     </div>
 
     <!-- Dashboard -->
     <div class="dashboard" id="dashboard">
+        <!-- Header -->
         <div class="header">
-            <div>
-                <h1>📊 Analytics Dashboard</h1>
-                <p style="color: #999;">Allison's Link Performance</p>
+            <div class="header-left">
+                <h1>📊 Allison Link Tracker</h1>
+                <p>Real-time visitor analytics & insights</p>
             </div>
-            <div class="time-range">
-                <button class="active" onclick="changeTimeRange('24h')">24h</button>
-                <button onclick="changeTimeRange('7d')">7d</button>
-                <button onclick="changeTimeRange('30d')">30d</button>
+            <div class="header-right">
+                <div class="time-range">
+                    <button class="active" onclick="changeTimeRange('24h')">24h</button>
+                    <button onclick="changeTimeRange('7d')">7d</button>
+                    <button onclick="changeTimeRange('30d')">30d</button>
+                </div>
+                <button class="refresh-btn" onclick="refreshData()">
+                    <span>🔄</span>
+                </button>
+                <div class="notification-bell" id="notificationBell">
+                    🔔
+                    <div class="notification-badge" id="notificationBadge" style="display: none;">0</div>
+                </div>
             </div>
         </div>
 
-        <div id="error-container"></div>
-
-        <!-- Stats Cards -->
+        <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Visitors</h3>
@@ -323,36 +607,67 @@
             </div>
         </div>
 
-        <!-- Charts -->
-        <div class="chart-grid">
+        <!-- Charts Grid -->
+        <div class="charts-grid">
             <div class="chart-card">
                 <h3>🔗 Link Clicks</h3>
-                <div id="linkClicks"></div>
+                <div id="linkClicks" class="no-data">No link clicks yet</div>
             </div>
             <div class="chart-card">
                 <h3>📍 Top Locations</h3>
-                <div id="topLocations"></div>
+                <div id="topLocations" class="no-data">No location data yet</div>
             </div>
             <div class="chart-card">
                 <h3>📱 Devices</h3>
-                <div id="devices"></div>
+                <div id="devices" class="no-data">No device data yet</div>
             </div>
             <div class="chart-card">
                 <h3>🌐 Browsers</h3>
-                <div id="browsers"></div>
+                <div id="browsers" class="no-data">No browser data yet</div>
             </div>
         </div>
 
         <!-- Recent Events -->
         <div class="recent-events">
             <h3>🕐 Recent Activity</h3>
-            <div id="recentEvents"></div>
+            <div id="recentEvents" class="no-data">No recent activity</div>
         </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="toast-title" id="toastTitle"></div>
+        <div class="toast-details" id="toastDetails"></div>
     </div>
 
     <script>
         let password = '';
         let currentRange = '24h';
+        let refreshInterval;
+        let lastEventCount = 0;
+        let userIP = '';
+
+        // Check for saved password on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            userIP = await getUserIP();
+            const savedPassword = localStorage.getItem(`analytics_pass_${userIP}`);
+            
+            if (savedPassword) {
+                document.getElementById('password').value = savedPassword;
+                password = savedPassword;
+                fetchAnalytics();
+            }
+        });
+
+        async function getUserIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return 'unknown';
+            }
+        }
 
         function login() {
             password = document.getElementById('password').value;
@@ -362,6 +677,8 @@
                 return;
             }
 
+            // Save password to localStorage with IP
+            localStorage.setItem(`analytics_pass_${userIP}`, password);
             fetchAnalytics();
         }
 
@@ -372,8 +689,12 @@
         }
 
         function showDashboard() {
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('dashboard').classList.add('active');
+            document.getElementById('login').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('dashboard').classList.add('active');
+                // Start auto-refresh every 10 seconds
+                refreshInterval = setInterval(fetchAnalytics, 10000);
+            }, 500);
         }
 
         function changeTimeRange(range) {
@@ -383,19 +704,29 @@
             fetchAnalytics();
         }
 
+        function refreshData() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.classList.add('loading');
+            fetchAnalytics().then(() => {
+                setTimeout(() => btn.classList.remove('loading'), 1000);
+            });
+        }
+
         async function fetchAnalytics() {
             try {
                 const response = await fetch(`/api/analytics?range=${currentRange}&password=${password}`);
                 
                 if (response.status === 401) {
                     showLoginError('Incorrect password');
+                    // Clear saved password
+                    localStorage.removeItem(`analytics_pass_${userIP}`);
                     return;
                 }
                 
                 const data = await response.json();
                 
                 if (data.error) {
-                    showError(data.error);
+                    showLoginError(data.error);
                     return;
                 }
 
@@ -403,59 +734,67 @@
                 updateDashboard(data);
                 
             } catch (error) {
-                showError('Failed to load analytics: ' + error.message);
+                console.error('Failed to load analytics:', error);
             }
         }
 
         function updateDashboard(data) {
             const { summary, recentEvents } = data;
 
-            // Update stats
-            document.getElementById('totalVisitors').textContent = summary.totalVisitors || 0;
-            document.getElementById('newVisitors').textContent = summary.newVisitors || 0;
-            document.getElementById('totalClicks').textContent = summary.totalClicks || 0;
+            // Update stats with animation
+            animateValue('totalVisitors', summary.totalVisitors || 0);
+            animateValue('newVisitors', summary.newVisitors || 0);
+            animateValue('totalClicks', summary.totalClicks || 0);
             document.getElementById('conversionRate').textContent = summary.conversionRate + '%';
             document.getElementById('bounceRate').textContent = summary.bounceRate + '%';
             document.getElementById('avgTime').textContent = Math.round(summary.avgTimeToClick || 0) + 's';
 
             // Update link clicks
-            const linkClicksHtml = summary.linkClicks.map(link => `
+            const linkClicksHtml = summary.linkClicks.length > 0 ? summary.linkClicks.map(link => `
                 <div class="chart-item">
                     <div class="name">${link.link_name || 'Unknown'}</div>
                     <div class="value">${link.clicks}</div>
                 </div>
-            `).join('') || '<p style="color: #999;">No link clicks yet</p>';
+            `).join('') : '<div class="no-data">No link clicks yet</div>';
             document.getElementById('linkClicks').innerHTML = linkClicksHtml;
 
             // Update locations
-            const locationsHtml = summary.topLocations.map(loc => `
+            const locationsHtml = summary.topLocations.length > 0 ? summary.topLocations.map(loc => `
                 <div class="chart-item">
                     <div class="name">${loc.city}, ${loc.country}</div>
                     <div class="value">${loc.visits}</div>
                 </div>
-            `).join('') || '<p style="color: #999;">No location data yet</p>';
+            `).join('') : '<div class="no-data">No location data yet</div>';
             document.getElementById('topLocations').innerHTML = locationsHtml;
 
             // Update devices
-            const devicesHtml = summary.devices.map(device => `
+            const devicesHtml = summary.devices.length > 0 ? summary.devices.map(device => `
                 <div class="chart-item">
                     <div class="name">${device.device_type || 'Unknown'}</div>
                     <div class="value">${device.count}</div>
                 </div>
-            `).join('') || '<p style="color: #999;">No device data yet</p>';
+            `).join('') : '<div class="no-data">No device data yet</div>';
             document.getElementById('devices').innerHTML = devicesHtml;
 
             // Update browsers
-            const browsersHtml = summary.browsers.map(browser => `
+            const browsersHtml = summary.browsers.length > 0 ? summary.browsers.map(browser => `
                 <div class="chart-item">
                     <div class="name">${browser.browser || 'Unknown'}</div>
                     <div class="value">${browser.count}</div>
                 </div>
-            `).join('') || '<p style="color: #999;">No browser data yet</p>';
+            `).join('') : '<div class="no-data">No browser data yet</div>';
             document.getElementById('browsers').innerHTML = browsersHtml;
 
-            // Update recent events
-            const eventsHtml = recentEvents.map(event => {
+            // Update recent events and check for new ones
+            if (recentEvents.length > lastEventCount) {
+                // New event detected!
+                const newEvent = recentEvents[0];
+                showNotification(newEvent);
+                updateNotificationBadge(recentEvents.length - lastEventCount);
+            }
+            lastEventCount = recentEvents.length;
+
+            const eventsHtml = recentEvents.length > 0 ? recentEvents.map(event => {
                 const icon = getEventIcon(event.event_type);
                 const title = getEventTitle(event);
                 const meta = getEventMeta(event);
@@ -469,8 +808,104 @@
                         </div>
                     </div>
                 `;
-            }).join('') || '<p style="color: #999;">No recent activity</p>';
+            }).join('') : '<div class="no-data">No recent activity</div>';
             document.getElementById('recentEvents').innerHTML = eventsHtml;
+        }
+
+        function animateValue(id, value) {
+            const element = document.getElementById(id);
+            const current = parseInt(element.textContent) || 0;
+            
+            if (current === value) return;
+            
+            const duration = 1000;
+            const stepTime = 20;
+            const steps = duration / stepTime;
+            const increment = (value - current) / steps;
+            let currentValue = current;
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if ((increment > 0 && currentValue >= value) || (increment < 0 && currentValue <= value)) {
+                    element.textContent = value;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(currentValue);
+                }
+            }, stepTime);
+        }
+
+        function getVisitorName(visitorId) {
+            const names = [
+                'Carl', 'Fred', 'Mike', 'Jake', 'Dave', 'Tom', 'Brad', 'Chad', 'Kyle', 'Ryan',
+                'Mark', 'Steve', 'John', 'Paul', 'Dan', 'Matt', 'Luke', 'Max', 'Sam', 'Ben',
+                'Alex', 'Chris', 'Nick', 'Tim', 'Rob', 'Sean', 'Adam', 'Eric', 'James', 'Josh',
+                'Tyler', 'Brandon', 'Kevin', 'Brian', 'Scott', 'Jason', 'Jeff', 'Gary', 'Greg', 'Derek',
+                'Colin', 'Justin', 'Evan', 'Aaron', 'Dylan', 'Logan', 'Mason', 'Nathan', 'Owen', 'Blake'
+            ];
+            
+            if (!visitorId) return 'Anonymous';
+            
+            // Hash the visitor ID to get consistent name
+            let hash = 0;
+            for (let i = 0; i < visitorId.length; i++) {
+                hash = ((hash << 5) - hash) + visitorId.charCodeAt(i);
+                hash = hash & hash;
+            }
+            
+            return names[Math.abs(hash) % names.length];
+        }
+
+        function showNotification(event) {
+            const toast = document.getElementById('notificationToast');
+            const bell = document.getElementById('notificationBell');
+            
+            let title = '';
+            let details = '';
+            const visitorName = getVisitorName(event.visitor_id);
+            
+            switch(event.event_type) {
+                case 'page_view':
+                    title = event.is_new_visitor ? `🎉 New Visitor: ${visitorName}!` : `🔄 ${visitorName} Returned`;
+                    details = `${event.city || 'Unknown'}, ${event.country || 'Unknown'} • ${event.device_type || 'Unknown'}`;
+                    break;
+                case 'link_click':
+                    title = `🎯 ${visitorName} Clicked: ${event.link_name}`;
+                    details = `${event.city || 'Unknown'}, ${event.country || 'Unknown'}`;
+                    break;
+                case 'bounce':
+                    title = `🚪 ${visitorName} Bounced`;
+                    details = `Left without clicking`;
+                    break;
+                case 'age_warning':
+                    title = `⚠️ ${visitorName} Saw Age Warning`;
+                    details = `${event.city || 'Unknown'}, ${event.country || 'Unknown'}`;
+                    break;
+            }
+            
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastDetails').textContent = details;
+            
+            // Show toast
+            toast.classList.add('show');
+            bell.classList.add('active');
+            
+            // Hide after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                bell.classList.remove('active');
+            }, 4000);
+        }
+
+        function updateNotificationBadge(count) {
+            const badge = document.getElementById('notificationBadge');
+            badge.textContent = count;
+            badge.style.display = 'flex';
+            
+            // Hide badge after 5 seconds
+            setTimeout(() => {
+                badge.style.display = 'none';
+            }, 5000);
         }
 
         function getEventIcon(type) {
@@ -485,11 +920,16 @@
         }
 
         function getEventTitle(event) {
+            const visitorName = getVisitorName(event.visitor_id);
+            
             const titles = {
-                page_view: event.is_new_visitor ? 'New Visitor' : 'Returning Visitor',
-                link_click: `Clicked: ${event.link_name || 'Link'}`,
-                bounce: 'Bounced',
-                session_end: 'Session Ended'
+                page_view: event.is_new_visitor ? 
+                    `New: <span class="visitor-name">${visitorName}</span>` : 
+                    `<span class="visitor-name">${visitorName}</span> Returned`,
+                link_click: `<span class="visitor-name">${visitorName}</span> clicked: ${event.link_name || 'Link'}`,
+                bounce: `<span class="visitor-name">${visitorName}</span> Bounced`,
+                session_end: `<span class="visitor-name">${visitorName}</span> Left`,
+                age_warning: `<span class="visitor-name">${visitorName}</span> Age Warning`
             };
             return titles[event.event_type] || event.event_type;
         }
@@ -498,21 +938,16 @@
             const location = event.city && event.country ? `${event.city}, ${event.country}` : 'Unknown';
             const device = event.device_type || 'Unknown';
             const time = new Date(event.created_at).toLocaleTimeString();
-            return `${location} • ${device} • ${time}`;
+            const visitorId = event.visitor_id ? event.visitor_id.substring(0, 8) : 'unknown';
+            return `${location} • ${device} • ${time} • ID: ${visitorId}`;
         }
 
-        function showError(message) {
-            const container = document.getElementById('error-container');
-            container.innerHTML = `<div class="error">${message}</div>`;
-        }
-
-        // Auto-refresh every 30 seconds
-        setInterval(() => {
-            if (document.getElementById('dashboard').classList.contains('active')) {
-                fetchAnalytics();
+        // Cleanup interval on page unload
+        window.addEventListener('beforeunload', () => {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
             }
-        }, 30000);
+        });
     </script>
 </body>
 </html>
-
