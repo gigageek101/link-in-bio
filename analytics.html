@@ -1475,81 +1475,6 @@
                 <div id="trendSummaryContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;"></div>
             </div>
             
-            <!-- Trend Stats Grid -->
-            <div class="stats-grid" style="margin-bottom: 40px;">
-                <div class="trend-stat-card">
-                    <div class="trend-stat-header">
-                        <span class="icon">👥</span>
-                        <span>Page Visits Growth</span>
-                    </div>
-                    <div class="trend-stat-change" id="trendVisitorsChange" style="font-size: 48px; margin: 15px 0;">
-                        <span>--</span>
-                    </div>
-                    <div class="trend-stat-value" id="trendVisitors" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0 visitors</div>
-                    <div class="trend-comparison" id="trendVisitorsComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
-                </div>
-                
-                <div class="trend-stat-card">
-                    <div class="trend-stat-header">
-                        <span class="icon">✨</span>
-                        <span>New Visitors Growth</span>
-                    </div>
-                    <div class="trend-stat-change" id="trendNewVisitorsChange" style="font-size: 48px; margin: 15px 0;">
-                        <span>--</span>
-                    </div>
-                    <div class="trend-stat-value" id="trendNewVisitors" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0 new visitors</div>
-                    <div class="trend-comparison" id="trendNewVisitorsComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
-                </div>
-                
-                <div class="trend-stat-card">
-                    <div class="trend-stat-header">
-                        <span class="icon">🎯</span>
-                        <span>Link Clicks Growth</span>
-                    </div>
-                    <div class="trend-stat-change" id="trendClicksChange" style="font-size: 48px; margin: 15px 0;">
-                        <span>--</span>
-                    </div>
-                    <div class="trend-stat-value" id="trendClicks" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0 clicks</div>
-                    <div class="trend-comparison" id="trendClicksComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
-                </div>
-                
-                <div class="trend-stat-card">
-                    <div class="trend-stat-header">
-                        <span class="icon">💫</span>
-                        <span>Conversion Rate Trend</span>
-                    </div>
-                    <div class="trend-stat-change" id="trendConversionChange" style="font-size: 48px; margin: 15px 0;">
-                        <span>--</span>
-                    </div>
-                    <div class="trend-stat-value" id="trendConversion" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0% conversion</div>
-                    <div class="trend-comparison" id="trendConversionComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
-                </div>
-                
-                <div class="trend-stat-card">
-                    <div class="trend-stat-header">
-                        <span class="icon">🚪</span>
-                        <span>Bounce Rate Trend</span>
-                    </div>
-                    <div class="trend-stat-change" id="trendBounceChange" style="font-size: 48px; margin: 15px 0;">
-                        <span>--</span>
-                    </div>
-                    <div class="trend-stat-value" id="trendBounce" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0% bounce</div>
-                    <div class="trend-comparison" id="trendBounceComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
-                </div>
-                
-                <div class="trend-stat-card">
-                    <div class="trend-stat-header">
-                        <span class="icon">⏱️</span>
-                        <span>Avg. Time Trend</span>
-                    </div>
-                    <div class="trend-stat-change" id="trendAvgTimeChange" style="font-size: 48px; margin: 15px 0;">
-                        <span>--</span>
-                    </div>
-                    <div class="trend-stat-value" id="trendAvgTime" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0s avg time</div>
-                    <div class="trend-comparison" id="trendAvgTimeComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
-                </div>
-            </div>
-            
             <!-- Trend Charts -->
             <div class="charts-grid">
                 <div class="chart-card">
@@ -2091,7 +2016,7 @@
                     const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
                     
                     return `
-                        <div class="tooltip-item">
+                        <div class="tooltip-item" style="cursor: pointer;" onclick="jumpToUserJourney('${event.visitor_id}'); event.stopPropagation();">
                             <div class="tooltip-flag">${flag}</div>
                             <div class="tooltip-info">
                                 <div class="name">${name}</div>
@@ -2116,7 +2041,7 @@
                     const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
                     
                     return `
-                        <div class="tooltip-item">
+                        <div class="tooltip-item" style="cursor: pointer;" onclick="jumpToUserJourney('${event.visitor_id}'); event.stopPropagation();">
                             <div class="tooltip-flag">${flag}</div>
                             <div class="tooltip-info">
                                 <div class="name">${name}</div>
@@ -2142,7 +2067,7 @@
                     const linkName = event.link_name || 'Link';
                     
                     return `
-                        <div class="tooltip-item">
+                        <div class="tooltip-item" style="cursor: pointer;" onclick="jumpToUserJourney('${event.visitor_id}'); event.stopPropagation();">
                             <div class="tooltip-flag">${flag}</div>
                             <div class="tooltip-info">
                                 <div class="name">${name}</div>
@@ -2177,7 +2102,7 @@
                     const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
                     
                     return `
-                        <div class="tooltip-item">
+                        <div class="tooltip-item" style="cursor: pointer;" onclick="jumpToUserJourney('${event.visitor_id}'); event.stopPropagation();">
                             <div class="tooltip-flag">${flag}</div>
                             <div class="tooltip-info">
                                 <div class="name">${name} ✅</div>
@@ -2202,7 +2127,7 @@
                     const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
                     
                     return `
-                        <div class="tooltip-item">
+                        <div class="tooltip-item" style="cursor: pointer;" onclick="jumpToUserJourney('${event.visitor_id}'); event.stopPropagation();">
                             <div class="tooltip-flag">${flag}</div>
                             <div class="tooltip-info">
                                 <div class="name">${name} 🚪</div>
@@ -2666,6 +2591,36 @@
                 const duration = Math.round((new Date(journey.lastSeen) - new Date(journey.firstSeen)) / 1000);
                 const isExpanded = expandedJourneys.has(journey.visitorId);
                 
+                // Get source from first page view event
+                let source = 'Direct';
+                const firstPageView = journey.events.find(e => e.event_type === 'page_view');
+                if (firstPageView && firstPageView.referrer) {
+                    const ref = firstPageView.referrer;
+                    if (ref.includes('instagram.com') || ref.includes('Instagram')) {
+                        source = 'Instagram';
+                    } else if (ref.includes('threads.net') || ref.includes('Threads') || ref.includes('Barcelona')) {
+                        source = 'Threads';
+                    } else if (ref.includes('facebook.com') || ref.includes('FBAV') || ref.includes('FBAN')) {
+                        source = 'Facebook';
+                    } else if (ref.includes('twitter.com') || ref.includes('t.co') || ref.includes('x.com')) {
+                        source = 'X/Twitter';
+                    } else if (ref.includes('google.com')) {
+                        source = 'Google';
+                    } else if (ref !== 'Direct' && ref !== 'Unknown') {
+                        source = ref.split('/')[2] || ref; // Get domain
+                    } else {
+                        source = ref;
+                    }
+                }
+                
+                // Get source emoji
+                const sourceEmoji = source.includes('Instagram') ? '📷' :
+                                   source.includes('Threads') ? '🧵' :
+                                   source.includes('Facebook') ? '👥' :
+                                   source.includes('Twitter') || source.includes('X/') ? '🐦' :
+                                   source.includes('Google') ? '🔍' :
+                                   source === 'Direct' ? '🔗' : '🌐';
+                
                 const timelineHtml = journey.events.map(event => {
                     const icon = getEventIcon(event.event_type);
                     const time = new Date(event.created_at).toLocaleTimeString();
@@ -2700,7 +2655,7 @@
                                 <div class="journey-avatar">${flag}</div>
                                 <div class="journey-info">
                                     <h4>${name}</h4>
-                                    <p>${journey.location} • ${journey.device || 'Unknown'}</p>
+                                    <p>${journey.location} • ${journey.device || 'Unknown'} • ${sourceEmoji} ${source}</p>
                                 </div>
                             </div>
                             <div class="journey-stats">
@@ -2770,6 +2725,47 @@
             } else {
                 card.classList.add('expanded');
                 expandedJourneys.add(visitorId);
+            }
+        }
+        
+        // Jump to user journey and highlight it
+        function jumpToUserJourney(visitorId) {
+            // Switch to overview view if not already there
+            if (currentView !== 'overview') {
+                switchView('overview');
+                // Wait for view to render
+                setTimeout(() => {
+                    scrollToJourney(visitorId);
+                }, 300);
+            } else {
+                scrollToJourney(visitorId);
+            }
+        }
+        
+        function scrollToJourney(visitorId) {
+            const journeyCard = document.querySelector(`[data-visitor-id="${visitorId}"]`);
+            if (journeyCard) {
+                // Expand the journey
+                if (!journeyCard.classList.contains('expanded')) {
+                    journeyCard.classList.add('expanded');
+                    expandedJourneys.add(visitorId);
+                }
+                
+                // Scroll to the card with smooth animation
+                journeyCard.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+                
+                // Add highlight effect
+                journeyCard.style.boxShadow = '0 0 30px rgba(129, 199, 212, 0.8)';
+                journeyCard.style.transform = 'scale(1.02)';
+                
+                // Remove highlight after 2 seconds
+                setTimeout(() => {
+                    journeyCard.style.boxShadow = '';
+                    journeyCard.style.transform = '';
+                }, 2000);
             }
         }
 
