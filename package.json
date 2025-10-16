@@ -1,0 +1,12 @@
+{
+  "name": "link-in-bio",
+  "version": "1.0.0",
+  "description": "Link in bio with analytics",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.5.1"
+  }
+}
+

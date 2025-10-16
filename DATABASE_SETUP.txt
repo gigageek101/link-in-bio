@@ -1,0 +1,94 @@
+🚀 ANALYTICS DASHBOARD SETUP GUIDE
+===================================
+
+Your analytics dashboard is ready! Follow these steps:
+
+STEP 1: Enable Vercel Postgres Database
+----------------------------------------
+1. Go to https://vercel.com/dashboard
+2. Select your 'link-in-bio' project
+3. Click "Storage" tab
+4. Click "Create Database"
+5. Select "Postgres"
+6. Choose database name: "link-in-bio-analytics"
+7. Select region closest to you
+8. Click "Create"
+
+STEP 2: Install Dependencies
+-----------------------------
+Run this command in your project folder:
+npm install
+
+(This installs @vercel/postgres package)
+
+STEP 3: Set Analytics Password (Optional)
+------------------------------------------
+1. Go to Settings → Environment Variables
+2. Add new variable:
+   - Key: ANALYTICS_PASSWORD
+   - Value: your-secure-password
+   - Check all environments
+3. Save
+
+Default password: allison2024
+(Change this for security!)
+
+STEP 4: Deploy
+--------------
+Push your code to GitHub (already done when you run the command)
+Vercel will auto-deploy with database connection!
+
+STEP 5: Access Your Dashboard
+------------------------------
+Visit: https://www.searchformylinks.com/analytics
+Password: allison2024 (or your custom password)
+
+===================================
+WHAT YOU GET:
+===================================
+
+✅ Real-time visitor tracking
+✅ Conversion rates
+✅ Bounce rates
+✅ Time to click analytics
+✅ Top locations
+✅ Device & browser breakdown
+✅ Link click statistics
+✅ Recent activity feed
+✅ Auto-refresh every 30 seconds
+
+===================================
+BOTH WORKING:
+===================================
+
+📱 Telegram notifications (instant)
+📊 Dashboard analytics (historical data + real-time stats)
+
+Your visitors are tracked to:
+1. Database (for dashboard)
+2. Telegram (for instant notifications)
+
+===================================
+FEATURES:
+===================================
+
+- Password protected
+- Beautiful professional design
+- Mobile responsive
+- Time range filters (24h, 7d, 30d)
+- All metrics in one place
+- No external tools needed!
+
+===================================
+TROUBLESHOOTING:
+===================================
+
+If dashboard shows error:
+1. Make sure Vercel Postgres is enabled
+2. Run: npm install
+3. Push to GitHub
+4. Wait for Vercel to redeploy
+5. Database will auto-initialize on first visit
+
+Need help? Check Vercel logs in dashboard!
+

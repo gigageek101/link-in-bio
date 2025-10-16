@@ -1,4 +1,6 @@
-// Vercel Serverless Function - Telegram Visitor Tracking
+// Vercel Serverless Function - Telegram Visitor Tracking + Database
+import { saveEvent, initDatabase } from '../lib/db.js';
+
 export default async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,6 +28,38 @@ export default async function handler(req, res) {
 
     try {
         const { type, data } = req.body;
+
+        // Prepare database event data
+        const dbEvent = {
+            event_type: type,
+            visitor_id: data.visitorId,
+            is_new_visitor: data.isNewVisitor,
+            visit_count: data.visitCount,
+            city: data.location?.city,
+            country: data.location?.country,
+            country_code: data.location?.countryCode,
+            ip: data.location?.ip,
+            device_type: data.device || data.deviceInfo?.type,
+            browser: data.browser,
+            platform: data.deviceInfo?.platform,
+            screen_resolution: data.deviceInfo?.screen,
+            viewport: data.deviceInfo?.viewport,
+            language: data.deviceInfo?.language,
+            is_touch: data.deviceInfo?.touchScreen,
+            referrer: data.referrer,
+            source_platform: detectPlatform(data.userAgent, data.referrer),
+            page_url: data.pageUrl,
+            time_on_page: data.timeOnPage,
+            time_to_interaction: data.timeOnPage,
+            session_duration: data.timeOnPage,
+            link_name: data.linkName,
+            link_url: data.linkUrl,
+            age_verified: data.ageVerified,
+            user_agent: data.userAgent
+        };
+
+        // Save to database (async, don't wait)
+        saveEvent(dbEvent).catch(err => console.error('DB save error:', err));
 
         let message = '';
 
@@ -195,5 +229,24 @@ export default async function handler(req, res) {
             error: 'Failed to track event'
         });
     }
+}
+
+// Helper function to detect platform
+function detectPlatform(userAgent, referrer) {
+    if (!userAgent) return 'Direct';
+    
+    if (userAgent.includes('Instagram')) return 'Instagram';
+    if (userAgent.includes('Barcelona') || userAgent.includes('Threads')) return 'Threads';
+    if (userAgent.includes('FBAV') || userAgent.includes('FBAN')) return 'Facebook';
+    if (userAgent.includes('Twitter')) return 'X/Twitter';
+    
+    if (referrer) {
+        if (referrer.includes('instagram')) return 'Instagram';
+        if (referrer.includes('threads')) return 'Threads';
+        if (referrer.includes('facebook')) return 'Facebook';
+        if (referrer.includes('twitter') || referrer.includes('x.com')) return 'X/Twitter';
+    }
+    
+    return 'Direct';
 }
 

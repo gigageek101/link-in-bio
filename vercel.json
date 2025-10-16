@@ -7,6 +7,10 @@
     {
       "source": "/allisonsundress/(.*)",
       "destination": "/$1"
+    },
+    {
+      "source": "/analytics",
+      "destination": "/analytics.html"
     }
   ],
   "headers": [
