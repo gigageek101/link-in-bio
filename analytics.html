@@ -417,9 +417,10 @@
         .trend-stat-change {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
         }
         
         .trend-stat-change.positive {
@@ -432,6 +433,10 @@
         
         .trend-stat-change.neutral {
             color: rgba(45, 55, 72, 0.5);
+        }
+        
+        body.dark-mode .trend-stat-value {
+            color: rgba(232, 232, 232, 0.7) !important;
         }
         
         .trend-comparison {
@@ -1459,73 +1464,73 @@
                 <div class="trend-stat-card">
                     <div class="trend-stat-header">
                         <span class="icon">👥</span>
-                        <span>Total Visitors</span>
+                        <span>Page Visits Growth</span>
                     </div>
-                    <div class="trend-stat-value" id="trendVisitors">0</div>
-                    <div class="trend-stat-change" id="trendVisitorsChange">
+                    <div class="trend-stat-change" id="trendVisitorsChange" style="font-size: 48px; margin: 15px 0;">
                         <span>--</span>
                     </div>
-                    <div class="trend-comparison" id="trendVisitorsComparison">vs previous period</div>
+                    <div class="trend-stat-value" id="trendVisitors" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0 visitors</div>
+                    <div class="trend-comparison" id="trendVisitorsComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
                 </div>
                 
                 <div class="trend-stat-card">
                     <div class="trend-stat-header">
                         <span class="icon">✨</span>
-                        <span>New Visitors</span>
+                        <span>New Visitors Growth</span>
                     </div>
-                    <div class="trend-stat-value" id="trendNewVisitors">0</div>
-                    <div class="trend-stat-change" id="trendNewVisitorsChange">
+                    <div class="trend-stat-change" id="trendNewVisitorsChange" style="font-size: 48px; margin: 15px 0;">
                         <span>--</span>
                     </div>
-                    <div class="trend-comparison" id="trendNewVisitorsComparison">vs previous period</div>
+                    <div class="trend-stat-value" id="trendNewVisitors" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0 new visitors</div>
+                    <div class="trend-comparison" id="trendNewVisitorsComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
                 </div>
                 
                 <div class="trend-stat-card">
                     <div class="trend-stat-header">
                         <span class="icon">🎯</span>
-                        <span>Total Clicks</span>
+                        <span>Link Clicks Growth</span>
                     </div>
-                    <div class="trend-stat-value" id="trendClicks">0</div>
-                    <div class="trend-stat-change" id="trendClicksChange">
+                    <div class="trend-stat-change" id="trendClicksChange" style="font-size: 48px; margin: 15px 0;">
                         <span>--</span>
                     </div>
-                    <div class="trend-comparison" id="trendClicksComparison">vs previous period</div>
+                    <div class="trend-stat-value" id="trendClicks" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0 clicks</div>
+                    <div class="trend-comparison" id="trendClicksComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
                 </div>
                 
                 <div class="trend-stat-card">
                     <div class="trend-stat-header">
                         <span class="icon">💫</span>
-                        <span>Conversion Rate</span>
+                        <span>Conversion Rate Trend</span>
                     </div>
-                    <div class="trend-stat-value" id="trendConversion">0%</div>
-                    <div class="trend-stat-change" id="trendConversionChange">
+                    <div class="trend-stat-change" id="trendConversionChange" style="font-size: 48px; margin: 15px 0;">
                         <span>--</span>
                     </div>
-                    <div class="trend-comparison" id="trendConversionComparison">vs previous period</div>
+                    <div class="trend-stat-value" id="trendConversion" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0% conversion</div>
+                    <div class="trend-comparison" id="trendConversionComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
                 </div>
                 
                 <div class="trend-stat-card">
                     <div class="trend-stat-header">
                         <span class="icon">🚪</span>
-                        <span>Bounce Rate</span>
+                        <span>Bounce Rate Trend</span>
                     </div>
-                    <div class="trend-stat-value" id="trendBounce">0%</div>
-                    <div class="trend-stat-change" id="trendBounceChange">
+                    <div class="trend-stat-change" id="trendBounceChange" style="font-size: 48px; margin: 15px 0;">
                         <span>--</span>
                     </div>
-                    <div class="trend-comparison" id="trendBounceComparison">vs previous period</div>
+                    <div class="trend-stat-value" id="trendBounce" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0% bounce</div>
+                    <div class="trend-comparison" id="trendBounceComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
                 </div>
                 
                 <div class="trend-stat-card">
                     <div class="trend-stat-header">
                         <span class="icon">⏱️</span>
-                        <span>Avg. Time to Click</span>
+                        <span>Avg. Time Trend</span>
                     </div>
-                    <div class="trend-stat-value" id="trendAvgTime">0s</div>
-                    <div class="trend-stat-change" id="trendAvgTimeChange">
+                    <div class="trend-stat-change" id="trendAvgTimeChange" style="font-size: 48px; margin: 15px 0;">
                         <span>--</span>
                     </div>
-                    <div class="trend-comparison" id="trendAvgTimeComparison">vs previous period</div>
+                    <div class="trend-stat-value" id="trendAvgTime" style="font-size: 16px; background: none; -webkit-text-fill-color: initial; color: rgba(45, 55, 72, 0.7); font-weight: 500;">0s avg time</div>
+                    <div class="trend-comparison" id="trendAvgTimeComparison" style="font-size: 13px; margin-top: 8px;">vs previous period</div>
                 </div>
             </div>
             
@@ -2366,21 +2371,30 @@
         }
         
         function updateTrendStat(prefix, currentValue, previousValue, suffix = '', reverseColors = false) {
-            // Update value
-            document.getElementById(prefix).textContent = currentValue + suffix;
-            
-            // Calculate change
+            const valueElement = document.getElementById(prefix);
             const changeElement = document.getElementById(prefix + 'Change');
             const comparisonElement = document.getElementById(prefix + 'Comparison');
             
             let changePercentage = null;
             
+            // Update the actual value with better formatting
+            const valueLabels = {
+                'trendVisitors': 'visitors',
+                'trendNewVisitors': 'new visitors',
+                'trendClicks': 'clicks',
+                'trendConversion': 'conversion',
+                'trendBounce': 'bounce',
+                'trendAvgTime': 'avg time'
+            };
+            const label = valueLabels[prefix] || '';
+            valueElement.textContent = `${currentValue}${suffix} ${label}`;
+            
             if (previousValue === 0) {
                 if (currentValue === 0) {
-                    changeElement.innerHTML = '<span>No change</span>';
+                    changeElement.innerHTML = '<span style="font-size: 0.6em;">No data</span>';
                     changeElement.className = 'trend-stat-change neutral';
                 } else {
-                    changeElement.innerHTML = '<span>↑ New data</span>';
+                    changeElement.innerHTML = '<span>↑ 100%</span>';
                     changeElement.className = 'trend-stat-change positive';
                     changePercentage = 100;
                 }
@@ -2405,7 +2419,8 @@
                 changeElement.className = 'trend-stat-change ' + colorClass;
             }
             
-            comparisonElement.textContent = `${previousValue}${suffix} in previous period`;
+            // Show calculation breakdown
+            comparisonElement.textContent = `${currentValue}${suffix} now vs ${previousValue}${suffix} before`;
             
             return changePercentage;
         }
