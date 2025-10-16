@@ -306,6 +306,230 @@
             opacity: 0.8;
         }
         
+        /* Source Filter */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-section label {
+            color: #FFB6C1;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .filter-section select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 192, 203, 0.3);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .filter-section select:hover {
+            border-color: #FFB6C1;
+            background: rgba(255, 192, 203, 0.1);
+        }
+        
+        .filter-section select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        
+        /* User Journeys */
+        .user-journeys {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out 1.2s backwards;
+        }
+        
+        .user-journeys h3 {
+            color: #FFB6C1;
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .journey-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .journey-card:hover {
+            background: rgba(255, 182, 193, 0.1);
+            border-color: #FFB6C1;
+            transform: translateX(5px);
+        }
+        
+        .journey-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .journey-visitor {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .journey-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #FFB6C1, #FFD700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        
+        .journey-info h4 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .journey-info p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+        
+        .journey-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .journey-stat {
+            text-align: right;
+        }
+        
+        .journey-stat .value {
+            color: #FFB6C1;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        
+        .journey-stat .label {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .journey-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 12px;
+        }
+        
+        .journey-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+        
+        .journey-meta-item span:first-child {
+            font-size: 16px;
+        }
+        
+        .journey-timeline {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            margin-top: 15px;
+        }
+        
+        .journey-card.expanded .journey-timeline {
+            max-height: 1000px;
+        }
+        
+        .timeline-event {
+            display: flex;
+            gap: 15px;
+            padding: 12px 0;
+            border-left: 2px solid rgba(255, 192, 203, 0.3);
+            padding-left: 20px;
+            margin-left: 10px;
+            position: relative;
+        }
+        
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 20px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #FFB6C1;
+        }
+        
+        .timeline-event:last-child {
+            border-left-color: transparent;
+        }
+        
+        .timeline-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-content .title {
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .timeline-content .details {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+        
+        .timeline-time {
+            color: rgba(255, 192, 203, 0.8);
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
         /* Stats Grid */
         .stats-grid {
             display: grid;
@@ -583,6 +807,23 @@
             </div>
         </div>
 
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <label>🔍 Filter by Traffic Source:</label>
+            <select id="sourceFilter" onchange="changeSource()">
+                <option value="all">All Sources</option>
+                <option value="Threads">🧵 Threads</option>
+                <option value="Instagram">📸 Instagram</option>
+                <option value="Facebook">📘 Facebook</option>
+                <option value="Twitter">𝕏 X/Twitter</option>
+                <option value="Direct">🌐 Direct</option>
+            </select>
+            <div style="flex: 1"></div>
+            <div style="color: rgba(255, 255, 255, 0.5); font-size: 13px;">
+                Showing: <span id="filterStatus" style="color: #FFB6C1; font-weight: 600;">All Traffic</span>
+            </div>
+        </div>
+
         <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -641,6 +882,12 @@
             </div>
         </div>
 
+        <!-- User Journeys -->
+        <div class="user-journeys">
+            <h3>👥 User Journeys & Behavior</h3>
+            <div id="userJourneys" class="no-data">No user journeys yet</div>
+        </div>
+
         <!-- Recent Events -->
         <div class="recent-events">
             <h3>🕐 Recent Activity</h3>
@@ -657,9 +904,11 @@
     <script>
         let password = '';
         let currentRange = '24h';
+        let currentSource = 'all';
         let refreshInterval;
         let lastEventCount = 0;
         let userIP = '';
+        let allJourneys = [];
 
         // Check for saved password on load
         window.addEventListener('DOMContentLoaded', async () => {
@@ -718,6 +967,23 @@
             fetchAnalytics();
         }
 
+        function changeSource() {
+            const select = document.getElementById('sourceFilter');
+            currentSource = select.value;
+            
+            const statusMap = {
+                'all': 'All Traffic',
+                'Threads': '🧵 Threads',
+                'Instagram': '📸 Instagram',
+                'Facebook': '📘 Facebook',
+                'Twitter': '𝕏 X/Twitter',
+                'Direct': '🌐 Direct'
+            };
+            
+            document.getElementById('filterStatus').textContent = statusMap[currentSource] || currentSource;
+            fetchAnalytics();
+        }
+
         function refreshData() {
             const btn = document.querySelector('.refresh-btn');
             btn.classList.add('loading');
@@ -728,7 +994,8 @@
 
         async function fetchAnalytics() {
             try {
-                const response = await fetch(`/api/analytics?range=${currentRange}&password=${password}`);
+                const sourceParam = currentSource !== 'all' ? `&source=${currentSource}` : '';
+                const response = await fetch(`/api/analytics?range=${currentRange}&password=${password}${sourceParam}`);
                 
                 if (response.status === 401) {
                     showLoginError('Incorrect password');
@@ -753,7 +1020,8 @@
         }
 
         function updateDashboard(data) {
-            const { summary, recentEvents } = data;
+            const { summary, recentEvents, userJourneys } = data;
+            allJourneys = userJourneys || [];
 
             // Update stats with animation
             animateValue('totalVisitors', summary.totalVisitors || 0);
@@ -843,6 +1111,131 @@
                 `;
             }).join('') : '<div class="no-data">No recent activity</div>';
             document.getElementById('recentEvents').innerHTML = eventsHtml;
+            
+            // Update user journeys
+            updateUserJourneys(allJourneys);
+        }
+
+        function updateUserJourneys(journeys) {
+            if (!journeys || journeys.length === 0) {
+                document.getElementById('userJourneys').innerHTML = '<div class="no-data">No user journeys yet</div>';
+                return;
+            }
+            
+            const journeysHtml = journeys.map(journey => {
+                const visitorName = getVisitorName(journey.visitorId);
+                const firstLetter = visitorName.charAt(0);
+                const duration = Math.round((new Date(journey.lastSeen) - new Date(journey.firstSeen)) / 1000);
+                const timeSpent = formatDuration(journey.totalTimeSpent);
+                const sessionDuration = formatDuration(duration);
+                
+                const timelineHtml = journey.events.map(event => {
+                    const icon = getEventIcon(event.event_type);
+                    let title = '';
+                    let details = '';
+                    const time = new Date(event.created_at).toLocaleTimeString();
+                    
+                    switch(event.event_type) {
+                        case 'page_view':
+                            title = event.is_new_visitor ? '👋 First Visit' : '🔄 Returned';
+                            details = `From ${event.source_platform || 'Direct'}`;
+                            break;
+                        case 'link_click':
+                            title = `Clicked: ${event.link_name}`;
+                            details = event.time_to_interaction ? `After ${formatDuration(event.time_to_interaction)}` : '';
+                            break;
+                        case 'age_warning':
+                            title = '⚠️ Saw Age Warning';
+                            details = 'OnlyFans link check';
+                            break;
+                        case 'bounce':
+                            title = '🚪 Left Without Clicking';
+                            details = event.session_duration ? `Spent ${formatDuration(event.session_duration)}` : '';
+                            break;
+                        case 'session_end':
+                            title = '👋 Session Ended';
+                            details = event.session_duration ? `Total time: ${formatDuration(event.session_duration)}` : '';
+                            break;
+                    }
+                    
+                    return `
+                        <div class="timeline-event">
+                            <div class="timeline-icon">${icon}</div>
+                            <div class="timeline-content">
+                                <div class="title">${title}</div>
+                                <div class="details">${details}</div>
+                            </div>
+                            <div class="timeline-time">${time}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                return `
+                    <div class="journey-card" onclick="toggleJourney(this)">
+                        <div class="journey-header">
+                            <div class="journey-visitor">
+                                <div class="journey-avatar">${firstLetter}</div>
+                                <div class="journey-info">
+                                    <h4>${visitorName}</h4>
+                                    <p>${journey.location} • ${journey.device || 'Unknown Device'}</p>
+                                </div>
+                            </div>
+                            <div class="journey-stats">
+                                <div class="journey-stat">
+                                    <div class="value">${journey.events.length}</div>
+                                    <div class="label">Events</div>
+                                </div>
+                                <div class="journey-stat">
+                                    <div class="value">${sessionDuration}</div>
+                                    <div class="label">Duration</div>
+                                </div>
+                                <div class="journey-stat">
+                                    <div class="value">${journey.clicked ? '✅' : '❌'}</div>
+                                    <div class="label">Converted</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="journey-meta">
+                            <div class="journey-meta-item">
+                                <span>🌐</span>
+                                <span>${journey.source || 'Direct'}</span>
+                            </div>
+                            <div class="journey-meta-item">
+                                <span>🌐</span>
+                                <span>${journey.browser || 'Unknown'}</span>
+                            </div>
+                            ${journey.clickedLinks.length > 0 ? `
+                                <div class="journey-meta-item">
+                                    <span>🎯</span>
+                                    <span>Clicked: ${journey.clickedLinks.join(', ')}</span>
+                                </div>
+                            ` : ''}
+                            <div class="journey-meta-item">
+                                <span>⏰</span>
+                                <span>First: ${new Date(journey.firstSeen).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="journey-timeline">
+                            <h4 style="color: #FFB6C1; margin-bottom: 15px; font-size: 14px;">📍 Customer Journey Timeline</h4>
+                            ${timelineHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('userJourneys').innerHTML = journeysHtml;
+        }
+
+        function toggleJourney(card) {
+            card.classList.toggle('expanded');
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '0s';
+            if (seconds < 60) return `${Math.round(seconds)}s`;
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.round(seconds % 60);
+            return `${minutes}m ${secs}s`;
         }
 
         function animateValue(id, value) {

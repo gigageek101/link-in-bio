@@ -184,20 +184,107 @@ async function getAnalyticsSummary(timeRange = '24h') {
     }
 }
 
-async function getRecentEvents(limit = 50) {
+async function getRecentEvents(limit = 50, sourceFilter = null) {
     try {
-        const events = await sql`
-            SELECT 
-                id, event_type, visitor_id, city, country, device_type, browser,
-                link_name, link_url, referrer, user_agent, source_platform,
-                time_on_page, session_duration, is_new_visitor, visit_count,
-                created_at
-            FROM analytics
-            ORDER BY created_at DESC
-            LIMIT ${limit}
-        `;
+        let events;
+        if (sourceFilter && sourceFilter !== 'all') {
+            events = await sql`
+                SELECT 
+                    id, event_type, visitor_id, city, country, device_type, browser,
+                    link_name, link_url, referrer, user_agent, source_platform,
+                    time_on_page, time_to_interaction, session_duration, is_new_visitor, visit_count,
+                    created_at
+                FROM analytics
+                WHERE source_platform = ${sourceFilter}
+                ORDER BY created_at DESC
+                LIMIT ${limit}
+            `;
+        } else {
+            events = await sql`
+                SELECT 
+                    id, event_type, visitor_id, city, country, device_type, browser,
+                    link_name, link_url, referrer, user_agent, source_platform,
+                    time_on_page, time_to_interaction, session_duration, is_new_visitor, visit_count,
+                    created_at
+                FROM analytics
+                ORDER BY created_at DESC
+                LIMIT ${limit}
+            `;
+        }
         return events.rows;
     } catch (error) {
+        return [];
+    }
+}
+
+async function getUserJourneys(sourceFilter = null) {
+    try {
+        let events;
+        if (sourceFilter && sourceFilter !== 'all') {
+            events = await sql`
+                SELECT 
+                    visitor_id, event_type, city, country, device_type, browser,
+                    link_name, link_url, referrer, user_agent, source_platform,
+                    time_on_page, time_to_interaction, session_duration, is_new_visitor,
+                    created_at
+                FROM analytics
+                WHERE source_platform = ${sourceFilter}
+                ORDER BY visitor_id, created_at ASC
+            `;
+        } else {
+            events = await sql`
+                SELECT 
+                    visitor_id, event_type, city, country, device_type, browser,
+                    link_name, link_url, referrer, user_agent, source_platform,
+                    time_on_page, time_to_interaction, session_duration, is_new_visitor,
+                    created_at
+                FROM analytics
+                ORDER BY visitor_id, created_at ASC
+            `;
+        }
+        
+        // Group events by visitor_id
+        const journeys = {};
+        events.rows.forEach(event => {
+            if (!event.visitor_id) return;
+            
+            if (!journeys[event.visitor_id]) {
+                journeys[event.visitor_id] = {
+                    visitorId: event.visitor_id,
+                    firstSeen: event.created_at,
+                    lastSeen: event.created_at,
+                    location: `${event.city || 'Unknown'}, ${event.country || 'Unknown'}`,
+                    device: event.device_type,
+                    browser: event.browser,
+                    source: event.source_platform,
+                    events: [],
+                    totalTimeSpent: 0,
+                    clicked: false,
+                    clickedLinks: []
+                };
+            }
+            
+            journeys[event.visitor_id].events.push(event);
+            journeys[event.visitor_id].lastSeen = event.created_at;
+            
+            if (event.time_on_page) {
+                journeys[event.visitor_id].totalTimeSpent += parseInt(event.time_on_page) || 0;
+            }
+            
+            if (event.event_type === 'link_click') {
+                journeys[event.visitor_id].clicked = true;
+                if (event.link_name) {
+                    journeys[event.visitor_id].clickedLinks.push(event.link_name);
+                }
+            }
+        });
+        
+        // Convert to array and sort by most recent
+        return Object.values(journeys)
+            .sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen))
+            .slice(0, 100);
+    } catch (error) {
+        console.error('Get user journeys error:', error);
         return [];
     }
 }
