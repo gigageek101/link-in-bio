@@ -530,6 +530,206 @@
             font-weight: 600;
         }
         
+        /* Stat Card Tooltips */
+        .hover-card {
+            position: relative;
+            cursor: help;
+        }
+        
+        .stat-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 192, 203, 0.3);
+            min-width: 250px;
+            max-width: 350px;
+            max-height: 300px;
+            overflow-y: auto;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hover-card:hover .stat-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: all;
+        }
+        
+        .tooltip-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .tooltip-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .tooltip-flag {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .tooltip-info {
+            flex: 1;
+            font-size: 12px;
+        }
+        
+        .tooltip-info .name {
+            color: #FFB6C1;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .tooltip-info .id {
+            color: rgba(255, 255, 255, 0.5);
+            font-family: monospace;
+            font-size: 10px;
+        }
+        
+        /* World Map */
+        .world-map-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out 0.8s backwards;
+        }
+        
+        .world-map-container h3 {
+            color: #FFB6C1;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .world-map {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(180deg, #0a0a15 0%, #1a1a2e 100%);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .map-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ff6b6b;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s infinite;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .map-marker:hover {
+            width: 16px;
+            height: 16px;
+            background: #FFB6C1;
+            z-index: 10;
+        }
+        
+        .map-marker::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: rgba(255, 107, 107, 0.3);
+            border-radius: 50%;
+            animation: ripple 2s infinite;
+        }
+        
+        @keyframes ripple {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 40px;
+                height: 40px;
+                opacity: 0;
+            }
+        }
+        
+        .map-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 192, 203, 0.3);
+            font-size: 12px;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 100;
+        }
+        
+        /* Pie Charts */
+        .pie-chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .pie-chart-container canvas {
+            margin-bottom: 20px;
+        }
+        
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        
+        .legend-label {
+            flex: 1;
+            color: #fff;
+            font-size: 13px;
+        }
+        
+        .legend-value {
+            color: #FFB6C1;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
         /* Stats Grid */
         .stats-grid {
             display: grid;
@@ -852,15 +1052,17 @@
                 <div class="value" id="totalVisitors">0</div>
                 <div class="label">unique visitors</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card hover-card">
                 <h3>New Visitors</h3>
                 <div class="value" id="newVisitors">0</div>
                 <div class="label">first time</div>
+                <div class="stat-tooltip" id="newVisitorsTooltip"></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card hover-card">
                 <h3>Total Clicks</h3>
                 <div class="value" id="totalClicks">0</div>
                 <div class="label">link clicks</div>
+                <div class="stat-tooltip" id="totalClicksTooltip"></div>
             </div>
             <div class="stat-card">
                 <h3>Conversion Rate</h3>
@@ -876,6 +1078,36 @@
                 <h3>Avg Time to Click</h3>
                 <div class="value" id="avgTime">0s</div>
                 <div class="label">average</div>
+            </div>
+        </div>
+
+        <!-- World Map -->
+        <div class="world-map-container">
+            <h3>🗺️ Global Visitor Map</h3>
+            <div id="worldMap" class="world-map">
+                <div class="map-placeholder">Loading map...</div>
+            </div>
+        </div>
+
+        <!-- Demographics Grid -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📊 Geographic Distribution</h3>
+                <div id="geoChart" class="pie-chart-container">
+                    <canvas id="geoCanvas" width="250" height="250"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>📱 Device Distribution</h3>
+                <div id="deviceChart" class="pie-chart-container">
+                    <canvas id="deviceCanvas" width="250" height="250"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>🌐 Browser Distribution</h3>
+                <div id="browserChart" class="pie-chart-container">
+                    <canvas id="browserCanvas" width="250" height="250"></canvas>
+                </div>
             </div>
         </div>
 
@@ -931,6 +1163,8 @@
         let userIP = '';
         let allJourneys = [];
         let isLoading = false;
+        let allEvents = []; // Store all events for tooltips
+        let locationData = {}; // Store location coordinates
         
         // Store previous values to prevent flickering
         let previousValues = {
@@ -1067,6 +1301,7 @@
         function updateDashboard(data, silent = false) {
             const { summary, recentEvents, userJourneys } = data;
             allJourneys = userJourneys || [];
+            allEvents = recentEvents || [];
 
             // Calculate currently online (users active in last 2 minutes)
             const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
@@ -1221,6 +1456,15 @@
             
             // Update user journeys
             updateUserJourneys(allJourneys);
+            
+            // Update tooltips
+            updateTooltips();
+            
+            // Update world map
+            updateWorldMap();
+            
+            // Update pie charts
+            updatePieCharts(summary);
         }
 
         function updateUserJourneys(journeys) {
@@ -1390,7 +1634,217 @@
                 hash = hash & hash;
             }
             
-            return names[Math.abs(hash) % names.length];
+            return names[Math.abs(hash) % names.length] + ' (fictional name to track patterns)';
+        }
+        
+        function getCountryFlag(countryCode) {
+            if (!countryCode || countryCode.length !== 2) return '🌍';
+            const codePoints = countryCode
+                .toUpperCase()
+                .split('')
+                .map(char => 127397 + char.charCodeAt());
+            return String.fromCodePoint(...codePoints);
+        }
+        
+        function getCountryCodeFromName(countryName) {
+            const codes = {
+                'United States': 'US', 'Germany': 'DE', 'Egypt': 'EG', 'United Kingdom': 'GB',
+                'France': 'FR', 'Spain': 'ES', 'Italy': 'IT', 'Canada': 'CA', 'Australia': 'AU',
+                'Brazil': 'BR', 'Japan': 'JP', 'China': 'CN', 'India': 'IN', 'Russia': 'RU',
+                'Mexico': 'MX', 'Netherlands': 'NL', 'Switzerland': 'CH', 'Sweden': 'SE',
+                'Norway': 'NO', 'Denmark': 'DK', 'Finland': 'FI', 'Poland': 'PL', 'Austria': 'AT',
+                'Belgium': 'BE', 'Greece': 'GR', 'Portugal': 'PT', 'Turkey': 'TR', 'Argentina': 'AR',
+                'South Korea': 'KR', 'Singapore': 'SG', 'Thailand': 'TH', 'Vietnam': 'VN',
+                'Philippines': 'PH', 'Indonesia': 'ID', 'Malaysia': 'MY', 'UAE': 'AE', 'Saudi Arabia': 'SA'
+            };
+            return codes[countryName] || 'XX';
+        }
+        
+        function updateTooltips() {
+            // New Visitors Tooltip
+            const newVisitors = allEvents.filter(e => e.event_type === 'page_view' && e.is_new_visitor);
+            const newVisitorsHtml = newVisitors.length > 0 ? newVisitors.slice(0, 10).map(event => {
+                const name = getVisitorName(event.visitor_id).replace(' (fictional name to track patterns)', '');
+                const country = event.country || 'Unknown';
+                const flag = getCountryFlag(getCountryCodeFromName(country));
+                const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
+                
+                return `
+                    <div class="tooltip-item">
+                        <div class="tooltip-flag">${flag}</div>
+                        <div class="tooltip-info">
+                            <div class="name">${name}</div>
+                            <div class="id">${visitorId}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<div style="color: rgba(255,255,255,0.5); padding: 10px;">No new visitors yet</div>';
+            
+            document.getElementById('newVisitorsTooltip').innerHTML = newVisitorsHtml;
+            
+            // Total Clicks Tooltip
+            const clickEvents = allEvents.filter(e => e.event_type === 'link_click');
+            const clicksHtml = clickEvents.length > 0 ? clickEvents.slice(0, 10).map(event => {
+                const name = getVisitorName(event.visitor_id).replace(' (fictional name to track patterns)', '');
+                const country = event.country || 'Unknown';
+                const flag = getCountryFlag(getCountryCodeFromName(country));
+                const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
+                
+                return `
+                    <div class="tooltip-item">
+                        <div class="tooltip-flag">${flag}</div>
+                        <div class="tooltip-info">
+                            <div class="name">${name}</div>
+                            <div class="id">${visitorId} • ${event.link_name || 'Link'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<div style="color: rgba(255,255,255,0.5); padding: 10px;">No clicks yet</div>';
+            
+            document.getElementById('totalClicksTooltip').innerHTML = clicksHtml;
+        }
+        
+        function updateWorldMap() {
+            const mapElement = document.getElementById('worldMap');
+            
+            // Count visitors by location
+            const locationCounts = {};
+            allEvents.filter(e => e.event_type === 'page_view' && e.city && e.country).forEach(event => {
+                const location = `${event.city}, ${event.country}`;
+                locationCounts[location] = (locationCounts[location] || 0) + 1;
+            });
+            
+            // Simple coordinate mapping (approximations)
+            const coordinates = {
+                'Berlin, Germany': { x: 52, y: 35 },
+                'Cairo, Egypt': { x: 53, y: 52 },
+                'Euless, United States': { x: 25, y: 42 },
+                'London, United Kingdom': { x: 48, y: 32 },
+                'New York, United States': { x: 28, y: 38 },
+                'Los Angeles, United States': { x: 18, y: 42 },
+                'Paris, France': { x: 50, y: 36 },
+                'Tokyo, Japan': { x: 85, y: 42 },
+                'Sydney, Australia': { x: 88, y: 72 },
+                'Mumbai, India': { x: 66, y: 52 }
+            };
+            
+            let markersHtml = '<div class="map-placeholder" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); font-size: 14px;">🌍 World Map</div>';
+            
+            Object.entries(locationCounts).forEach(([location, count]) => {
+                const coords = coordinates[location] || { x: 50, y: 50 };
+                const size = Math.min(20, 12 + count * 2);
+                markersHtml += `
+                    <div class="map-marker" 
+                         style="left: ${coords.x}%; top: ${coords.y}%; width: ${size}px; height: ${size}px;"
+                         title="${location}: ${count} visitors">
+                    </div>
+                `;
+            });
+            
+            mapElement.innerHTML = markersHtml;
+        }
+        
+        function updatePieCharts(summary) {
+            // Geographic Distribution
+            drawPieChart('geoCanvas', summary.topLocations.map(l => ({
+                label: `${l.city}, ${l.country}`,
+                value: l.visits
+            })));
+            
+            // Device Distribution
+            drawPieChart('deviceCanvas', summary.devices.map(d => ({
+                label: d.device_type || 'Unknown',
+                value: d.count
+            })));
+            
+            // Browser Distribution
+            drawPieChart('browserCanvas', summary.browsers.map(b => ({
+                label: b.browser || 'Unknown',
+                value: b.count
+            })));
+        }
+        
+        function drawPieChart(canvasId, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 10;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (!data || data.length === 0) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.font = '14px -apple-system';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data', centerX, centerY);
+                return;
+            }
+            
+            const total = data.reduce((sum, item) => sum + item.value, 0);
+            const colors = [
+                '#FFB6C1', '#FFD700', '#87CEEB', '#98FB98', '#DDA0DD',
+                '#F0E68C', '#FFE4B5', '#AFEEEE', '#FFA07A', '#D3D3D3'
+            ];
+            
+            let currentAngle = -Math.PI / 2;
+            
+            data.forEach((item, index) => {
+                const sliceAngle = (item.value / total) * 2 * Math.PI;
+                
+                // Draw slice
+                ctx.fillStyle = colors[index % colors.length];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Draw percentage
+                const percentage = ((item.value / total) * 100).toFixed(1);
+                if (percentage > 5) { // Only show label if slice is big enough
+                    const labelAngle = currentAngle + sliceAngle / 2;
+                    const labelX = centerX + Math.cos(labelAngle) * (radius * 0.7);
+                    const labelY = centerY + Math.sin(labelAngle) * (radius * 0.7);
+                    
+                    ctx.fillStyle = '#1a1a2e';
+                    ctx.font = 'bold 12px -apple-system';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`${percentage}%`, labelX, labelY);
+                }
+                
+                currentAngle += sliceAngle;
+            });
+            
+            // Add legend below canvas
+            const legendContainer = canvas.parentElement;
+            let legendHtml = '<div class="chart-legend">';
+            data.forEach((item, index) => {
+                const percentage = ((item.value / total) * 100).toFixed(1);
+                legendHtml += `
+                    <div class="legend-item">
+                        <div style="display: flex; align-items: center;">
+                            <div class="legend-color" style="background: ${colors[index % colors.length]}"></div>
+                            <div class="legend-label">${item.label}</div>
+                        </div>
+                        <div class="legend-value">${percentage}%</div>
+                    </div>
+                `;
+            });
+            legendHtml += '</div>';
+            
+            // Remove old legend if exists
+            const oldLegend = legendContainer.querySelector('.chart-legend');
+            if (oldLegend) oldLegend.remove();
+            
+            // Add new legend
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = legendHtml;
+            legendContainer.appendChild(tempDiv.firstElementChild);
         }
 
         function showNotification(event) {
