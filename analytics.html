@@ -619,54 +619,93 @@
         .world-map {
             position: relative;
             width: 100%;
-            height: 400px;
-            background: linear-gradient(180deg, #0a0a15 0%, #1a1a2e 100%);
+            height: 500px;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(100, 149, 237, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255, 182, 193, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a15 0%, #16213e 50%, #0a0a15 100%);
             border-radius: 15px;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .map-background {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0px, transparent 1px, transparent 50px, rgba(255, 255, 255, 0.02) 51px),
+                repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0px, transparent 1px, transparent 50px, rgba(255, 255, 255, 0.02) 51px);
+        }
+        
+        /* Geographic Distribution */
+        .geo-distribution-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 192, 203, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out 0.9s backwards;
+        }
+        
+        .geo-distribution-container h3 {
+            color: #FFB6C1;
+            font-size: 18px;
+            margin-bottom: 20px;
         }
         
         .map-marker {
             position: absolute;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             background: #ff6b6b;
-            border: 2px solid #fff;
+            border: 3px solid #fff;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            animation: pulse 2s infinite;
             cursor: pointer;
             transition: all 0.3s;
+            z-index: 10;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.8);
+            animation: markerPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes markerPulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(255, 107, 107, 0.8);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 107, 107, 1);
+            }
         }
         
         .map-marker:hover {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             background: #FFB6C1;
-            z-index: 10;
+            border-color: #FFD700;
+            z-index: 100;
         }
         
-        .map-marker::after {
+        .map-marker::before {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 0;
-            height: 0;
-            background: rgba(255, 107, 107, 0.3);
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 107, 107, 0.2);
             border-radius: 50%;
-            animation: ripple 2s infinite;
+            animation: ripple 2s ease-out infinite;
         }
         
         @keyframes ripple {
             0% {
-                width: 0;
-                height: 0;
+                transform: translate(-50%, -50%) scale(0);
                 opacity: 1;
             }
             100% {
-                width: 40px;
-                height: 40px;
+                transform: translate(-50%, -50%) scale(1.5);
                 opacity: 0;
             }
         }
@@ -1089,25 +1128,11 @@
             </div>
         </div>
 
-        <!-- Demographics Grid -->
-        <div class="charts-grid">
-            <div class="chart-card">
-                <h3>📊 Geographic Distribution</h3>
-                <div id="geoChart" class="pie-chart-container">
-                    <canvas id="geoCanvas" width="250" height="250"></canvas>
-                </div>
-            </div>
-            <div class="chart-card">
-                <h3>📱 Device Distribution</h3>
-                <div id="deviceChart" class="pie-chart-container">
-                    <canvas id="deviceCanvas" width="250" height="250"></canvas>
-                </div>
-            </div>
-            <div class="chart-card">
-                <h3>🌐 Browser Distribution</h3>
-                <div id="browserChart" class="pie-chart-container">
-                    <canvas id="browserCanvas" width="250" height="250"></canvas>
-                </div>
+        <!-- Geographic Distribution -->
+        <div class="geo-distribution-container">
+            <h3>📊 Geographic Distribution</h3>
+            <div id="geoChart" class="pie-chart-container">
+                <canvas id="geoCanvas" width="300" height="300"></canvas>
             </div>
         </div>
 
@@ -1663,49 +1688,67 @@
         function updateTooltips() {
             // New Visitors Tooltip
             const newVisitors = allEvents.filter(e => e.event_type === 'page_view' && e.is_new_visitor);
-            const newVisitorsHtml = newVisitors.length > 0 ? newVisitors.slice(0, 10).map(event => {
-                const name = getVisitorName(event.visitor_id).replace(' (fictional name to track patterns)', '');
-                const country = event.country || 'Unknown';
-                const flag = getCountryFlag(getCountryCodeFromName(country));
-                const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
-                
-                return `
-                    <div class="tooltip-item">
-                        <div class="tooltip-flag">${flag}</div>
-                        <div class="tooltip-info">
-                            <div class="name">${name}</div>
-                            <div class="id">${visitorId}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('') : '<div style="color: rgba(255,255,255,0.5); padding: 10px;">No new visitors yet</div>';
             
-            document.getElementById('newVisitorsTooltip').innerHTML = newVisitorsHtml;
+            if (newVisitors.length > 0) {
+                const newVisitorsHtml = newVisitors.slice(0, 15).map(event => {
+                    const name = getVisitorName(event.visitor_id);
+                    const cleanName = name.replace(' (fictional name to track patterns)', '');
+                    const country = event.country || 'Unknown';
+                    const countryCode = getCountryCodeFromName(country);
+                    const flag = getCountryFlag(countryCode);
+                    const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
+                    
+                    return `
+                        <div class="tooltip-item">
+                            <div class="tooltip-flag">${flag}</div>
+                            <div class="tooltip-info">
+                                <div class="name">${cleanName}</div>
+                                <div class="id">${visitorId}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('newVisitorsTooltip').innerHTML = newVisitorsHtml;
+            } else {
+                document.getElementById('newVisitorsTooltip').innerHTML = 
+                    '<div style="color: rgba(255,255,255,0.5); padding: 10px; text-align: center;">No new visitors yet</div>';
+            }
             
             // Total Clicks Tooltip
             const clickEvents = allEvents.filter(e => e.event_type === 'link_click');
-            const clicksHtml = clickEvents.length > 0 ? clickEvents.slice(0, 10).map(event => {
-                const name = getVisitorName(event.visitor_id).replace(' (fictional name to track patterns)', '');
-                const country = event.country || 'Unknown';
-                const flag = getCountryFlag(getCountryCodeFromName(country));
-                const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
-                
-                return `
-                    <div class="tooltip-item">
-                        <div class="tooltip-flag">${flag}</div>
-                        <div class="tooltip-info">
-                            <div class="name">${name}</div>
-                            <div class="id">${visitorId} • ${event.link_name || 'Link'}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('') : '<div style="color: rgba(255,255,255,0.5); padding: 10px;">No clicks yet</div>';
             
-            document.getElementById('totalClicksTooltip').innerHTML = clicksHtml;
+            if (clickEvents.length > 0) {
+                const clicksHtml = clickEvents.slice(0, 15).map(event => {
+                    const name = getVisitorName(event.visitor_id);
+                    const cleanName = name.replace(' (fictional name to track patterns)', '');
+                    const country = event.country || 'Unknown';
+                    const countryCode = getCountryCodeFromName(country);
+                    const flag = getCountryFlag(countryCode);
+                    const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
+                    const linkName = event.link_name || 'Link';
+                    
+                    return `
+                        <div class="tooltip-item">
+                            <div class="tooltip-flag">${flag}</div>
+                            <div class="tooltip-info">
+                                <div class="name">${cleanName}</div>
+                                <div class="id">${visitorId} • ${linkName}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('totalClicksTooltip').innerHTML = clicksHtml;
+            } else {
+                document.getElementById('totalClicksTooltip').innerHTML = 
+                    '<div style="color: rgba(255,255,255,0.5); padding: 10px; text-align: center;">No clicks yet</div>';
+            }
         }
         
         function updateWorldMap() {
             const mapElement = document.getElementById('worldMap');
+            if (!mapElement) return;
             
             // Count visitors by location
             const locationCounts = {};
@@ -1764,26 +1807,33 @@
                 // Oceania
                 'Sydney, Australia': { x: 88, y: 72 },
                 'Melbourne, Australia': { x: 86, y: 74 },
-                'Auckland, New Zealand': { x: 92, y: 76 },
-                
-                // Default for unknown locations
-                'Unknown, Unknown': { x: 50, y: 50 }
+                'Auckland, New Zealand': { x: 92, y: 76 }
             };
             
-            let markersHtml = '<div class="map-placeholder" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); font-size: 14px;">🌍 World Map</div>';
+            // Create background grid
+            let mapHtml = '<div class="map-background"></div>';
             
-            Object.entries(locationCounts).forEach(([location, count]) => {
-                const coords = coordinates[location] || { x: 50, y: 50 };
-                const size = Math.min(20, 12 + count * 2);
-                markersHtml += `
-                    <div class="map-marker" 
-                         style="left: ${coords.x}%; top: ${coords.y}%; width: ${size}px; height: ${size}px;"
-                         title="${location}: ${count} visitors">
-                    </div>
-                `;
-            });
+            if (Object.keys(locationCounts).length === 0) {
+                mapHtml += '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); font-size: 16px; text-align: center;">🌍<br>No visitors yet</div>';
+            } else {
+                Object.entries(locationCounts).forEach(([location, count]) => {
+                    const coords = coordinates[location];
+                    if (coords) {
+                        const size = Math.min(24, 14 + count * 3);
+                        const flag = getCountryFlag(getCountryCodeFromName(location.split(', ')[1]));
+                        mapHtml += `
+                            <div class="map-marker" 
+                                 style="left: ${coords.x}%; top: ${coords.y}%; width: ${size}px; height: ${size}px;"
+                                 data-location="${location}"
+                                 data-count="${count}"
+                                 title="${flag} ${location}: ${count} visitor${count > 1 ? 's' : ''}">
+                            </div>
+                        `;
+                    }
+                });
+            }
             
-            mapElement.innerHTML = markersHtml;
+            mapElement.innerHTML = mapHtml;
         }
         
         function updatePieCharts(summary) {
@@ -1792,7 +1842,7 @@
             allEvents.filter(e => e.event_type === 'page_view').forEach(event => {
                 const location = event.city && event.country ? 
                     `${event.city}, ${event.country}` : 
-                    'Unknown, Unknown';
+                    'Unknown';
                 locationCounts[location] = (locationCounts[location] || 0) + 1;
             });
             
@@ -1804,37 +1854,7 @@
                     value: count
                 }));
             
-            // Device Distribution - count from all page views
-            const deviceCounts = {};
-            allEvents.filter(e => e.event_type === 'page_view').forEach(event => {
-                const device = event.device_type || 'Unknown Device';
-                deviceCounts[device] = (deviceCounts[device] || 0) + 1;
-            });
-            
-            const deviceData = Object.entries(deviceCounts)
-                .sort((a, b) => b[1] - a[1])
-                .map(([device, count]) => ({
-                    label: device,
-                    value: count
-                }));
-            
-            // Browser Distribution - count from all page views
-            const browserCounts = {};
-            allEvents.filter(e => e.event_type === 'page_view').forEach(event => {
-                const browser = event.browser || 'Unknown Browser';
-                browserCounts[browser] = (browserCounts[browser] || 0) + 1;
-            });
-            
-            const browserData = Object.entries(browserCounts)
-                .sort((a, b) => b[1] - a[1])
-                .map(([browser, count]) => ({
-                    label: browser,
-                    value: count
-                }));
-            
             drawPieChart('geoCanvas', geoData);
-            drawPieChart('deviceCanvas', deviceData);
-            drawPieChart('browserCanvas', browserData);
         }
         
         function drawPieChart(canvasId, data) {
