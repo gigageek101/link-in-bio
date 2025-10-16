@@ -477,6 +477,13 @@
             color: rgba(232, 232, 232, 0.8);
         }
         
+        body.dark-mode #customStartDate,
+        body.dark-mode #customEndDate {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e8e8e8;
+            border-color: rgba(129, 199, 212, 0.4);
+        }
+        
         @keyframes slideDown {
             from {
                 opacity: 0;
@@ -1441,11 +1448,20 @@
                     <h2 style="font-size: 24px; color: #ffffff; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(0,0,0,0.3);">📈 Performance Trends</h2>
                     <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8);">Compare periods and track growth</p>
                 </div>
-                <div class="time-range">
-                    <button class="active" onclick="changeTrendPeriod('7d')">Last 7 Days</button>
-                    <button onclick="changeTrendPeriod('14d')">Last 14 Days</button>
-                    <button onclick="changeTrendPeriod('30d')">Last 30 Days</button>
-                    <button onclick="changeTrendPeriod('90d')">Last 90 Days</button>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                    <div class="time-range">
+                        <button class="active" onclick="changeTrendPeriod('24h')">24 Hours</button>
+                        <button onclick="changeTrendPeriod('7d')">7 Days</button>
+                        <button onclick="changeTrendPeriod('14d')">14 Days</button>
+                        <button onclick="changeTrendPeriod('30d')">30 Days</button>
+                        <button onclick="changeTrendPeriod('90d')">90 Days</button>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="date" id="customStartDate" style="padding: 10px; border: 2px solid rgba(129, 199, 212, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.6); font-size: 14px;" placeholder="Start Date">
+                        <span style="color: rgba(255, 255, 255, 0.8);">to</span>
+                        <input type="date" id="customEndDate" style="padding: 10px; border: 2px solid rgba(129, 199, 212, 0.3); border-radius: 10px; background: rgba(255, 255, 255, 0.6); font-size: 14px;" placeholder="End Date">
+                        <button onclick="applyCustomDateRange()" style="padding: 10px 20px; background: linear-gradient(135deg, #81c7d4, #9b8fc9); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Apply</button>
+                    </div>
                 </div>
             </div>
             
@@ -1454,9 +1470,9 @@
             </div>
             
             <!-- Overall Trend Summary -->
-            <div id="trendSummary" style="display: none; background: linear-gradient(135deg, rgba(129, 199, 212, 0.15), rgba(155, 143, 201, 0.15)); backdrop-filter: blur(20px); padding: 25px; border-radius: 20px; border: 1px solid rgba(129, 199, 212, 0.3); margin-bottom: 30px;">
-                <h3 style="font-size: 18px; color: #2d3748; margin-bottom: 15px; font-weight: 600;">📊 Overall Performance</h3>
-                <div id="trendSummaryContent" style="font-size: 15px; line-height: 1.8; color: rgba(45, 55, 72, 0.8);"></div>
+            <div id="trendSummary" style="display: none; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(30px); padding: 30px; border-radius: 25px; border: 1px solid rgba(129, 199, 212, 0.3); margin-bottom: 30px; box-shadow: 0 10px 40px rgba(129, 199, 212, 0.15);">
+                <h3 style="font-size: 20px; color: #2d3748; margin-bottom: 20px; font-weight: 700; text-align: center;">📊 Overall Performance Summary</h3>
+                <div id="trendSummaryContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;"></div>
             </div>
             
             <!-- Trend Stats Grid -->
@@ -1590,7 +1606,8 @@
         let allJourneys = [];
         let expandedJourneys = new Set();
         let currentView = 'overview';
-        let currentTrendPeriod = '7d';
+        let currentTrendPeriod = '24h';
+        let customDateRange = null;
         
         // Theme management
         const savedTheme = localStorage.getItem('theme') || 'light';
@@ -1684,8 +1701,32 @@
         // Change trend period
         function changeTrendPeriod(period) {
             currentTrendPeriod = period;
+            customDateRange = null;
             document.querySelectorAll('#trendsView .time-range button').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
+            updateTrends();
+        }
+        
+        // Apply custom date range
+        function applyCustomDateRange() {
+            const startDate = document.getElementById('customStartDate').value;
+            const endDate = document.getElementById('customEndDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            
+            if (start >= end) {
+                alert('End date must be after start date');
+                return;
+            }
+            
+            customDateRange = { start, end };
+            document.querySelectorAll('#trendsView .time-range button').forEach(btn => btn.classList.remove('active'));
             updateTrends();
         }
 
@@ -2204,17 +2245,37 @@
                 return;
             }
             
-            // Calculate period duration in days
-            const periodDays = {
-                '7d': 7,
-                '14d': 14,
-                '30d': 30,
-                '90d': 90
-            }[currentTrendPeriod];
-            
+            let currentPeriodStart, previousPeriodStart, periodDays, periodName;
             const now = new Date();
-            const currentPeriodStart = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
-            const previousPeriodStart = new Date(currentPeriodStart.getTime() - periodDays * 24 * 60 * 60 * 1000);
+            
+            if (customDateRange) {
+                // Custom date range
+                currentPeriodStart = customDateRange.start;
+                const currentPeriodEnd = customDateRange.end;
+                periodDays = Math.ceil((currentPeriodEnd - currentPeriodStart) / (24 * 60 * 60 * 1000));
+                previousPeriodStart = new Date(currentPeriodStart.getTime() - periodDays * 24 * 60 * 60 * 1000);
+                periodName = `${currentPeriodStart.toLocaleDateString()} - ${currentPeriodEnd.toLocaleDateString()}`;
+            } else {
+                // Predefined periods
+                const periodConfig = {
+                    '24h': 1,
+                    '7d': 7,
+                    '14d': 14,
+                    '30d': 30,
+                    '90d': 90
+                };
+                periodDays = periodConfig[currentTrendPeriod];
+                currentPeriodStart = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+                previousPeriodStart = new Date(currentPeriodStart.getTime() - periodDays * 24 * 60 * 60 * 1000);
+                
+                periodName = {
+                    '24h': 'last 24 hours',
+                    '7d': 'last 7 days',
+                    '14d': 'last 14 days',
+                    '30d': 'last 30 days',
+                    '90d': 'last 90 days'
+                }[currentTrendPeriod];
+            }
             
             // Check if we have enough data
             const oldestEvent = allEvents.reduce((oldest, event) => {
@@ -2224,9 +2285,9 @@
             
             const daysOfData = Math.floor((now - oldestEvent) / (24 * 60 * 60 * 1000));
             
-            if (daysOfData < periodDays) {
+            if (!customDateRange && daysOfData < periodDays) {
                 const daysNeeded = periodDays - daysOfData;
-                showTrendAlert(`⏳ Collecting data... ${daysNeeded} more day${daysNeeded === 1 ? '' : 's'} needed for full ${currentTrendPeriod.toUpperCase()} analysis. Current data: ${daysOfData} days.`);
+                showTrendAlert(`⏳ Collecting data... ${daysNeeded} more day${daysNeeded === 1 ? '' : 's'} needed for full ${periodName.toUpperCase()} analysis. Current data: ${daysOfData} days.`);
                 // Still show partial data
             } else {
                 hideTrendAlert();
@@ -2261,7 +2322,7 @@
             };
             
             // Generate overall summary
-            generateTrendSummary(changes, periodDays, currentMetrics, previousMetrics);
+            generateTrendSummary(changes, periodDays, currentMetrics, previousMetrics, currentPeriodStart, previousPeriodStart, periodName);
             
             // Update daily trends
             updateDailyTrends(filteredEvents, periodDays);
@@ -2278,74 +2339,104 @@
             document.getElementById('trendAlert').style.display = 'none';
         }
         
-        function generateTrendSummary(changes, periodDays, currentMetrics, previousMetrics) {
+        function generateTrendSummary(changes, periodDays, currentMetrics, previousMetrics, currentPeriodStart, previousPeriodStart, periodName) {
             const summaryElement = document.getElementById('trendSummary');
             const contentElement = document.getElementById('trendSummaryContent');
             
             if (!summaryElement || !contentElement) return;
             
-            const periodName = {
-                7: 'week',
-                14: 'two weeks',
-                30: 'month',
-                90: 'three months'
-            }[periodDays] || `${periodDays} days`;
+            const formatDate = (date) => {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            };
             
-            let summaryParts = [];
+            const currentPeriodEnd = new Date();
+            const previousPeriodEnd = currentPeriodStart;
             
-            // Visitors trend
-            if (changes.visitors !== null) {
-                const trend = changes.visitors > 0 ? 'growth' : changes.visitors < 0 ? 'decline' : 'stable';
-                const color = changes.visitors > 0 ? '#4ade80' : changes.visitors < 0 ? '#ef4444' : '#81c7d4';
-                summaryParts.push(`<span style="color: ${color}; font-weight: 600;">${Math.abs(changes.visitors).toFixed(1)}% ${trend}</span> in <strong>page visits</strong>`);
+            // Create individual metric cards
+            let html = '';
+            
+            // New Visitors Growth Card
+            if (changes.newVisitors !== null) {
+                const arrow = changes.newVisitors > 0 ? '↑' : changes.newVisitors < 0 ? '↓' : '→';
+                const color = changes.newVisitors > 0 ? '#4ade80' : changes.newVisitors < 0 ? '#ef4444' : '#81c7d4';
+                html += `
+                    <div style="background: rgba(129, 199, 212, 0.08); padding: 20px; border-radius: 15px; border: 1px solid rgba(129, 199, 212, 0.2);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <span style="font-size: 24px;">✨</span>
+                            <span style="font-weight: 600; color: #2d3748; font-size: 16px;">New Visitors Growth</span>
+                        </div>
+                        <div style="font-size: 36px; font-weight: 700; color: ${color}; margin-bottom: 10px;">${arrow} ${Math.abs(changes.newVisitors).toFixed(1)}%</div>
+                        <div style="font-size: 14px; color: rgba(45, 55, 72, 0.7); line-height: 1.6;">
+                            <strong>Current Period:</strong><br>
+                            ${formatDate(currentPeriodStart)} to ${formatDate(currentPeriodEnd)}<br>
+                            <span style="color: #2d3748; font-weight: 600;">${currentMetrics.newVisitors} new visitors</span>
+                        </div>
+                        <div style="border-top: 1px solid rgba(129, 199, 212, 0.2); margin: 12px 0; padding-top: 12px; font-size: 14px; color: rgba(45, 55, 72, 0.7); line-height: 1.6;">
+                            <strong>Previous Period:</strong><br>
+                            ${formatDate(previousPeriodStart)} to ${formatDate(previousPeriodEnd)}<br>
+                            <span style="color: rgba(45, 55, 72, 0.6);">${previousMetrics.newVisitors} new visitors</span>
+                        </div>
+                    </div>
+                `;
             }
             
-            // Clicks trend
+            // Link Clicks Growth Card
             if (changes.clicks !== null) {
-                const trend = changes.clicks > 0 ? 'increase' : changes.clicks < 0 ? 'decrease' : 'no change';
+                const arrow = changes.clicks > 0 ? '↑' : changes.clicks < 0 ? '↓' : '→';
                 const color = changes.clicks > 0 ? '#4ade80' : changes.clicks < 0 ? '#ef4444' : '#81c7d4';
-                summaryParts.push(`<span style="color: ${color}; font-weight: 600;">${Math.abs(changes.clicks).toFixed(1)}% ${trend}</span> in <strong>link clicks</strong>`);
+                html += `
+                    <div style="background: rgba(129, 199, 212, 0.08); padding: 20px; border-radius: 15px; border: 1px solid rgba(129, 199, 212, 0.2);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <span style="font-size: 24px;">🎯</span>
+                            <span style="font-weight: 600; color: #2d3748; font-size: 16px;">Link Clicks Growth</span>
+                        </div>
+                        <div style="font-size: 36px; font-weight: 700; color: ${color}; margin-bottom: 10px;">${arrow} ${Math.abs(changes.clicks).toFixed(1)}%</div>
+                        <div style="font-size: 14px; color: rgba(45, 55, 72, 0.7); line-height: 1.6;">
+                            <strong>Current Period:</strong><br>
+                            ${formatDate(currentPeriodStart)} to ${formatDate(currentPeriodEnd)}<br>
+                            <span style="color: #2d3748; font-weight: 600;">${currentMetrics.clicks} clicks</span>
+                        </div>
+                        <div style="border-top: 1px solid rgba(129, 199, 212, 0.2); margin: 12px 0; padding-top: 12px; font-size: 14px; color: rgba(45, 55, 72, 0.7); line-height: 1.6;">
+                            <strong>Previous Period:</strong><br>
+                            ${formatDate(previousPeriodStart)} to ${formatDate(previousPeriodEnd)}<br>
+                            <span style="color: rgba(45, 55, 72, 0.6);">${previousMetrics.clicks} clicks</span>
+                        </div>
+                    </div>
+                `;
             }
             
-            // Conversion trend
+            // Conversion Rate Card
             if (changes.conversion !== null) {
-                const trend = changes.conversion > 0 ? 'improvement' : changes.conversion < 0 ? 'drop' : 'stable';
+                const arrow = changes.conversion > 0 ? '↑' : changes.conversion < 0 ? '↓' : '→';
                 const color = changes.conversion > 0 ? '#4ade80' : changes.conversion < 0 ? '#ef4444' : '#81c7d4';
-                summaryParts.push(`<span style="color: ${color}; font-weight: 600;">${Math.abs(changes.conversion).toFixed(1)}% ${trend}</span> in <strong>conversion rate</strong>`);
+                html += `
+                    <div style="background: rgba(129, 199, 212, 0.08); padding: 20px; border-radius: 15px; border: 1px solid rgba(129, 199, 212, 0.2);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <span style="font-size: 24px;">💫</span>
+                            <span style="font-weight: 600; color: #2d3748; font-size: 16px;">Conversion Rate</span>
+                        </div>
+                        <div style="font-size: 36px; font-weight: 700; color: ${color}; margin-bottom: 10px;">${arrow} ${Math.abs(changes.conversion).toFixed(1)}%</div>
+                        <div style="font-size: 14px; color: rgba(45, 55, 72, 0.7); line-height: 1.6;">
+                            <strong>Current Period:</strong><br>
+                            ${formatDate(currentPeriodStart)} to ${formatDate(currentPeriodEnd)}<br>
+                            <span style="color: #2d3748; font-weight: 600;">${currentMetrics.conversion}% conversion</span>
+                        </div>
+                        <div style="border-top: 1px solid rgba(129, 199, 212, 0.2); margin: 12px 0; padding-top: 12px; font-size: 14px; color: rgba(45, 55, 72, 0.7); line-height: 1.6;">
+                            <strong>Previous Period:</strong><br>
+                            ${formatDate(previousPeriodStart)} to ${formatDate(previousPeriodEnd)}<br>
+                            <span style="color: rgba(45, 55, 72, 0.6);">${previousMetrics.conversion}% conversion</span>
+                        </div>
+                    </div>
+                `;
             }
             
-            if (summaryParts.length === 0) {
-                contentElement.innerHTML = `No significant changes in the past ${periodName}.`;
+            if (html) {
+                contentElement.innerHTML = html;
+                summaryElement.style.display = 'block';
             } else {
-                const lastPart = summaryParts.pop();
-                let text = `Over the past <strong>${periodName}</strong>, you're seeing `;
-                
-                if (summaryParts.length > 0) {
-                    text += summaryParts.join(', ') + ' and ' + lastPart;
-                } else {
-                    text += lastPart;
-                }
-                
-                text += ` compared to the previous ${periodName}.`;
-                
-                // Add key insight
-                const bestMetric = Object.entries(changes)
-                    .filter(([_, val]) => val !== null && val > 5)
-                    .sort((a, b) => b[1] - a[1])[0];
-                
-                if (bestMetric) {
-                    const metricNames = {
-                        visitors: 'visitor growth',
-                        clicks: 'engagement',
-                        conversion: 'conversion performance'
-                    };
-                    text += ` 🎉 <strong style="color: #4ade80;">Top performer:</strong> ${metricNames[bestMetric[0]] || bestMetric[0]} is up ${bestMetric[1].toFixed(1)}%!`;
-                }
-                
-                contentElement.innerHTML = text;
+                contentElement.innerHTML = '<div style="text-align: center; color: rgba(45, 55, 72, 0.5);">No data available for comparison</div>';
+                summaryElement.style.display = 'block';
             }
-            
-            summaryElement.style.display = 'block';
         }
         
         function calculatePeriodMetrics(events) {
