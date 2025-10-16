@@ -534,13 +534,16 @@
         }
         
         .stat-card.hover-card {
-            cursor: help;
+            cursor: pointer;
             position: relative;
         }
         
         /* Tooltip */
         .stat-tooltip {
-            position: fixed;
+            position: absolute;
+            top: calc(100% + 15px);
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(30px);
             padding: 20px;
@@ -552,16 +555,22 @@
             overflow-y: auto;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
             z-index: 10000;
             box-shadow: 0 15px 50px rgba(129, 199, 212, 0.25);
             display: none;
         }
         
-        .hover-card:hover .stat-tooltip {
+        .hover-card {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .hover-card.tooltip-active .stat-tooltip {
             opacity: 1;
             pointer-events: all;
             display: block;
+            transform: translateX(-50%) translateY(0);
         }
         
         .tooltip-item {
@@ -1173,35 +1182,35 @@
 
         <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card hover-card">
+            <div class="stat-card hover-card" onclick="toggleTooltip(this)">
                 <div class="icon">👥</div>
                 <div class="value" id="totalVisitors">0</div>
                 <div class="label">Total Visitors</div>
                 <div class="stat-tooltip" id="totalVisitorsTooltip"></div>
             </div>
 
-            <div class="stat-card hover-card">
+            <div class="stat-card hover-card" onclick="toggleTooltip(this)">
                 <div class="icon">✨</div>
                 <div class="value" id="newVisitors">0</div>
                 <div class="label">New Visitors</div>
                 <div class="stat-tooltip" id="newVisitorsTooltip"></div>
             </div>
 
-            <div class="stat-card hover-card">
+            <div class="stat-card hover-card" onclick="toggleTooltip(this)">
                 <div class="icon">🎯</div>
                 <div class="value" id="totalClicks">0</div>
                 <div class="label">Total Clicks</div>
                 <div class="stat-tooltip" id="totalClicksTooltip"></div>
             </div>
 
-            <div class="stat-card hover-card">
+            <div class="stat-card hover-card" onclick="toggleTooltip(this)">
                 <div class="icon">💫</div>
                 <div class="value" id="conversionRate">0%</div>
                 <div class="label">Conversion Rate</div>
                 <div class="stat-tooltip" id="conversionRateTooltip"></div>
             </div>
 
-            <div class="stat-card hover-card">
+            <div class="stat-card hover-card" onclick="toggleTooltip(this)">
                 <div class="icon">🚪</div>
                 <div class="value" id="bounceRate">0%</div>
                 <div class="label">Bounce Rate</div>
@@ -1236,8 +1245,13 @@
             </div>
 
             <div class="chart-card">
-                <h3>📍 Top Locations</h3>
-                <div id="locationChart"></div>
+                <h3>🌍 Top Countries</h3>
+                <div id="countryChart"></div>
+            </div>
+            
+            <div class="chart-card">
+                <h3>📍 Top Cities</h3>
+                <div id="cityChart"></div>
             </div>
         </div>
 
@@ -1545,25 +1559,66 @@
                     `).join('')
                 : '<div class="no-data">No link clicks yet</div>';
             
-            // Top locations
-            const locations = {};
-            events.filter(e => e.event_type === 'page_view' && e.city && e.country).forEach(e => {
-                const loc = `${e.city}, ${e.country}`;
-                locations[loc] = (locations[loc] || 0) + 1;
+            // Top countries (unique visitors per country)
+            const countryVisitors = {};
+            const seenVisitorsPerCountry = {};
+            
+            events.filter(e => e.event_type === 'page_view' && e.country).forEach(e => {
+                if (!seenVisitorsPerCountry[e.country]) {
+                    seenVisitorsPerCountry[e.country] = new Set();
+                }
+                if (e.visitor_id && !seenVisitorsPerCountry[e.country].has(e.visitor_id)) {
+                    seenVisitorsPerCountry[e.country].add(e.visitor_id);
+                    countryVisitors[e.country] = (countryVisitors[e.country] || 0) + 1;
+                }
             });
             
-            const locationChart = document.getElementById('locationChart');
-            locationChart.innerHTML = Object.entries(locations).length > 0
-                ? Object.entries(locations)
+            const countryChart = document.getElementById('countryChart');
+            const totalVisitors = Object.values(countryVisitors).reduce((sum, count) => sum + count, 0);
+            
+            countryChart.innerHTML = Object.entries(countryVisitors).length > 0
+                ? Object.entries(countryVisitors)
                     .sort((a, b) => b[1] - a[1])
-                    .slice(0, 5)
-                    .map(([location, count]) => `
+                    .slice(0, 8)
+                    .map(([country, count]) => {
+                        const flag = getCountryFlag(getCountryCodeFromName(country));
+                        const percentage = totalVisitors > 0 ? ((count / totalVisitors) * 100).toFixed(1) : 0;
+                        return `
+                            <div class="chart-item">
+                                <span class="chart-label">${flag} ${country}</span>
+                                <span class="chart-value">${count} (${percentage}%)</span>
+                            </div>
+                        `;
+                    }).join('')
+                : '<div class="no-data">No country data yet</div>';
+            
+            // Top cities (unique visitors per city)
+            const cityVisitors = {};
+            const seenVisitorsPerCity = {};
+            
+            events.filter(e => e.event_type === 'page_view' && e.city && e.country).forEach(e => {
+                const cityKey = `${e.city}, ${e.country}`;
+                if (!seenVisitorsPerCity[cityKey]) {
+                    seenVisitorsPerCity[cityKey] = new Set();
+                }
+                if (e.visitor_id && !seenVisitorsPerCity[cityKey].has(e.visitor_id)) {
+                    seenVisitorsPerCity[cityKey].add(e.visitor_id);
+                    cityVisitors[cityKey] = (cityVisitors[cityKey] || 0) + 1;
+                }
+            });
+            
+            const cityChart = document.getElementById('cityChart');
+            cityChart.innerHTML = Object.entries(cityVisitors).length > 0
+                ? Object.entries(cityVisitors)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 8)
+                    .map(([city, count]) => `
                         <div class="chart-item">
-                            <span class="chart-label">${location}</span>
+                            <span class="chart-label">${city}</span>
                             <span class="chart-value">${count}</span>
                         </div>
                     `).join('')
-                : '<div class="no-data">No location data yet</div>';
+                : '<div class="no-data">No city data yet</div>';
         }
 
         // Update pie chart
@@ -1641,19 +1696,20 @@
                 const flag = getCountryFlag(getCountryCodeFromName(country));
                 const percentage = ((count / total) * 100).toFixed(0);
                 
-                // Draw text with shadow for better visibility
-                ctx.font = 'bold 15px -apple-system, BlinkMacSystemFont, sans-serif';
+                // Draw country name and percentage
+                const countryText = `${country}: ${percentage}%`;
+                ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.textAlign = labelX > centerX ? 'left' : 'right';
                 
                 // White shadow/outline for contrast
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-                ctx.lineWidth = 4;
-                ctx.strokeText(`${flag} ${percentage}%`, labelX, labelY);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.lineWidth = 5;
+                ctx.strokeText(countryText, labelX, labelY);
                 
                 // Main text color (adapts to theme)
                 const isDarkMode = document.body.classList.contains('dark-mode');
-                ctx.fillStyle = isDarkMode ? '#e8e8e8' : '#2d3748';
-                ctx.fillText(`${flag} ${percentage}%`, labelX, labelY);
+                ctx.fillStyle = isDarkMode ? '#ffffff' : '#1a1a2e';
+                ctx.fillText(countryText, labelX, labelY);
                 
                 currentAngle += sliceAngle;
             });
@@ -1804,48 +1860,26 @@
             }
         }
 
-        // Position tooltips near mouse - improved version
-        let currentTooltip = null;
-        let tooltipUpdateFrame = null;
-        
-        document.addEventListener('mousemove', function(e) {
-            if (tooltipUpdateFrame) {
-                cancelAnimationFrame(tooltipUpdateFrame);
-            }
-            
-            tooltipUpdateFrame = requestAnimationFrame(() => {
-                const hoverCards = document.querySelectorAll('.hover-card:hover');
-                
-                hoverCards.forEach(card => {
-                    const tooltip = card.querySelector('.stat-tooltip');
-                    if (tooltip && window.getComputedStyle(tooltip).opacity === '1') {
-                        currentTooltip = tooltip;
-                        
-                        // Position tooltip relative to cursor
-                        let x = e.clientX + 20;
-                        let y = e.clientY + 20;
-                        
-                        // Get tooltip dimensions
-                        const tooltipRect = tooltip.getBoundingClientRect();
-                        
-                        // Keep tooltip within viewport
-                        if (x + tooltipRect.width > window.innerWidth - 20) {
-                            x = e.clientX - tooltipRect.width - 20;
-                        }
-                        if (y + tooltipRect.height > window.innerHeight - 20) {
-                            y = e.clientY - tooltipRect.height - 20;
-                        }
-                        
-                        // Ensure it doesn't go off top or left
-                        x = Math.max(20, x);
-                        y = Math.max(20, y);
-                        
-                        tooltip.style.left = x + 'px';
-                        tooltip.style.top = y + 'px';
-                        tooltip.style.transform = 'none';
-                    }
-                });
+        // Toggle tooltip on click
+        function toggleTooltip(card) {
+            // Close all other tooltips
+            document.querySelectorAll('.hover-card').forEach(c => {
+                if (c !== card) {
+                    c.classList.remove('tooltip-active');
+                }
             });
+            
+            // Toggle current tooltip
+            card.classList.toggle('tooltip-active');
+        }
+        
+        // Close tooltips when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.hover-card')) {
+                document.querySelectorAll('.hover-card').forEach(card => {
+                    card.classList.remove('tooltip-active');
+                });
+            }
         });
 
         // Update user journeys
