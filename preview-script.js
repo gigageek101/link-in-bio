@@ -1,5 +1,47 @@
 // Preview page script - No tracking, just demo
 
+// Age Warning Modal
+let pendingUrl = null;
+let pendingLinkName = null;
+
+function showAgeWarning(event, url, linkName) {
+    event.preventDefault();
+    pendingUrl = url || 'https://onlyfans.com/sophiestardust';
+    pendingLinkName = linkName || 'My VIP Content';
+    
+    const modal = document.getElementById('age-warning-modal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+    
+    return false;
+}
+
+function hideAgeWarning() {
+    const modal = document.getElementById('age-warning-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+    pendingUrl = null;
+}
+
+function confirmAge() {
+    if (pendingUrl) {
+        // Store URL before clearing
+        const urlToOpen = pendingUrl;
+        
+        // Clear modal
+        hideAgeWarning();
+        
+        // Open link in new tab
+        window.open(urlToOpen, '_blank', 'noopener,noreferrer');
+    } else {
+        hideAgeWarning();
+    }
+}
+
 // Get user's location based on IP
 async function getUserLocation() {
     try {
@@ -206,5 +248,34 @@ function initSlideshow() {
 document.addEventListener('DOMContentLoaded', function() {
     initSlideshow();
     updateLocationMessages();
+    
+    // Setup age warning modal buttons
+    const confirmBtn = document.getElementById('age-confirm-btn');
+    const cancelBtn = document.getElementById('age-cancel-btn');
+    const modal = document.getElementById('age-warning-modal');
+    
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', confirmAge);
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', hideAgeWarning);
+    }
+    
+    // Close modal if clicking outside
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                hideAgeWarning();
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideAgeWarning();
+        }
+    });
 });
 
