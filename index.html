@@ -134,20 +134,25 @@
             text-align: center;
             max-width: 1000px;
             width: 100%;
+            min-height: 700px;
+            padding-bottom: 40px;
         }
 
         .hero-title-section {
             position: relative;
             z-index: 10;
-            margin-bottom: -100px;
-            padding-bottom: 120px;
+            padding-top: 40px;
+            padding-bottom: 60px;
         }
 
         .hero-video-container {
-            position: relative;
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 1;
             max-width: 900px;
-            margin: 0 auto 40px;
+            width: 90%;
             border-radius: 24px;
             overflow: hidden;
             box-shadow: 0 20px 80px rgba(255, 107, 157, 0.3);
@@ -156,18 +161,18 @@
         }
 
         .hero-video-container:hover {
-            transform: translateY(-10px) scale(1.02);
+            transform: translateX(-50%) translateY(-10px) scale(1.02);
             box-shadow: 0 30px 100px rgba(255, 107, 157, 0.4);
         }
 
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateX(-50%) translateY(30px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(-50%) translateY(0);
             }
         }
 
@@ -483,14 +488,18 @@
                 padding: 60px 20px;
             }
 
+            .hero-content {
+                min-height: 600px;
+            }
+
             .hero-title-section {
-                margin-bottom: -60px;
-                padding-bottom: 80px;
+                padding-top: 20px;
+                padding-bottom: 40px;
             }
 
             .hero-video-container {
-                max-width: 100%;
-                margin-bottom: 30px;
+                top: 140px;
+                width: 95%;
             }
 
             h1 {
