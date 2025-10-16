@@ -235,6 +235,7 @@ function showAgeWarning(event, url, linkName) {
 async function trackAgeWarning() {
     const location = await getLocationForTracking();
     const timeOnPage = getTimeOnPage();
+    const visitorType = getVisitorType();
     
     // Track first interaction
     if (!firstInteraction) {
@@ -252,7 +253,8 @@ async function trackAgeWarning() {
         location,
         timestamp,
         timeOnPage: timeOnPage,
-        timeToInteraction: formatDuration(timeOnPage)
+        timeToInteraction: formatDuration(timeOnPage),
+        visitorId: visitorType.visitorId
     });
 }
 
@@ -712,12 +714,17 @@ function initSlideshow() {
 }
 
 // Initialize when page loads
+let hasTrackedPageView = false;
+
 document.addEventListener('DOMContentLoaded', function() {
     initSlideshow();
     updateLocationMessages();
     
-    // Track page view in Telegram
-    trackPageView();
+    // Track page view only once
+    if (!hasTrackedPageView) {
+        hasTrackedPageView = true;
+        trackPageView();
+    }
     
     // Setup age warning modal buttons
     const confirmBtn = document.getElementById('age-confirm-btn');

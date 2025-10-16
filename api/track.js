@@ -1,5 +1,6 @@
 // Vercel Serverless Function - Telegram Visitor Tracking + Database
 const { sql } = require('@vercel/postgres');
+const { getVisitorName } = require('../lib/names.js');
 
 // Simplified save function
 async function saveEvent(eventData) {
@@ -95,6 +96,9 @@ module.exports = async function handler(req, res) {
             // Page visit notification
             const { location, device, deviceInfo, browser, referrer, timestamp, userAgent, isNewVisitor, visitCount, visitorId, pageUrl } = data;
             
+            // Get visitor name
+            const visitorName = getVisitorName(visitorId);
+            
             // Detect platform from user agent or referrer
             let platform = 'Direct';
             if (userAgent) {
@@ -112,9 +116,9 @@ module.exports = async function handler(req, res) {
 
             // Different message for new vs returning visitors
             if (isNewVisitor) {
-                message = `🎉 <b>NEW VISITOR!</b>\n\n`;
+                message = `🎉 <b>NEW VISITOR: ${visitorName}</b>\n\n`;
             } else {
-                message = `🔄 <b>Returning Visitor</b> (Visit #${visitCount})\n\n`;
+                message = `🔄 <b>${visitorName} Returned</b> (Visit #${visitCount})\n\n`;
             }
             
             message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
@@ -136,30 +140,24 @@ module.exports = async function handler(req, res) {
             }
             
             message += `\n⏰ <b>Time:</b> ${timestamp}\n`;
-            
-            if (!isNewVisitor && visitCount > 1) {
-                message += `\n👤 <b>Visitor ID:</b> <code>${visitorId}</code>\n`;
-            }
+            message += `\n👤 <b>Visitor:</b> ${visitorName} (<code>${visitorId?.substring(0, 12)}...</code>)\n`;
             
         } else if (type === 'link_click') {
             // Link click notification
             const { linkName, linkUrl, location, ageVerified, timestamp, isNewVisitor, visitorId, visitCount, timeOnPage, timeToClick } = data;
+            
+            // Get visitor name
+            const visitorName = getVisitorName(visitorId);
             
             let emoji = '🔗';
             if (linkName.includes('Exclusive') || linkName.includes('OnlyFans')) emoji = '💗';
             else if (linkName.includes('Telegram')) emoji = '✈️';
             else if (linkName.includes('X') || linkName.includes('Twitter')) emoji = '𝕏';
 
-            message = `🎯 <b>Link Clicked!</b>\n\n`;
+            message = `🎯 <b>${visitorName} Clicked a Link!</b>\n\n`;
             message += `${emoji} <b>Link:</b> ${linkName}\n`;
-            message += `📍 <b>Visitor from:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
-            
-            // Show visitor type
-            if (isNewVisitor) {
-                message += `👤 <b>Visitor:</b> 🆕 New\n`;
-            } else {
-                message += `👤 <b>Visitor:</b> 🔄 Returning (Visit #${visitCount})\n`;
-            }
+            message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            message += `👤 <b>Visitor:</b> ${visitorName}\n`;
             
             // Time to click
             if (timeToClick) {
@@ -174,10 +172,14 @@ module.exports = async function handler(req, res) {
             
         } else if (type === 'age_warning') {
             // Age warning shown
-            const { location, timestamp, timeOnPage, timeToInteraction } = data;
+            const { location, timestamp, timeOnPage, timeToInteraction, visitorId } = data;
             
-            message = `⚠️ <b>Age Warning Shown</b>\n\n`;
-            message += `📍 <b>Visitor from:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            // Get visitor name
+            const visitorName = getVisitorName(visitorId);
+            
+            message = `⚠️ <b>${visitorName} Saw Age Warning</b>\n\n`;
+            message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            message += `👤 <b>Visitor:</b> ${visitorName}\n`;
             
             if (timeToInteraction) {
                 message += `⏱️ <b>Time on page:</b> ${timeToInteraction}\n`;
@@ -189,14 +191,12 @@ module.exports = async function handler(req, res) {
             // Bounce notification (user left without clicking)
             const { location, timestamp, timeOnPage, sessionDuration, isNewVisitor, visitorId } = data;
             
-            message = `🚪 <b>BOUNCE!</b> (No clicks)\n\n`;
-            message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            // Get visitor name
+            const visitorName = getVisitorName(visitorId);
             
-            if (isNewVisitor) {
-                message += `👤 <b>Visitor:</b> 🆕 New\n`;
-            } else {
-                message += `👤 <b>Visitor:</b> 🔄 Returning\n`;
-            }
+            message = `🚪 <b>${visitorName} Bounced</b> (No clicks)\n\n`;
+            message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            message += `👤 <b>Visitor:</b> ${visitorName}\n`;
             
             if (sessionDuration) {
                 message += `⏱️ <b>Time on page:</b> ${sessionDuration}\n`;
@@ -208,14 +208,12 @@ module.exports = async function handler(req, res) {
             // Session end notification (user left after clicking)
             const { location, timestamp, timeOnPage, sessionDuration, hadInteraction, isNewVisitor, visitorId } = data;
             
-            message = `👋 <b>Session Ended</b>\n\n`;
-            message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            // Get visitor name
+            const visitorName = getVisitorName(visitorId);
             
-            if (isNewVisitor) {
-                message += `👤 <b>Visitor:</b> 🆕 New\n`;
-            } else {
-                message += `👤 <b>Visitor:</b> 🔄 Returning\n`;
-            }
+            message = `👋 <b>${visitorName} Left</b>\n\n`;
+            message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            message += `👤 <b>Visitor:</b> ${visitorName}\n`;
             
             if (sessionDuration) {
                 message += `⏱️ <b>Session duration:</b> ${sessionDuration}\n`;
