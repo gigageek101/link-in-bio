@@ -82,6 +82,12 @@ async function getAnalyticsSummary(timeRange = '24h') {
             SELECT COUNT(DISTINCT visitor_id) as count
             FROM analytics
             WHERE event_type = 'page_view'
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
         `;
         
         const newVisitors = await sql`
@@ -89,18 +95,36 @@ async function getAnalyticsSummary(timeRange = '24h') {
             FROM analytics
             WHERE event_type = 'page_view'
             AND is_new_visitor = true
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
         `;
         
         const totalClicks = await sql`
             SELECT COUNT(*) as count
             FROM analytics
             WHERE event_type = 'link_click'
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
         `;
         
         const bounces = await sql`
             SELECT COUNT(*) as count
             FROM analytics
             WHERE event_type = 'bounce'
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
         `;
         
         const avgTime = await sql`
@@ -108,13 +132,24 @@ async function getAnalyticsSummary(timeRange = '24h') {
             FROM analytics
             WHERE event_type = 'link_click'
             AND time_to_interaction IS NOT NULL
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
         `;
         
         const topLocs = await sql`
             SELECT city, country, COUNT(*) as visits
             FROM analytics
             WHERE event_type = 'page_view'
-            AND city IS NOT NULL
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
             GROUP BY city, country
             ORDER BY visits DESC
             LIMIT 10
@@ -125,6 +160,12 @@ async function getAnalyticsSummary(timeRange = '24h') {
             FROM analytics
             WHERE event_type = 'link_click'
             AND link_name IS NOT NULL
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
             GROUP BY link_name
             ORDER BY clicks DESC
         `;
@@ -134,6 +175,12 @@ async function getAnalyticsSummary(timeRange = '24h') {
             FROM analytics
             WHERE event_type = 'page_view'
             AND device_type IS NOT NULL
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
             GROUP BY device_type
             ORDER BY count DESC
         `;
@@ -143,6 +190,12 @@ async function getAnalyticsSummary(timeRange = '24h') {
             FROM analytics
             WHERE event_type = 'page_view'
             AND browser IS NOT NULL
+            AND city IS NOT NULL 
+            AND city != '' 
+            AND city != 'Unknown'
+            AND country IS NOT NULL 
+            AND country != '' 
+            AND country != 'Unknown'
             GROUP BY browser
             ORDER BY count DESC
         `;
@@ -196,6 +249,12 @@ async function getRecentEvents(limit = 50, sourceFilter = null) {
                     created_at
                 FROM analytics
                 WHERE source_platform = ${sourceFilter}
+                AND city IS NOT NULL 
+                AND city != '' 
+                AND city != 'Unknown'
+                AND country IS NOT NULL 
+                AND country != '' 
+                AND country != 'Unknown'
                 ORDER BY created_at DESC
                 LIMIT ${limit}
             `;
@@ -207,6 +266,12 @@ async function getRecentEvents(limit = 50, sourceFilter = null) {
                     time_on_page, time_to_interaction, session_duration, is_new_visitor, visit_count,
                     created_at
                 FROM analytics
+                WHERE city IS NOT NULL 
+                AND city != '' 
+                AND city != 'Unknown'
+                AND country IS NOT NULL 
+                AND country != '' 
+                AND country != 'Unknown'
                 ORDER BY created_at DESC
                 LIMIT ${limit}
             `;
@@ -229,6 +294,12 @@ async function getUserJourneys(sourceFilter = null) {
                     created_at
                 FROM analytics
                 WHERE source_platform = ${sourceFilter}
+                AND city IS NOT NULL 
+                AND city != '' 
+                AND city != 'Unknown'
+                AND country IS NOT NULL 
+                AND country != '' 
+                AND country != 'Unknown'
                 ORDER BY visitor_id, created_at ASC
             `;
         } else {
@@ -239,6 +310,12 @@ async function getUserJourneys(sourceFilter = null) {
                     time_on_page, time_to_interaction, session_duration, is_new_visitor,
                     created_at
                 FROM analytics
+                WHERE city IS NOT NULL 
+                AND city != '' 
+                AND city != 'Unknown'
+                AND country IS NOT NULL 
+                AND country != '' 
+                AND country != 'Unknown'
                 ORDER BY visitor_id, created_at ASC
             `;
         }
