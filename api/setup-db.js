@@ -1,11 +1,13 @@
 // One-time database setup for Supabase
-const { sql } = require('@vercel/postgres');
+const { neon } = require('@neondatabase/serverless');
 
 module.exports = async function handler(req, res) {
-    // Set the connection string as env var if not set
-    if (!process.env.POSTGRES_URL && process.env.POSTGRES_URL_POSTGRES_URL) {
-        process.env.POSTGRES_URL = process.env.POSTGRES_URL_POSTGRES_URL;
-    }
+    // Get the connection string (Supabase uses prefixed vars)
+    const connectionString = process.env.POSTGRES_URL_POSTGRES_URL || 
+                            process.env.POSTGRES_URL || 
+                            process.env.DATABASE_URL;
+    
+    const sql = neon(connectionString);
     try {
         // Create analytics table
         await sql`
