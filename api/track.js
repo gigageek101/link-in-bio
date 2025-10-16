@@ -2,7 +2,7 @@
 const { sql } = require('@vercel/postgres');
 const { getVisitorName } = require('../lib/names.js');
 
-// Simplified save function
+// Simplified save function with proper null handling
 async function saveEvent(eventData) {
     try {
         await sql`
@@ -15,14 +15,31 @@ async function saveEvent(eventData) {
                 link_name, link_url, age_verified,
                 user_agent
             ) VALUES (
-                ${eventData.event_type}, ${eventData.visitor_id}, ${eventData.is_new_visitor}, ${eventData.visit_count},
-                ${eventData.city}, ${eventData.country}, ${eventData.country_code}, ${eventData.ip},
-                ${eventData.device_type}, ${eventData.browser}, ${eventData.platform}, ${eventData.screen_resolution}, 
-                ${eventData.viewport}, ${eventData.language}, ${eventData.is_touch},
-                ${eventData.referrer}, ${eventData.source_platform}, ${eventData.page_url},
-                ${eventData.time_on_page}, ${eventData.time_to_interaction}, ${eventData.session_duration},
-                ${eventData.link_name}, ${eventData.link_url}, ${eventData.age_verified},
-                ${eventData.user_agent}
+                ${eventData.event_type || null}, 
+                ${eventData.visitor_id || null}, 
+                ${eventData.is_new_visitor !== undefined ? eventData.is_new_visitor : null}, 
+                ${eventData.visit_count || null},
+                ${eventData.city || null}, 
+                ${eventData.country || null}, 
+                ${eventData.country_code || null}, 
+                ${eventData.ip || null},
+                ${eventData.device_type || null}, 
+                ${eventData.browser || null}, 
+                ${eventData.platform || null}, 
+                ${eventData.screen_resolution || null}, 
+                ${eventData.viewport || null}, 
+                ${eventData.language || null}, 
+                ${eventData.is_touch !== undefined ? eventData.is_touch : null},
+                ${eventData.referrer || null}, 
+                ${eventData.source_platform || null}, 
+                ${eventData.page_url || null},
+                ${eventData.time_on_page || null}, 
+                ${eventData.time_to_interaction || null}, 
+                ${eventData.session_duration || null},
+                ${eventData.link_name || null}, 
+                ${eventData.link_url || null}, 
+                ${eventData.age_verified !== undefined ? eventData.age_verified : null},
+                ${eventData.user_agent || null}
             )
         `;
     } catch (error) {
