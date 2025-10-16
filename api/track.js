@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 
         if (type === 'page_view') {
             // Page visit notification
-            const { location, device, browser, referrer, timestamp, userAgent } = data;
+            const { location, device, browser, referrer, timestamp, userAgent, isNewVisitor, visitCount, visitorId } = data;
             
             // Detect platform from user agent or referrer
             let platform = 'Direct';
@@ -57,16 +57,29 @@ export default async function handler(req, res) {
                 else if (referrer.includes('twitter') || referrer.includes('x.com')) platform = 'X/Twitter 𝕏';
             }
 
-            message = `🔔 <b>New Visitor!</b>\n\n`;
+            // Different message for new vs returning visitors
+            if (isNewVisitor) {
+                message = `🎉 <b>NEW VISITOR!</b>\n\n`;
+            } else {
+                message = `🔄 <b>Returning Visitor</b> (Visit #${visitCount})\n\n`;
+            }
+            
             message += `📍 <b>Location:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            if (location.ip && location.ip !== 'Unknown') {
+                message += `🌐 <b>IP:</b> ${location.ip}\n`;
+            }
             message += `📱 <b>Device:</b> ${device || 'Unknown'}\n`;
             message += `🌐 <b>Browser:</b> ${browser || 'Unknown'}\n`;
             message += `🔗 <b>From:</b> ${platform}\n`;
             message += `⏰ <b>Time:</b> ${timestamp}\n`;
             
+            if (!isNewVisitor && visitCount > 1) {
+                message += `\n👤 <b>Visitor ID:</b> <code>${visitorId}</code>\n`;
+            }
+            
         } else if (type === 'link_click') {
             // Link click notification
-            const { linkName, linkUrl, location, ageVerified, timestamp } = data;
+            const { linkName, linkUrl, location, ageVerified, timestamp, isNewVisitor, visitorId, visitCount } = data;
             
             let emoji = '🔗';
             if (linkName.includes('Exclusive') || linkName.includes('OnlyFans')) emoji = '💗';
@@ -76,6 +89,14 @@ export default async function handler(req, res) {
             message = `🎯 <b>Link Clicked!</b>\n\n`;
             message += `${emoji} <b>Link:</b> ${linkName}\n`;
             message += `📍 <b>Visitor from:</b> ${location.city || 'Unknown'}, ${location.country || 'Unknown'}\n`;
+            
+            // Show visitor type
+            if (isNewVisitor) {
+                message += `👤 <b>Visitor:</b> 🆕 New\n`;
+            } else {
+                message += `👤 <b>Visitor:</b> 🔄 Returning (Visit #${visitCount})\n`;
+            }
+            
             if (ageVerified !== undefined) {
                 message += `✅ <b>Age verified:</b> ${ageVerified ? 'Yes' : 'Cancelled'}\n`;
             }

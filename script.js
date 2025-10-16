@@ -1,5 +1,39 @@
 // Telegram Tracking System
 let userLocation = null;
+let visitorInfo = null;
+
+// Check if visitor is new or returning
+function getVisitorType() {
+    const VISITOR_KEY = 'allison_visitor_id';
+    const FIRST_VISIT_KEY = 'allison_first_visit';
+    
+    let visitorId = localStorage.getItem(VISITOR_KEY);
+    let firstVisit = localStorage.getItem(FIRST_VISIT_KEY);
+    let isNewVisitor = false;
+    
+    if (!visitorId) {
+        // New visitor - create unique ID
+        visitorId = 'v_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        firstVisit = new Date().toISOString();
+        localStorage.setItem(VISITOR_KEY, visitorId);
+        localStorage.setItem(FIRST_VISIT_KEY, firstVisit);
+        isNewVisitor = true;
+    }
+    
+    return {
+        visitorId,
+        isNewVisitor,
+        firstVisit,
+        totalVisits: parseInt(localStorage.getItem('allison_visit_count') || '0') + 1
+    };
+}
+
+// Increment visit count
+function incrementVisitCount() {
+    const count = parseInt(localStorage.getItem('allison_visit_count') || '0') + 1;
+    localStorage.setItem('allison_visit_count', count.toString());
+    return count;
+}
 
 // Get user location for tracking
 async function getLocationForTracking() {
@@ -11,12 +45,13 @@ async function getLocationForTracking() {
         userLocation = {
             city: data.city || 'Unknown',
             country: data.country_name || 'Unknown',
-            countryCode: data.country_code
+            countryCode: data.country_code,
+            ip: data.ip || 'Unknown'
         };
         return userLocation;
     } catch (error) {
         console.error('Location fetch error:', error);
-        return { city: 'Unknown', country: 'Unknown' };
+        return { city: 'Unknown', country: 'Unknown', ip: 'Unknown' };
     }
 }
 
@@ -93,6 +128,9 @@ async function trackPageView() {
     const device = getDeviceType();
     const browser = getBrowserName();
     const referrer = document.referrer || 'Direct';
+    const visitorType = getVisitorType();
+    const visitCount = incrementVisitCount();
+    
     const timestamp = new Date().toLocaleString('en-US', { 
         timeZone: 'UTC',
         hour12: true,
@@ -109,13 +147,19 @@ async function trackPageView() {
         browser,
         referrer,
         timestamp,
-        userAgent: navigator.userAgent
+        userAgent: navigator.userAgent,
+        isNewVisitor: visitorType.isNewVisitor,
+        visitorId: visitorType.visitorId,
+        visitCount: visitCount,
+        firstVisit: visitorType.firstVisit
     });
 }
 
 // Track link click
 async function trackLinkClick(linkName, linkUrl, ageVerified = undefined) {
     const location = await getLocationForTracking();
+    const visitorType = getVisitorType();
+    
     const timestamp = new Date().toLocaleString('en-US', { 
         timeZone: 'UTC',
         hour12: true,
@@ -129,7 +173,10 @@ async function trackLinkClick(linkName, linkUrl, ageVerified = undefined) {
         linkUrl,
         location,
         ageVerified,
-        timestamp
+        timestamp,
+        isNewVisitor: visitorType.isNewVisitor,
+        visitorId: visitorType.visitorId,
+        visitCount: visitorType.totalVisits
     });
 }
 
