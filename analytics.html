@@ -18,6 +18,99 @@
             color: #2d3748;
             position: relative;
             overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+        
+        /* Dark Mode */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e8e8e8;
+        }
+        
+        body.dark-mode .login-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        
+        body.dark-mode .stat-card,
+        body.dark-mode .content-section,
+        body.dark-mode .chart-card,
+        body.dark-mode .geo-distribution-container,
+        body.dark-mode .journey-card,
+        body.dark-mode .login-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(129, 199, 212, 0.3);
+        }
+        
+        body.dark-mode .chart-item,
+        body.dark-mode .timeline-event,
+        body.dark-mode .activity-item,
+        body.dark-mode .tooltip-item {
+            background: rgba(129, 199, 212, 0.1);
+        }
+        
+        body.dark-mode .chart-label,
+        body.dark-mode .timeline-title,
+        body.dark-mode .activity-content,
+        body.dark-mode .journey-info h4,
+        body.dark-mode .content-section h3,
+        body.dark-mode .chart-card h3,
+        body.dark-mode .geo-distribution-container h3,
+        body.dark-mode .tooltip-info .name {
+            color: #e8e8e8;
+        }
+        
+        body.dark-mode .header-left p,
+        body.dark-mode .stat-card .label,
+        body.dark-mode .journey-info p,
+        body.dark-mode .journey-stat .label,
+        body.dark-mode .timeline-details,
+        body.dark-mode .activity-time,
+        body.dark-mode .tooltip-info .id {
+            color: rgba(232, 232, 232, 0.6);
+        }
+        
+        body.dark-mode .login-box input {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e8e8e8;
+            border-color: rgba(129, 199, 212, 0.3);
+        }
+        
+        body.dark-mode .login-box input::placeholder {
+            color: rgba(232, 232, 232, 0.4);
+        }
+        
+        body.dark-mode .time-range,
+        body.dark-mode .source-filter,
+        body.dark-mode .refresh-btn,
+        body.dark-mode .notification-btn,
+        body.dark-mode .theme-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(129, 199, 212, 0.3);
+        }
+        
+        body.dark-mode .time-range button {
+            color: rgba(232, 232, 232, 0.6);
+        }
+        
+        body.dark-mode .source-filter,
+        body.dark-mode .source-filter option {
+            color: #e8e8e8;
+            background: rgba(26, 26, 46, 0.95);
+        }
+        
+        body.dark-mode .stat-tooltip,
+        body.dark-mode .toast {
+            background: rgba(26, 26, 46, 0.95);
+            border-color: rgba(129, 199, 212, 0.4);
+        }
+        
+        body.dark-mode .toast-title,
+        body.dark-mode .tooltip-info .name {
+            color: #e8e8e8;
+        }
+        
+        body.dark-mode .toast-message {
+            color: rgba(232, 232, 232, 0.6);
         }
         
         /* Animated Background Waves */
@@ -315,7 +408,7 @@
             box-shadow: 0 4px 20px rgba(129, 199, 212, 0.2);
         }
         
-        .refresh-btn, .notification-btn {
+        .refresh-btn, .notification-btn, .theme-toggle {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(129, 199, 212, 0.2);
@@ -330,10 +423,16 @@
             box-shadow: 0 4px 15px rgba(129, 199, 212, 0.1);
         }
         
-        .refresh-btn:hover, .notification-btn:hover {
+        .refresh-btn:hover, .notification-btn:hover, .theme-toggle:hover {
             background: rgba(255, 255, 255, 0.9);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(129, 199, 212, 0.2);
+        }
+        
+        body.dark-mode .refresh-btn:hover, 
+        body.dark-mode .notification-btn:hover,
+        body.dark-mode .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.15);
         }
         
         .refresh-btn.loading {
@@ -387,7 +486,6 @@
             border: 1px solid rgba(129, 199, 212, 0.2);
             box-shadow: 0 10px 40px rgba(129, 199, 212, 0.1);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: floatIn 0.6s ease-out backwards;
         }
         
         @keyframes floatIn {
@@ -400,13 +498,6 @@
                 transform: translateY(0);
             }
         }
-        
-        .stat-card:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card:nth-child(2) { animation-delay: 0.2s; }
-        .stat-card:nth-child(3) { animation-delay: 0.3s; }
-        .stat-card:nth-child(4) { animation-delay: 0.4s; }
-        .stat-card:nth-child(5) { animation-delay: 0.5s; }
-        .stat-card:nth-child(6) { animation-delay: 0.6s; }
         
         .stat-card:hover {
             transform: translateY(-8px);
@@ -683,7 +774,6 @@
             border: 1px solid rgba(129, 199, 212, 0.2);
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: slideInLeft 0.5s ease-out backwards;
         }
         
         @keyframes slideInLeft {
@@ -855,7 +945,6 @@
             border-radius: 15px;
             border-left: 3px solid #81c7d4;
             transition: all 0.3s ease;
-            animation: slideInRight 0.4s ease-out backwards;
         }
         
         @keyframes slideInRight {
@@ -1075,6 +1164,9 @@
                     <option value="X/Twitter">X/Twitter</option>
                     <option value="Direct">Direct</option>
                 </select>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <span id="themeIcon">🌙</span>
+                </button>
                 <button class="refresh-btn" onclick="manualRefresh()" title="Refresh">🔄</button>
                 <button class="notification-btn" title="Notifications">
                     🔔
@@ -1194,6 +1286,28 @@
         let lastEventCount = 0;
         let allEvents = [];
         let allJourneys = [];
+        
+        // Theme management
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeIcon').textContent = '☀️';
+        }
+        
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
 
         // Password memory (IP-based)
         const savedPassword = localStorage.getItem('analytics_password');
@@ -1213,6 +1327,13 @@
                     document.getElementById('loginContainer').classList.add('hidden');
                     setTimeout(() => {
                         document.getElementById('dashboard').classList.add('active');
+                        
+                        // Update theme icon if dark mode is active
+                        const icon = document.getElementById('themeIcon');
+                        if (icon && document.body.classList.contains('dark-mode')) {
+                            icon.textContent = '☀️';
+                        }
+                        
                         fetchAnalytics();
                         setInterval(fetchAnalytics, 5000);
                     }, 500);
