@@ -402,13 +402,12 @@
             width: 50px;
             height: 50px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #FFB6C1, #FFD700);
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.2), rgba(255, 215, 0, 0.2));
+            border: 2px solid rgba(255, 192, 203, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a1a2e;
+            font-size: 28px;
         }
         
         .journey-info h4 {
@@ -537,10 +536,7 @@
         }
         
         .stat-tooltip {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-10px);
+            position: fixed;
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(20px);
             padding: 15px;
@@ -552,15 +548,16 @@
             overflow-y: auto;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            z-index: 1000;
+            transition: opacity 0.3s;
+            z-index: 10000;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: none;
         }
         
         .hover-card:hover .stat-tooltip {
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
             pointer-events: all;
+            display: block;
         }
         
         .tooltip-item {
@@ -1489,7 +1486,18 @@
             
             const journeysHtml = journeys.map(journey => {
                 const visitorName = getVisitorName(journey.visitorId);
-                const firstLetter = visitorName.charAt(0);
+                
+                // Get country flag emoji for avatar
+                let avatarEmoji;
+                if (!journey.location || journey.location === 'Unknown, Unknown' || journey.location.includes('Unknown')) {
+                    avatarEmoji = '🤖'; // Robot emoji for unknown locations
+                } else {
+                    const country = journey.location.split(', ')[1] || '';
+                    const countryCode = getCountryCodeFromName(country);
+                    avatarEmoji = getCountryFlag(countryCode);
+                    if (avatarEmoji === '🌍') avatarEmoji = '🤖'; // Fallback to robot if flag not found
+                }
+                
                 const duration = Math.round((new Date(journey.lastSeen) - new Date(journey.firstSeen)) / 1000);
                 const timeSpent = formatDuration(journey.totalTimeSpent);
                 const sessionDuration = formatDuration(duration);
@@ -1539,7 +1547,7 @@
                     <div class="journey-card" onclick="toggleJourney(this)">
                         <div class="journey-header">
                             <div class="journey-visitor">
-                                <div class="journey-avatar">${firstLetter}</div>
+                                <div class="journey-avatar">${avatarEmoji}</div>
                                 <div class="journey-info">
                                     <h4>${visitorName}</h4>
                                     <p>${journey.location} • ${journey.device || 'Unknown Device'}</p>
@@ -1692,7 +1700,10 @@
                     const cleanName = name.replace(' (fictional name to track patterns)', '');
                     const country = event.country || 'Unknown';
                     const countryCode = getCountryCodeFromName(country);
-                    const flag = getCountryFlag(countryCode);
+                    let flag = getCountryFlag(countryCode);
+                    if (flag === '🌍' || !country || country === 'Unknown') {
+                        flag = '🤖'; // Robot for unknown
+                    }
                     const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
                     
                     return `
@@ -1721,7 +1732,10 @@
                     const cleanName = name.replace(' (fictional name to track patterns)', '');
                     const country = event.country || 'Unknown';
                     const countryCode = getCountryCodeFromName(country);
-                    const flag = getCountryFlag(countryCode);
+                    let flag = getCountryFlag(countryCode);
+                    if (flag === '🌍' || !country || country === 'Unknown') {
+                        flag = '🤖'; // Robot for unknown
+                    }
                     const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
                     const linkName = event.link_name || 'Link';
                     
@@ -1742,6 +1756,27 @@
                     '<div style="color: rgba(255,255,255,0.5); padding: 10px; text-align: center;">No clicks yet</div>';
             }
         }
+        
+        // Position tooltips near mouse cursor
+        document.addEventListener('mousemove', function(e) {
+            const hoverCards = document.querySelectorAll('.hover-card:hover');
+            hoverCards.forEach(card => {
+                const tooltip = card.querySelector('.stat-tooltip');
+                if (tooltip && tooltip.style.opacity === '1') {
+                    // Position tooltip near cursor
+                    const x = e.clientX + 15; // 15px offset from cursor
+                    const y = e.clientY + 15;
+                    
+                    // Keep tooltip within viewport
+                    const tooltipRect = tooltip.getBoundingClientRect();
+                    const maxX = window.innerWidth - tooltipRect.width - 10;
+                    const maxY = window.innerHeight - tooltipRect.height - 10;
+                    
+                    tooltip.style.left = Math.min(x, maxX) + 'px';
+                    tooltip.style.top = Math.min(y, maxY) + 'px';
+                }
+            });
+        });
         
         function updateWorldMap() {
             const mapElement = document.getElementById('worldMap');
