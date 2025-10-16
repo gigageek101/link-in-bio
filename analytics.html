@@ -1659,6 +1659,11 @@
         function filterBySource() {
             currentSourceFilter = document.getElementById('sourceFilter').value;
             fetchAnalytics();
+            
+            // Update trends if on trends view
+            if (currentView === 'trends') {
+                updateTrends();
+            }
         }
 
         // Manual refresh
