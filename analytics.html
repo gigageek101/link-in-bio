@@ -1194,16 +1194,18 @@
                 <div class="stat-tooltip" id="totalClicksTooltip"></div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card hover-card">
                 <div class="icon">💫</div>
                 <div class="value" id="conversionRate">0%</div>
                 <div class="label">Conversion Rate</div>
+                <div class="stat-tooltip" id="conversionRateTooltip"></div>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card hover-card">
                 <div class="icon">🚪</div>
                 <div class="value" id="bounceRate">0%</div>
                 <div class="label">Bounce Rate</div>
+                <div class="stat-tooltip" id="bounceRateTooltip"></div>
             </div>
 
             <div class="stat-card online-card">
@@ -1454,7 +1456,7 @@
             // Update charts
             updateCharts(filteredEvents, summary);
             
-            // Update pie chart
+            // Update pie chart with filtered events
             updatePieChart(filteredEvents);
             
             // Update tooltips
@@ -1465,6 +1467,9 @@
             
             // Update recent activity
             updateRecentActivity(filteredEvents);
+            
+            // Store filtered events for use by other functions
+            window.currentFilteredEvents = filteredEvents;
         }
 
         // Animate value
@@ -1567,18 +1572,30 @@
             if (!canvas) return;
             
             const ctx = canvas.getContext('2d');
-            const pageViews = events.filter(e => e.event_type === 'page_view' && e.country);
+            // Only count unique visitors per country (not all page views)
+            const visitorsByCountry = {};
+            const seenVisitors = new Set();
             
-            if (pageViews.length === 0) {
+            events.forEach(event => {
+                if (event.event_type === 'page_view' && event.country && event.visitor_id && !seenVisitors.has(event.visitor_id)) {
+                    const country = event.country;
+                    if (!visitorsByCountry[country]) {
+                        visitorsByCountry[country] = [];
+                    }
+                    visitorsByCountry[country].push(event.visitor_id);
+                    seenVisitors.add(event.visitor_id);
+                }
+            });
+            
+            if (Object.keys(visitorsByCountry).length === 0) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 return;
             }
             
-            // Aggregate by country
+            // Aggregate by country (count unique visitors)
             const countryData = {};
-            pageViews.forEach(event => {
-                const country = event.country || 'Unknown';
-                countryData[country] = (countryData[country] || 0) + 1;
+            Object.entries(visitorsByCountry).forEach(([country, visitors]) => {
+                countryData[country] = visitors.length;
             });
             
             // Sort and get top countries
@@ -1644,12 +1661,43 @@
 
         // Update tooltips
         function updateTooltips(events) {
+            // Total visitors tooltip (all unique visitors)
+            const uniqueVisitors = {};
+            events.filter(e => e.event_type === 'page_view').forEach(event => {
+                if (event.visitor_id && !uniqueVisitors[event.visitor_id]) {
+                    uniqueVisitors[event.visitor_id] = event;
+                }
+            });
+            const totalVisitorsTooltip = document.getElementById('totalVisitorsTooltip');
+            const visitorsList = Object.values(uniqueVisitors);
+            
+            if (visitorsList.length > 0) {
+                totalVisitorsTooltip.innerHTML = visitorsList.slice(0, 15).map(event => {
+                    const name = getVisitorName(event.visitor_id);
+                    const country = event.country || 'Unknown';
+                    const flag = country !== 'Unknown' ? getCountryFlag(getCountryCodeFromName(country)) : '🤖';
+                    const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
+                    
+                    return `
+                        <div class="tooltip-item">
+                            <div class="tooltip-flag">${flag}</div>
+                            <div class="tooltip-info">
+                                <div class="name">${name}</div>
+                                <div class="id">${visitorId}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                totalVisitorsTooltip.innerHTML = '<div style="color: rgba(45,55,72,0.4); padding: 10px; text-align: center;">No visitors yet</div>';
+            }
+            
             // New visitors tooltip
             const newVisitors = events.filter(e => e.event_type === 'page_view' && e.is_new_visitor);
             const newVisitorsTooltip = document.getElementById('newVisitorsTooltip');
             
             if (newVisitors.length > 0) {
-                newVisitorsTooltip.innerHTML = newVisitors.slice(0, 10).map(event => {
+                newVisitorsTooltip.innerHTML = newVisitors.slice(0, 15).map(event => {
                     const name = getVisitorName(event.visitor_id);
                     const country = event.country || 'Unknown';
                     const flag = country !== 'Unknown' ? getCountryFlag(getCountryCodeFromName(country)) : '🤖';
@@ -1674,7 +1722,7 @@
             const totalClicksTooltip = document.getElementById('totalClicksTooltip');
             
             if (clickEvents.length > 0) {
-                totalClicksTooltip.innerHTML = clickEvents.slice(0, 10).map(event => {
+                totalClicksTooltip.innerHTML = clickEvents.slice(0, 15).map(event => {
                     const name = getVisitorName(event.visitor_id);
                     const country = event.country || 'Unknown';
                     const flag = country !== 'Unknown' ? getCountryFlag(getCountryCodeFromName(country)) : '🤖';
@@ -1694,24 +1742,109 @@
             } else {
                 totalClicksTooltip.innerHTML = '<div style="color: rgba(45,55,72,0.4); padding: 10px; text-align: center;">No clicks yet</div>';
             }
+            
+            // Conversion rate tooltip (visitors who clicked)
+            const visitorsWhoClicked = new Set(clickEvents.map(e => e.visitor_id));
+            const conversionRateTooltip = document.getElementById('conversionRateTooltip');
+            
+            if (visitorsWhoClicked.size > 0) {
+                const converters = events.filter(e => 
+                    e.event_type === 'page_view' && visitorsWhoClicked.has(e.visitor_id)
+                );
+                const uniqueConverters = {};
+                converters.forEach(event => {
+                    if (!uniqueConverters[event.visitor_id]) {
+                        uniqueConverters[event.visitor_id] = event;
+                    }
+                });
+                
+                conversionRateTooltip.innerHTML = Object.values(uniqueConverters).slice(0, 15).map(event => {
+                    const name = getVisitorName(event.visitor_id);
+                    const country = event.country || 'Unknown';
+                    const flag = country !== 'Unknown' ? getCountryFlag(getCountryCodeFromName(country)) : '🤖';
+                    const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
+                    
+                    return `
+                        <div class="tooltip-item">
+                            <div class="tooltip-flag">${flag}</div>
+                            <div class="tooltip-info">
+                                <div class="name">${name} ✅</div>
+                                <div class="id">${visitorId}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                conversionRateTooltip.innerHTML = '<div style="color: rgba(45,55,72,0.4); padding: 10px; text-align: center;">No conversions yet</div>';
+            }
+            
+            // Bounce rate tooltip (visitors who bounced)
+            const bounceEvents = events.filter(e => e.event_type === 'bounce');
+            const bounceRateTooltip = document.getElementById('bounceRateTooltip');
+            
+            if (bounceEvents.length > 0) {
+                bounceRateTooltip.innerHTML = bounceEvents.slice(0, 15).map(event => {
+                    const name = getVisitorName(event.visitor_id);
+                    const country = event.country || 'Unknown';
+                    const flag = country !== 'Unknown' ? getCountryFlag(getCountryCodeFromName(country)) : '🤖';
+                    const visitorId = event.visitor_id ? event.visitor_id.substring(0, 12) + '...' : 'unknown';
+                    
+                    return `
+                        <div class="tooltip-item">
+                            <div class="tooltip-flag">${flag}</div>
+                            <div class="tooltip-info">
+                                <div class="name">${name} 🚪</div>
+                                <div class="id">${visitorId}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                bounceRateTooltip.innerHTML = '<div style="color: rgba(45,55,72,0.4); padding: 10px; text-align: center;">No bounces yet</div>';
+            }
         }
 
-        // Position tooltips near mouse
+        // Position tooltips near mouse - improved version
+        let currentTooltip = null;
+        let tooltipUpdateFrame = null;
+        
         document.addEventListener('mousemove', function(e) {
-            const hoverCards = document.querySelectorAll('.hover-card:hover');
-            hoverCards.forEach(card => {
-                const tooltip = card.querySelector('.stat-tooltip');
-                if (tooltip && getComputedStyle(tooltip).display === 'block') {
-                    const x = e.clientX + 15;
-                    const y = e.clientY + 15;
-                    
-                    const tooltipRect = tooltip.getBoundingClientRect();
-                    const maxX = window.innerWidth - tooltipRect.width - 10;
-                    const maxY = window.innerHeight - tooltipRect.height - 10;
-                    
-                    tooltip.style.left = Math.min(x, maxX) + 'px';
-                    tooltip.style.top = Math.min(y, maxY) + 'px';
-                }
+            if (tooltipUpdateFrame) {
+                cancelAnimationFrame(tooltipUpdateFrame);
+            }
+            
+            tooltipUpdateFrame = requestAnimationFrame(() => {
+                const hoverCards = document.querySelectorAll('.hover-card:hover');
+                
+                hoverCards.forEach(card => {
+                    const tooltip = card.querySelector('.stat-tooltip');
+                    if (tooltip && window.getComputedStyle(tooltip).opacity === '1') {
+                        currentTooltip = tooltip;
+                        
+                        // Position tooltip relative to cursor
+                        let x = e.clientX + 20;
+                        let y = e.clientY + 20;
+                        
+                        // Get tooltip dimensions
+                        const tooltipRect = tooltip.getBoundingClientRect();
+                        
+                        // Keep tooltip within viewport
+                        if (x + tooltipRect.width > window.innerWidth - 20) {
+                            x = e.clientX - tooltipRect.width - 20;
+                        }
+                        if (y + tooltipRect.height > window.innerHeight - 20) {
+                            y = e.clientY - tooltipRect.height - 20;
+                        }
+                        
+                        // Ensure it doesn't go off top or left
+                        x = Math.max(20, x);
+                        y = Math.max(20, y);
+                        
+                        tooltip.style.left = x + 'px';
+                        tooltip.style.top = y + 'px';
+                        tooltip.style.transform = 'none';
+                    }
+                });
             });
         });
 
