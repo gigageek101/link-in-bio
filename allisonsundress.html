@@ -198,35 +198,64 @@
             const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
             const isAndroid = /android/i.test(ua);
             
-            // Detect Threads/Instagram/Facebook/X in-app browser
-            // X/Twitter user agents: TwitterAndroid, Twitter, X, XiPhone, etc.
-            const isInAppBrowser = (
+            // Detect X/Twitter in-app browser
+            const isXApp = (
+                ua.indexOf('TwitterAndroid') > -1 ||
+                ua.indexOf('Twitter') > -1 ||
+                ua.indexOf(' X/') > -1 ||
+                ua.indexOf('XiPhone') > -1 ||
+                ua.indexOf('X-App') > -1 ||
+                ua.indexOf('x.com') > -1
+            );
+            
+            // Detect other in-app browsers (Instagram, Threads, Facebook)
+            const isOtherInAppBrowser = (
                 ua.indexOf('Instagram') > -1 ||
                 ua.indexOf('FBAV') > -1 ||
                 ua.indexOf('FBAN') > -1 ||
-                ua.indexOf('Barcelona') > -1 || // Threads internal code name
-                ua.indexOf('Threads') > -1 ||
-                ua.indexOf('TwitterAndroid') > -1 ||
-                ua.indexOf('Twitter') > -1 ||
-                ua.indexOf(' X/') > -1 || // X app identifier
-                ua.indexOf('XiPhone') > -1 ||
-                ua.indexOf('X-App') > -1
+                ua.indexOf('Barcelona') > -1 ||
+                ua.indexOf('Threads') > -1
             );
             
-            console.log('🔗 Deep linking check - UA:', ua.substring(0, 100), 'In-app:', isInAppBrowser, 'iOS:', isIOS, 'Android:', isAndroid);
+            console.log('🔗 Deep linking check - X/Twitter:', isXApp, 'Other in-app:', isOtherInAppBrowser, 'iOS:', isIOS, 'Android:', isAndroid);
             
-            if (isInAppBrowser) {
-                if (isAndroid) {
-                    // Android: Force open in Chrome using intent URL
-                    const cleanUrl = url.replace('https://', '').replace('http://', '');
-                    console.log('🔗 Android deep link - opening in Chrome:', cleanUrl);
-                    window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
-                } else if (isIOS) {
-                    // iOS: Force open in Safari using x-safari scheme
-                    console.log('🔗 iOS deep link - opening in Safari');
-                    window.location.href = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+            // Advanced X/Twitter specific deep linking (based on comprehensive research)
+            if (isXApp) {
+                // Check for redirect loop prevention
+                const urlObj = new URL(url);
+                const hasRedirected = urlObj.searchParams.get('redirected') === 'true';
+                
+                if (!hasRedirected) {
+                    // Add redirect prevention parameter
+                    const redirectUrl = url + (url.includes('?') ? '&' : '?') + 'redirected=true';
+                    
+                    if (isAndroid) {
+                        // Android: Force open in default browser using intent:// scheme
+                        const cleanUrl = redirectUrl.replace('https://', '').replace('http://', '');
+                        console.log('🔗 X/Android - Using intent scheme to open in default browser');
+                        window.location.href = `intent://${cleanUrl}#Intent;scheme=https;end`;
+                        return;
+                    } else if (isIOS) {
+                        // iOS: Force open in Safari using x-safari-https:// scheme
+                        console.log('🔗 X/iOS - Using x-safari-https scheme to open in Safari');
+                        window.location.href = redirectUrl.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                        return;
+                    }
                 }
-                return;
+            }
+            
+            // For other in-app browsers (Instagram, Threads, Facebook) - existing behavior
+            if (isOtherInAppBrowser) {
+                if (isAndroid) {
+                    const cleanUrl = url.replace('https://', '').replace('http://', '');
+                    console.log('🔗 Other in-app (Android) - Force Chrome');
+                    window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+                    return;
+                } else if (isIOS) {
+                    console.log('🔗 Other in-app (iOS) - Force Safari');
+                    window.location.href = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                    return;
+                }
             }
             
             // Not in in-app browser, open normally
