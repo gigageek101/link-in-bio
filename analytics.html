@@ -2515,6 +2515,12 @@
             const changeElement = document.getElementById(prefix + 'Change');
             const comparisonElement = document.getElementById(prefix + 'Comparison');
             
+            // Skip if elements don't exist (they may not be in the HTML)
+            if (!valueElement || !changeElement || !comparisonElement) {
+                console.log(`⚠️ Skipping ${prefix} - elements not found in DOM`);
+                return null;
+            }
+            
             let changePercentage = null;
             
             // Update the actual value with better formatting
