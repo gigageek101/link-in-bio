@@ -220,44 +220,30 @@
             console.log('🔗 Opening URL:', url);
             console.log('🔗 X/Twitter:', isXApp, 'Other in-app:', isOtherInAppBrowser, 'iOS:', isIOS, 'Android:', isAndroid);
             
-            // Try deep linking for X/Twitter and other in-app browsers
+            // Force direct navigation for in-app browsers
             if (isXApp || isOtherInAppBrowser) {
-                try {
-                    if (isAndroid) {
-                        const cleanUrl = url.replace('https://', '').replace('http://', '');
-                        const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;end`;
-                        console.log('🔗 Android - Attempting intent URL:', intentUrl);
-                        window.location.href = intentUrl;
-                        
-                        // Fallback after 1 second in case intent doesn't work
-                        setTimeout(() => {
-                            console.log('🔗 Intent fallback - opening with window.open()');
-                            window.open(url, '_blank');
-                        }, 1000);
-                        
-                        return;
-                    } else if (isIOS) {
-                        const safariUrl = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
-                        console.log('🔗 iOS - Attempting x-safari URL:', safariUrl);
-                        window.location.href = safariUrl;
-                        
-                        // Fallback after 1 second in case scheme doesn't work
-                        setTimeout(() => {
-                            console.log('🔗 Safari fallback - opening with window.open()');
-                            window.open(url, '_blank');
-                        }, 1000);
-                        
-                        return;
-                    }
-                } catch (error) {
-                    console.error('🔗 Deep linking error:', error);
-                    // Fall through to normal opening below
+                if (isAndroid) {
+                    // Android: Try intent URL first
+                    const cleanUrl = url.replace('https://', '').replace('http://', '');
+                    const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;end`;
+                    console.log('🔗 Android - Using intent URL');
+                    window.location.href = intentUrl;
+                } else if (isIOS) {
+                    // iOS: Try x-safari scheme
+                    const safariUrl = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                    console.log('🔗 iOS - Using x-safari URL');
+                    window.location.href = safariUrl;
+                } else {
+                    // Fallback for in-app browser
+                    console.log('🔗 In-app browser - direct navigation');
+                    window.location.href = url;
                 }
+                return;
             }
             
-            // Default: just open normally
-            console.log('🔗 Opening normally with window.open()');
-            window.open(url, '_blank');
+            // For regular browsers: direct navigation
+            console.log('🔗 Regular browser - direct navigation');
+            window.location.href = url;
         }
     </script>
 
