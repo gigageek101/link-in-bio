@@ -1769,31 +1769,30 @@
             if (currentSourceFilter !== 'all') {
                 console.log('📋 Before filtering - Events:', events.length, 'Journeys:', journeys.length);
                 
-                filteredEvents = events.filter(e => {
-                    const extracted = extractSource(e);
-                    const matches = extracted === currentSourceFilter;
-                    if (matches) {
-                        console.log('✅ Match found:', {
-                            event_type: e.event_type,
-                            visitor_id: e.visitor_id?.substring(0, 8),
-                            referrer: e.referrer,
-                            source_platform: e.source_platform,
-                            extracted: extracted
-                        });
+                // STEP 1: Find all visitor IDs that came from the selected source
+                const visitorIdsFromSource = new Set();
+                events.forEach(e => {
+                    if (e.event_type === 'page_view') {
+                        const extracted = extractSource(e);
+                        if (extracted === currentSourceFilter) {
+                            visitorIdsFromSource.add(e.visitor_id);
+                            console.log('✅ Visitor from source:', e.visitor_id?.substring(0, 8), 'source:', extracted);
+                        }
                     }
-                    return matches;
                 });
                 
-                filteredJourneys = journeys.filter(j => {
-                    // Extract source from first page view in journey
-                    const firstPageView = j.events?.find(ev => ev.event_type === 'page_view') || {};
-                    const extracted = extractSource(firstPageView);
-                    const matches = extracted === currentSourceFilter;
-                    if (matches) {
-                        console.log('✅ Journey match:', j.visitorId?.substring(0, 8), 'extracted:', extracted);
-                    }
-                    return matches;
-                });
+                console.log(`👥 Found ${visitorIdsFromSource.size} visitors from ${currentSourceFilter}`);
+                
+                // STEP 2: Include ALL events from these visitors (page views, clicks, bounces, etc.)
+                filteredEvents = events.filter(e => visitorIdsFromSource.has(e.visitor_id));
+                
+                console.log(`📊 Including all events from these visitors: ${filteredEvents.length} events`);
+                console.log(`   - Page views: ${filteredEvents.filter(e => e.event_type === 'page_view').length}`);
+                console.log(`   - Clicks: ${filteredEvents.filter(e => e.event_type === 'link_click').length}`);
+                console.log(`   - Bounces: ${filteredEvents.filter(e => e.event_type === 'bounce').length}`);
+                
+                // STEP 3: Filter journeys
+                filteredJourneys = journeys.filter(j => visitorIdsFromSource.has(j.visitorId));
                 
                 console.log('📊 After filtering - Events:', filteredEvents.length, 'Journeys:', filteredJourneys.length);
             }
