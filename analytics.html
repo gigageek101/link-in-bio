@@ -2626,9 +2626,24 @@
             if (!element) return;
             
             const maxValue = Math.max(...values, 1);
+            
+            // Helper function to get ordinal suffix (1st, 2nd, 3rd, etc.)
+            function getOrdinal(day) {
+                if (day > 3 && day < 21) return day + 'th';
+                switch (day % 10) {
+                    case 1: return day + 'st';
+                    case 2: return day + 'nd';
+                    case 3: return day + 'rd';
+                    default: return day + 'th';
+                }
+            }
+            
             const formattedDates = dates.map(d => {
                 const date = new Date(d);
-                return `${date.getMonth() + 1}/${date.getDate()}`;
+                const dayOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][date.getDay()];
+                const monthShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.getMonth()];
+                const dayWithOrdinal = getOrdinal(date.getDate());
+                return `${dayOfWeek}, ${dayWithOrdinal} ${monthShort}`;
             });
             
             let html = '<div style="padding: 20px;">';
@@ -2640,7 +2655,7 @@
                 
                 html += `
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                        <div style="width: 70px; font-size: 12px; color: rgba(45, 55, 72, 0.6);">${formattedDates[index]}</div>
+                        <div style="width: 100px; font-size: 12px; color: rgba(45, 55, 72, 0.6); font-weight: 500;">${formattedDates[index]}</div>
                         <div style="flex: 1; height: 30px; background: rgba(129, 199, 212, 0.1); border-radius: 8px; overflow: hidden; position: relative;">
                             <div style="width: ${percentage}%; height: 100%; background: ${color}; border-radius: 8px; transition: width 0.5s ease;"></div>
                         </div>
