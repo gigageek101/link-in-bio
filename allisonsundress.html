@@ -208,41 +208,37 @@
                 ua.indexOf('x.com') > -1
             );
             
-            // Detect other in-app browsers (Instagram, Threads, Facebook)
-            const isOtherInAppBrowser = (
-                ua.indexOf('Instagram') > -1 ||
-                ua.indexOf('FBAV') > -1 ||
-                ua.indexOf('FBAN') > -1 ||
-                ua.indexOf('Barcelona') > -1 ||
-                ua.indexOf('Threads') > -1
-            );
-            
             console.log('🔗 Opening URL:', url);
-            console.log('🔗 X/Twitter:', isXApp, 'Other in-app:', isOtherInAppBrowser, 'iOS:', isIOS, 'Android:', isAndroid);
+            console.log('🔗 X/Twitter:', isXApp, 'iOS:', isIOS, 'Android:', isAndroid);
             
-            // Force direct navigation for in-app browsers
-            if (isXApp || isOtherInAppBrowser) {
+            if (isXApp) {
                 if (isAndroid) {
-                    // Android: Try intent URL first
-                    const cleanUrl = url.replace('https://', '').replace('http://', '');
-                    const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;end`;
-                    console.log('🔗 Android - Using intent URL');
-                    window.location.href = intentUrl;
+                    // Android: Use intent with fallback URL for maximum compatibility
+                    try {
+                        const fallbackUrl = encodeURIComponent(url);
+                        const cleanUrl = url.replace('https://', '').replace('http://', '');
+                        const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;S.browser_fallback_url=${fallbackUrl};end`;
+                        console.log('🔗 X/Android - Using intent with fallback');
+                        window.location.href = intentUrl;
+                        return;
+                    } catch (e) {
+                        console.error('🔗 Intent error:', e);
+                    }
                 } else if (isIOS) {
                     // iOS: Try x-safari scheme
-                    const safariUrl = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
-                    console.log('🔗 iOS - Using x-safari URL');
-                    window.location.href = safariUrl;
-                } else {
-                    // Fallback for in-app browser
-                    console.log('🔗 In-app browser - direct navigation');
-                    window.location.href = url;
+                    try {
+                        const safariUrl = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                        console.log('🔗 X/iOS - Using x-safari-https');
+                        window.location.href = safariUrl;
+                        return;
+                    } catch (e) {
+                        console.error('🔗 Safari scheme error:', e);
+                    }
                 }
-                return;
             }
             
-            // For regular browsers: direct navigation
-            console.log('🔗 Regular browser - direct navigation');
+            // Fallback: Direct navigation
+            console.log('🔗 Fallback - direct navigation');
             window.location.href = url;
         }
     </script>
