@@ -217,49 +217,46 @@
                 ua.indexOf('Threads') > -1
             );
             
-            console.log('🔗 Deep linking check - X/Twitter:', isXApp, 'Other in-app:', isOtherInAppBrowser, 'iOS:', isIOS, 'Android:', isAndroid);
+            console.log('🔗 Opening URL:', url);
+            console.log('🔗 X/Twitter:', isXApp, 'Other in-app:', isOtherInAppBrowser, 'iOS:', isIOS, 'Android:', isAndroid);
             
-            // Advanced X/Twitter specific deep linking (based on comprehensive research)
-            if (isXApp) {
-                // Check for redirect loop prevention
-                const urlObj = new URL(url);
-                const hasRedirected = urlObj.searchParams.get('redirected') === 'true';
-                
-                if (!hasRedirected) {
-                    // Add redirect prevention parameter
-                    const redirectUrl = url + (url.includes('?') ? '&' : '?') + 'redirected=true';
-                    
+            // Try deep linking for X/Twitter and other in-app browsers
+            if (isXApp || isOtherInAppBrowser) {
+                try {
                     if (isAndroid) {
-                        // Android: Force open in default browser using intent:// scheme
-                        const cleanUrl = redirectUrl.replace('https://', '').replace('http://', '');
-                        console.log('🔗 X/Android - Using intent scheme to open in default browser');
-                        window.location.href = `intent://${cleanUrl}#Intent;scheme=https;end`;
+                        const cleanUrl = url.replace('https://', '').replace('http://', '');
+                        const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;end`;
+                        console.log('🔗 Android - Attempting intent URL:', intentUrl);
+                        window.location.href = intentUrl;
+                        
+                        // Fallback after 1 second in case intent doesn't work
+                        setTimeout(() => {
+                            console.log('🔗 Intent fallback - opening with window.open()');
+                            window.open(url, '_blank');
+                        }, 1000);
+                        
                         return;
                     } else if (isIOS) {
-                        // iOS: Force open in Safari using x-safari-https:// scheme
-                        console.log('🔗 X/iOS - Using x-safari-https scheme to open in Safari');
-                        window.location.href = redirectUrl.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                        const safariUrl = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                        console.log('🔗 iOS - Attempting x-safari URL:', safariUrl);
+                        window.location.href = safariUrl;
+                        
+                        // Fallback after 1 second in case scheme doesn't work
+                        setTimeout(() => {
+                            console.log('🔗 Safari fallback - opening with window.open()');
+                            window.open(url, '_blank');
+                        }, 1000);
+                        
                         return;
                     }
+                } catch (error) {
+                    console.error('🔗 Deep linking error:', error);
+                    // Fall through to normal opening below
                 }
             }
             
-            // For other in-app browsers (Instagram, Threads, Facebook) - existing behavior
-            if (isOtherInAppBrowser) {
-                if (isAndroid) {
-                    const cleanUrl = url.replace('https://', '').replace('http://', '');
-                    console.log('🔗 Other in-app (Android) - Force Chrome');
-                    window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
-                    return;
-                } else if (isIOS) {
-                    console.log('🔗 Other in-app (iOS) - Force Safari');
-                    window.location.href = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
-                    return;
-                }
-            }
-            
-            // Not in in-app browser, open normally
-            console.log('🔗 Normal browser - opening link normally');
+            // Default: just open normally
+            console.log('🔗 Opening normally with window.open()');
             window.open(url, '_blank');
         }
     </script>
