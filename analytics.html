@@ -2349,9 +2349,16 @@
                 new Date(e.created_at) >= previousPeriodStart && new Date(e.created_at) < currentPeriodStart
             );
             
+            console.log(`📅 Period breakdown:
+  - Current period (${currentPeriodStart.toLocaleDateString()} - now): ${currentPeriodEvents.length} events
+  - Previous period (${previousPeriodStart.toLocaleDateString()} - ${currentPeriodStart.toLocaleDateString()}): ${previousPeriodEvents.length} events`);
+            
             // Calculate metrics for both periods
             const currentMetrics = calculatePeriodMetrics(currentPeriodEvents);
             const previousMetrics = calculatePeriodMetrics(previousPeriodEvents);
+            
+            console.log('📊 Current period metrics:', currentMetrics);
+            console.log('📊 Previous period metrics:', previousMetrics);
             
             // Update trend stats
             const changes = {
@@ -2562,6 +2569,9 @@
             const now = new Date();
             const startDate = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
             
+            console.log(`📅 updateDailyTrends: Processing ${events.length} events over ${periodDays} days`);
+            console.log(`   Start: ${startDate.toLocaleDateString()}, End: ${now.toLocaleDateString()}`);
+            
             // Group events by day
             const dailyData = {};
             for (let i = 0; i < periodDays; i++) {
@@ -2585,6 +2595,8 @@
                     }
                 }
             });
+            
+            console.log('📊 Daily data:', dailyData);
             
             // Convert to arrays
             const dates = Object.keys(dailyData).sort();
