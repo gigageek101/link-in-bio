@@ -1659,6 +1659,24 @@
         // Filter by source
         function filterBySource() {
             currentSourceFilter = document.getElementById('sourceFilter').value;
+            
+            // Debug: Log what we're filtering for and what sources exist
+            console.log('🔍 Filtering for:', currentSourceFilter);
+            console.log('📊 Available events:', allEvents.length);
+            
+            if (allEvents.length > 0) {
+                const sources = allEvents.map(e => ({
+                    type: e.event_type,
+                    source_platform: e.source_platform,
+                    referrer: e.referrer,
+                    extracted: extractSource(e)
+                }));
+                console.log('🌐 Event sources (first 10):', sources.slice(0, 10));
+                
+                const uniqueSources = [...new Set(allEvents.map(e => extractSource(e)))];
+                console.log('✨ Unique extracted sources:', uniqueSources);
+            }
+            
             fetchAnalytics();
             
             // Update trends if on trends view
@@ -2248,7 +2266,7 @@
             // Filter events by source
             let filteredEvents = allEvents;
             if (currentSourceFilter !== 'all') {
-                filteredEvents = allEvents.filter(e => e.source_platform === currentSourceFilter);
+                filteredEvents = allEvents.filter(e => extractSource(e) === currentSourceFilter);
             }
             
             // Split events into current and previous periods
