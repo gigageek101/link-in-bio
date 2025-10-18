@@ -1677,7 +1677,8 @@
                 console.log('✨ Unique extracted sources:', uniqueSources);
             }
             
-            fetchAnalytics();
+            // Re-apply display with the new filter (no need to fetch again - we have all data)
+            updateDisplay(allEvents, allJourneys, null);
             
             // Update trends if on trends view
             if (currentView === 'trends') {
@@ -1702,8 +1703,8 @@
             const password = localStorage.getItem('analytics_password');
             
             try {
-                const sourceParam = currentSourceFilter !== 'all' ? `&source=${currentSourceFilter}` : '';
-                const response = await fetch(`/api/analytics?range=${currentTimeRange}&password=${password}${sourceParam}`);
+                // Always fetch ALL data - we'll filter on the frontend
+                const response = await fetch(`/api/analytics?range=${currentTimeRange}&password=${password}`);
                 
                 if (!response.ok) throw new Error('Failed to fetch');
                 
@@ -1711,6 +1712,7 @@
                 allEvents = data.recentEvents || [];
                 allJourneys = data.userJourneys || [];
                 
+                // Apply frontend filtering
                 updateDisplay(allEvents, allJourneys, data.summary);
                 
                 // Check for new events
