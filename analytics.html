@@ -1709,6 +1709,28 @@
             }
         }
 
+        // Extract source from event (same logic as display)
+        function extractSource(event) {
+            const ref = event.referrer || event.source_platform;
+            if (!ref || ref === 'Direct' || ref === 'Unknown') {
+                return event.source_platform || 'Direct';
+            }
+            
+            if (ref.includes('instagram.com') || ref.includes('Instagram')) {
+                return 'Instagram';
+            } else if (ref.includes('threads.net') || ref.includes('Threads') || ref.includes('Barcelona')) {
+                return 'Threads';
+            } else if (ref.includes('facebook.com') || ref.includes('FBAV') || ref.includes('FBAN')) {
+                return 'Facebook';
+            } else if (ref.includes('twitter.com') || ref.includes('t.co') || ref.includes('x.com') || ref.includes('X/Twitter')) {
+                return 'X/Twitter';
+            } else if (ref.includes('google.com')) {
+                return 'Google';
+            }
+            
+            return event.source_platform || 'Direct';
+        }
+        
         // Update display
         function updateDisplay(events, journeys, summary = null) {
             // Apply source filter if needed
@@ -1716,8 +1738,12 @@
             let filteredJourneys = journeys;
             
             if (currentSourceFilter !== 'all') {
-                filteredEvents = events.filter(e => e.source_platform === currentSourceFilter);
-                filteredJourneys = journeys.filter(j => j.source === currentSourceFilter);
+                filteredEvents = events.filter(e => extractSource(e) === currentSourceFilter);
+                filteredJourneys = journeys.filter(j => {
+                    // Extract source from first page view in journey
+                    const firstPageView = j.events?.find(ev => ev.event_type === 'page_view') || {};
+                    return extractSource(firstPageView) === currentSourceFilter;
+                });
             }
             
             // Calculate summary from filtered events if not provided
