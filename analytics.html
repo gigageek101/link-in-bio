@@ -2317,10 +2317,28 @@
                 hideTrendAlert();
             }
             
-            // Filter events by source
+            // Filter events by source (using visitor-based filtering)
             let filteredEvents = allEvents;
             if (currentSourceFilter !== 'all') {
-                filteredEvents = allEvents.filter(e => extractSource(e) === currentSourceFilter);
+                console.log(`🔍 Trends: Filtering for ${currentSourceFilter}`);
+                
+                // Find all visitor IDs that came from the selected source
+                const visitorIdsFromSource = new Set();
+                allEvents.forEach(e => {
+                    if (e.event_type === 'page_view') {
+                        const extracted = extractSource(e);
+                        if (extracted === currentSourceFilter) {
+                            visitorIdsFromSource.add(e.visitor_id);
+                        }
+                    }
+                });
+                
+                console.log(`👥 Trends: Found ${visitorIdsFromSource.size} visitors from ${currentSourceFilter}`);
+                
+                // Include ALL events from these visitors
+                filteredEvents = allEvents.filter(e => visitorIdsFromSource.has(e.visitor_id));
+                
+                console.log(`📊 Trends: Filtered to ${filteredEvents.length} events`);
             }
             
             // Split events into current and previous periods
