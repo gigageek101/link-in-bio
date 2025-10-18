@@ -1808,9 +1808,18 @@
                     conversionRate: uniqueVisitors > 0 ? ((clicks / uniqueVisitors) * 100).toFixed(1) : 0,
                     bounceRate: uniqueVisitors > 0 ? ((bounces / uniqueVisitors) * 100).toFixed(1) : 0
                 };
+                
+                console.log('📈 Calculated summary from filtered events:', summary);
             }
             
             // Update stats with animation
+            console.log('🔢 Updating stats:', {
+                totalVisitors: summary.totalVisitors,
+                newVisitors: summary.newVisitors,
+                totalClicks: summary.totalClicks,
+                conversionRate: summary.conversionRate,
+                bounceRate: summary.bounceRate
+            });
             animateValue('totalVisitors', summary.totalVisitors || 0);
             animateValue('newVisitors', summary.newVisitors || 0);
             animateValue('totalClicks', summary.totalClicks || 0);
@@ -1843,19 +1852,28 @@
         // Animate value
         function animateValue(elementId, newValue, suffix = '') {
             const element = document.getElementById(elementId);
-            if (!element) return;
+            if (!element) {
+                console.warn(`❌ Element not found: ${elementId}`);
+                return;
+            }
             
             const oldValue = previousValues[elementId] || 0;
             
-            // Only animate if value changed
-            if (oldValue === newValue) return;
+            console.log(`🔄 animateValue(${elementId}): old=${oldValue} (${typeof oldValue}), new=${newValue} (${typeof newValue}), equal=${oldValue === newValue}`);
             
+            // Only animate if value changed - BUT always update to ensure display is correct
             previousValues[elementId] = newValue;
             
             const duration = 800;
             const start = performance.now();
             const startValue = parseFloat(oldValue) || 0;
             const endValue = parseFloat(newValue) || 0;
+            
+            // If values are the same, just update the text directly
+            if (startValue === endValue) {
+                element.textContent = Math.round(endValue) + suffix;
+                return;
+            }
             
             function update(currentTime) {
                 const elapsed = currentTime - start;
