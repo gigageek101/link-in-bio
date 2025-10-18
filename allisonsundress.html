@@ -137,7 +137,7 @@
 
         <!-- Links Section -->
         <div class="links-container">
-            <a href="javascript:void(0)" class="link-button link-of" onclick="showAgeWarning(event, 'https://onlyfans.com/allison-gray/c35', 'My Exclusive Content 🥰', true)">
+            <a href="https://onlyfans.com/allison-gray/c35" class="link-button link-of" target="_blank" rel="noopener noreferrer" onclick="return showAgeWarning(event, this.href, 'My Exclusive Content 🥰')">
                 <span class="link-text">My Exclusive Content 🥰</span>
             </a>
             
@@ -191,6 +191,7 @@
         </div>
     </div>
 
+    <!-- HIDDEN: Deep linking function (commented out - not working with X/Twitter)
     <script>
         // Deep linking function - forces external browser on in-app browsers
         function openInExternalBrowser(url) {
@@ -242,6 +243,7 @@
             window.location.href = url;
         }
     </script>
+    END OF HIDDEN DEEP LINKING -->
 
     <script src="script.js"></script>
 </body>
