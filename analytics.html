@@ -1713,8 +1713,14 @@
                 allEvents = data.recentEvents || [];
                 allJourneys = data.userJourneys || [];
                 
+                // If we have a filter active, DON'T pass the backend summary
+                // This forces recalculation from filtered events
+                const summaryToUse = currentSourceFilter !== 'all' ? null : data.summary;
+                
+                console.log(`📦 Fetched data: ${allEvents.length} events, filter: ${currentSourceFilter}, using backend summary: ${summaryToUse !== null}`);
+                
                 // Apply frontend filtering
-                updateDisplay(allEvents, allJourneys, data.summary);
+                updateDisplay(allEvents, allJourneys, summaryToUse);
                 
                 // Check for new events
                 if (allEvents.length > lastEventCount) {
@@ -1798,15 +1804,18 @@
                 const uniqueVisitors = new Set(pageViews.map(e => e.visitor_id)).size;
                 const newVisitors = pageViews.filter(e => e.is_new_visitor).length;
                 const clicks = filteredEvents.filter(e => e.event_type === 'link_click').length;
-                const bounces = filteredEvents.filter(e => e.event_type === 'bounce').length;
+                
+                // Count unique visitors who bounced
+                const bounceEvents = filteredEvents.filter(e => e.event_type === 'bounce');
+                const uniqueBouncedVisitors = new Set(bounceEvents.map(e => e.visitor_id)).size;
                 
                 summary = {
                     totalVisitors: uniqueVisitors,
                     newVisitors: newVisitors,
                     totalClicks: clicks,
-                    bounces: bounces,
+                    bounces: uniqueBouncedVisitors,
                     conversionRate: uniqueVisitors > 0 ? ((clicks / uniqueVisitors) * 100).toFixed(1) : 0,
-                    bounceRate: uniqueVisitors > 0 ? ((bounces / uniqueVisitors) * 100).toFixed(1) : 0
+                    bounceRate: uniqueVisitors > 0 ? ((uniqueBouncedVisitors / uniqueVisitors) * 100).toFixed(1) : 0
                 };
                 
                 console.log('📈 Calculated summary from filtered events:', summary);
