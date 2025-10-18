@@ -208,11 +208,13 @@ async function trackLinkClick(linkName, linkUrl, ageVerified = undefined) {
 // Age Warning Modal
 let pendingUrl = null;
 let pendingLinkName = null;
+let useDeepLinkForPending = false;
 
-function showAgeWarning(event, url, linkName) {
+function showAgeWarning(event, url, linkName, useDeepLink = false) {
     event.preventDefault();
     pendingUrl = url || 'https://onlyfans.com/allison-gray/c35';
     pendingLinkName = linkName || 'My Exclusive Content';
+    useDeepLinkForPending = useDeepLink;
     
     // Track age warning shown in Vercel Analytics
     if (window.va) {
@@ -327,6 +329,7 @@ function confirmAge() {
         // Store URL and link name before clearing
         const urlToOpen = pendingUrl;
         const linkName = pendingLinkName;
+        const shouldUseDeepLink = useDeepLinkForPending;
         
         // Track age verification acceptance in Vercel Analytics
         if (window.va) {
@@ -339,8 +342,12 @@ function confirmAge() {
         // Clear modal
         hideAgeWarning();
         
-        // Open link in new tab (deep linking disabled)
-        window.open(urlToOpen, '_blank', 'noopener,noreferrer');
+        // Open link using deep linking if requested, otherwise use standard method
+        if (shouldUseDeepLink && typeof openInExternalBrowser === 'function') {
+            openInExternalBrowser(urlToOpen);
+        } else {
+            window.open(urlToOpen, '_blank', 'noopener,noreferrer');
+        }
     } else {
         hideAgeWarning();
     }

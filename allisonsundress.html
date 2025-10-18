@@ -137,7 +137,7 @@
 
         <!-- Links Section -->
         <div class="links-container">
-            <a href="https://onlyfans.com/allison-gray/c35" class="link-button link-of" target="_blank" rel="noopener noreferrer" onclick="return showAgeWarning(event, this.href, 'My Exclusive Content 🥰')">
+            <a href="javascript:void(0)" class="link-button link-of" onclick="showAgeWarning(event, 'https://onlyfans.com/allison-gray/c35', 'My Exclusive Content 🥰', true)">
                 <span class="link-text">My Exclusive Content 🥰</span>
             </a>
             
@@ -190,6 +190,40 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Deep linking function - forces external browser on in-app browsers
+        function openInExternalBrowser(url) {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isAndroid = /android/i.test(ua);
+            
+            // Detect Threads/Instagram/Facebook/X in-app browser
+            const isInAppBrowser = (
+                ua.indexOf('Instagram') > -1 ||
+                ua.indexOf('FBAV') > -1 ||
+                ua.indexOf('FBAN') > -1 ||
+                ua.indexOf('Barcelona') > -1 || // Threads internal code name
+                ua.indexOf('Threads') > -1 ||
+                ua.indexOf('TwitterAndroid') > -1 ||
+                ua.indexOf('Twitter') > -1
+            );
+            
+            if (isInAppBrowser) {
+                if (isAndroid) {
+                    // Android: Force open in Chrome using intent URL
+                    const cleanUrl = url.replace('https://', '').replace('http://', '');
+                    window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+                } else if (isIOS) {
+                    // iOS: Force open in Safari using x-safari scheme
+                    window.location.href = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                }
+            } else {
+                // Not in in-app browser, open normally
+                window.open(url, '_blank');
+            }
+        }
+    </script>
 
     <script src="script.js"></script>
 </body>
