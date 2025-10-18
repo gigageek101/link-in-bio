@@ -1661,21 +1661,22 @@
             currentSourceFilter = document.getElementById('sourceFilter').value;
             
             // Debug: Log what we're filtering for and what sources exist
+            console.log('='.repeat(60));
             console.log('🔍 Filtering for:', currentSourceFilter);
             console.log('📊 Available events:', allEvents.length);
             
             if (allEvents.length > 0) {
-                const sources = allEvents.map(e => ({
-                    type: e.event_type,
-                    source_platform: e.source_platform,
-                    referrer: e.referrer,
-                    extracted: extractSource(e)
-                }));
-                console.log('🌐 Event sources (first 10):', sources.slice(0, 10));
+                console.log('🌐 All event sources:');
+                allEvents.forEach((e, idx) => {
+                    const extracted = extractSource(e);
+                    console.log(`  ${idx + 1}. ${e.event_type} | referrer: "${e.referrer}" | source_platform: "${e.source_platform}" | extracted: "${extracted}"`);
+                });
                 
                 const uniqueSources = [...new Set(allEvents.map(e => extractSource(e)))];
                 console.log('✨ Unique extracted sources:', uniqueSources);
+                console.log('🎯 Looking for exact match:', `"${currentSourceFilter}"`);
             }
+            console.log('='.repeat(60));
             
             // Re-apply display with the new filter (no need to fetch again - we have all data)
             updateDisplay(allEvents, allJourneys, null);
@@ -1757,13 +1758,38 @@
             let filteredEvents = events;
             let filteredJourneys = journeys;
             
+            console.log('🎯 updateDisplay called with filter:', currentSourceFilter);
+            
             if (currentSourceFilter !== 'all') {
-                filteredEvents = events.filter(e => extractSource(e) === currentSourceFilter);
+                console.log('📋 Before filtering - Events:', events.length, 'Journeys:', journeys.length);
+                
+                filteredEvents = events.filter(e => {
+                    const extracted = extractSource(e);
+                    const matches = extracted === currentSourceFilter;
+                    if (matches) {
+                        console.log('✅ Match found:', {
+                            event_type: e.event_type,
+                            visitor_id: e.visitor_id?.substring(0, 8),
+                            referrer: e.referrer,
+                            source_platform: e.source_platform,
+                            extracted: extracted
+                        });
+                    }
+                    return matches;
+                });
+                
                 filteredJourneys = journeys.filter(j => {
                     // Extract source from first page view in journey
                     const firstPageView = j.events?.find(ev => ev.event_type === 'page_view') || {};
-                    return extractSource(firstPageView) === currentSourceFilter;
+                    const extracted = extractSource(firstPageView);
+                    const matches = extracted === currentSourceFilter;
+                    if (matches) {
+                        console.log('✅ Journey match:', j.visitorId?.substring(0, 8), 'extracted:', extracted);
+                    }
+                    return matches;
                 });
+                
+                console.log('📊 After filtering - Events:', filteredEvents.length, 'Journeys:', filteredJourneys.length);
             }
             
             // Calculate summary from filtered events if not provided
