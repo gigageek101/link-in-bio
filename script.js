@@ -790,3 +790,78 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// User Education Overlay System
+function showEducationOverlay() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    
+    // Detect platform (only show for in-app browsers)
+    const isTwitter = ua.indexOf('TwitterAndroid') > -1 || ua.indexOf('Twitter') > -1 || ua.indexOf('XiPhone') > -1 || ua.indexOf('X-App') > -1;
+    const isInstagram = ua.indexOf('Instagram') > -1;
+    const isThreads = ua.indexOf('Barcelona') > -1 || ua.indexOf('Threads') > -1;
+    
+    // Don't show for direct links or regular browsers
+    if (!isTwitter && !isInstagram && !isThreads) {
+        return;
+    }
+    
+    // Check if already dismissed in this session
+    const dismissedKey = 'edu_overlay_dismissed';
+    if (localStorage.getItem(dismissedKey)) {
+        return;
+    }
+    
+    const overlay = document.getElementById('education-overlay');
+    const twitterEdu = document.getElementById('edu-twitter');
+    const instagramEdu = document.getElementById('edu-instagram');
+    const threadsEdu = document.getElementById('edu-threads');
+    
+    // Hide all education panels first
+    [twitterEdu, instagramEdu, threadsEdu].forEach(el => {
+        if (el) el.classList.add('hidden');
+    });
+    
+    // Show appropriate panel and overlay
+    if (isTwitter && twitterEdu) {
+        overlay.classList.remove('hidden');
+        twitterEdu.classList.remove('hidden');
+        startCountdown('countdown-twitter', dismissedKey);
+    } else if (isInstagram && instagramEdu) {
+        overlay.classList.remove('hidden');
+        instagramEdu.classList.remove('hidden');
+        startCountdown('countdown-instagram', dismissedKey);
+    } else if (isThreads && threadsEdu) {
+        overlay.classList.remove('hidden');
+        threadsEdu.classList.remove('hidden');
+        startCountdown('countdown-threads', dismissedKey);
+    }
+}
+
+function dismissEducation() {
+    const overlay = document.getElementById('education-overlay');
+    overlay.classList.add('hidden');
+    localStorage.setItem('edu_overlay_dismissed', 'true');
+}
+
+function startCountdown(countdownId, dismissedKey) {
+    let seconds = 30;
+    const element = document.getElementById(countdownId);
+    
+    const interval = setInterval(() => {
+        seconds--;
+        if (element) {
+            element.textContent = seconds;
+        }
+        
+        if (seconds <= 0) {
+            clearInterval(interval);
+            dismissEducation();
+        }
+    }, 1000);
+}
+
+// Show education overlay when page loads (if applicable)
+document.addEventListener('DOMContentLoaded', function() {
+    // Show education overlay after a short delay to let page settle
+    setTimeout(showEducationOverlay, 500);
+});

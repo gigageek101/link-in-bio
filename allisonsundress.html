@@ -158,6 +158,81 @@
         </div>
     </div>
 
+    <!-- User Education Overlay -->
+    <div id="education-overlay" class="education-overlay hidden">
+        <div class="education-spotlight"></div>
+        <div class="education-content">
+            <!-- X/Twitter Instructions -->
+            <div id="edu-twitter" class="education-instructions hidden">
+                <div class="edu-header">
+                    <span class="edu-close" onclick="dismissEducation()">✕</span>
+                    <h3>📱 Open in Safari</h3>
+                </div>
+                <div class="edu-body">
+                    <p class="edu-text">To open this link in Safari instead of X's browser:</p>
+                    <ol class="edu-steps">
+                        <li>Tap the <strong>three dots menu (⋮)</strong> in the top-right corner</li>
+                        <li>Select <strong>Open in Safari</strong></li>
+                    </ol>
+                    <svg class="edu-arrow edu-arrow-top-right" viewBox="0 0 100 100">
+                        <path d="M 50 50 Q 70 30 90 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <polygon points="90,10 95,5 98,15" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="edu-footer">
+                    <p class="edu-countdown">Closes in <span id="countdown-twitter">30</span>s</p>
+                    <button class="edu-button" onclick="dismissEducation()">Got it</button>
+                </div>
+            </div>
+
+            <!-- Instagram Instructions -->
+            <div id="edu-instagram" class="education-instructions hidden">
+                <div class="edu-header">
+                    <span class="edu-close" onclick="dismissEducation()">✕</span>
+                    <h3>📱 Open in External Browser</h3>
+                </div>
+                <div class="edu-body">
+                    <p class="edu-text">To open this link in your default browser:</p>
+                    <ol class="edu-steps">
+                        <li>Tap the <strong>three dot menu (⋮)</strong> on this link</li>
+                        <li>Select <strong>Open in external browser</strong></li>
+                    </ol>
+                    <svg class="edu-arrow edu-arrow-top-right" viewBox="0 0 100 100">
+                        <path d="M 50 50 Q 70 30 90 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <polygon points="90,10 95,5 98,15" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="edu-footer">
+                    <p class="edu-countdown">Closes in <span id="countdown-instagram">30</span>s</p>
+                    <button class="edu-button" onclick="dismissEducation()">Got it</button>
+                </div>
+            </div>
+
+            <!-- Threads Instructions -->
+            <div id="edu-threads" class="education-instructions hidden">
+                <div class="edu-header">
+                    <span class="edu-close" onclick="dismissEducation()">✕</span>
+                    <h3>📱 Open in External Browser</h3>
+                </div>
+                <div class="edu-body">
+                    <p class="edu-text">To open this link in your default browser:</p>
+                    <ol class="edu-steps">
+                        <li>Tap the <strong>three dot menu (⋮)</strong> in the top-right corner</li>
+                        <li>Select <strong>Open in Browser</strong></li>
+                    </ol>
+                    <svg class="edu-arrow edu-arrow-top-right" viewBox="0 0 100 100">
+                        <path d="M 50 50 Q 70 30 90 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <polygon points="90,10 95,5 98,15" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="edu-footer">
+                    <p class="edu-countdown">Closes in <span id="countdown-threads">30</span>s</p>
+                    <button class="edu-button" onclick="dismissEducation()">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Age Verification Modal -->
     <div id="age-warning-modal" class="modal-overlay">
         <div class="modal-content">
