@@ -7,33 +7,18 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- Meta Compliance Tags - CRITICAL FOR PLATFORM SAFETY -->
-    <!-- Prevent image indexing and snippets on adult content -->
+    <!-- META-SAFE: Clean metadata for platform compliance -->
     <meta name="robots" content="noimageindex,nosnippet,noodp">
-    
-    <!-- OpenGraph - Clean, no adult indicators -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Allison's Profile | Links">
-    <meta property="og:description" content="Links to Allison's verified social pages and contact information.">
-    <meta property="og:image" content=""> <!-- Empty to prevent thumbnail scraping -->
+    <meta property="og:title" content="Allison's Profile">
+    <meta property="og:description" content="Links to Allison's verified social pages.">
     
-    <!-- Twitter Card - Safe metadata -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Allison's Profile">
-    <meta name="twitter:description" content="Links to Allison's verified social pages.">
+    <title>Allison 😇</title>
     
-    <!-- No tracking/fingerprinting meta tags -->
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    <meta http-equiv="Permissions-Policy" content="geolocation=(),microphone=(),camera=()">
+    <!-- Favicon - Angel Emoji -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😇</text></svg>">
     
-    <title>Allison's Links</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😊</text></svg>">
-    
-    <!-- Meta-Safe v1.0 - Deployed -->
-    
-    <!-- Optional: Vercel Analytics (privacy-focused, no cookies) -->
+    <!-- Vercel Analytics -->
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -47,22 +32,22 @@
         <div class="slideshow-container" id="slideshow-container">
             <div class="slideshow-wrapper">
                 <div class="slide-item active" data-index="0">
-                    <img src="images/0.jpg" alt="Gallery image 0">
+                    <img src="images/0.jpg" alt="Slide 0">
                 </div>
                 <div class="slide-item" data-index="1">
-                    <img src="images/1.png" alt="Gallery image 1">
+                    <img src="images/1.png" alt="Slide 1">
                 </div>
                 <div class="slide-item" data-index="2">
-                    <img src="images/2.jpg" alt="Gallery image 2">
+                    <img src="images/2.jpg" alt="Slide 2">
                 </div>
                 <div class="slide-item" data-index="3">
-                    <img src="images/3.jpg" alt="Gallery image 3">
+                    <img src="images/3.jpg" alt="Slide 3">
                 </div>
                 <div class="slide-item" data-index="4">
-                    <img src="images/4.jpg" alt="Gallery image 4">
+                    <img src="images/4.jpg" alt="Slide 4">
                 </div>
                 <div class="slide-item" data-index="5">
-                    <img src="images/5.jpg" alt="Gallery image 5">
+                    <img src="images/5.jpg" alt="Slide 5">
                 </div>
             </div>
             
@@ -99,21 +84,18 @@
             </div>
         </div>
 
-        <!-- Links Section - Meta-Safe Implementation -->
+        <!-- Links Section -->
         <div class="links-container">
-            <!-- OnlyFans Link - Age-gated with consent form -->
-            <button class="link-button link-of" onclick="showConsentGate('onlyfans', 'My Exclusive Content 🥰', 'https://onlyfans.com/allison-gray/c35')">
+            <a href="https://onlyfans.com/allison-gray/c35" class="link-button link-of" target="_blank" rel="noopener noreferrer" onclick="return showAgeWarning(event, this.href, 'My Exclusive Content 🥰')">
                 <span class="link-text">My Exclusive Content 🥰</span>
-            </button>
+            </a>
             
-            <!-- Telegram Link - No age gate, direct redirect -->
-            <a href="/redirect?target=telegram&url=aHR0cHM6Ly90Lm1lL2FsbGlzb25zd29ybGQ=" class="link-button link-telegram">
+            <a href="https://t.me/allisonsworld" class="link-button link-telegram" target="_blank" rel="noopener noreferrer" onclick="return handleLinkClick(event, this.href, 'Send me a message on Telegram 💌')">
                 <span class="link-icon">✈️</span>
                 <span class="link-text">Send me a message on Telegram 💌</span>
             </a>
             
-            <!-- X/Twitter Link - No age gate, direct redirect -->
-            <a href="/redirect?target=twitter&url=aHR0cHM6Ly94LmNvbS9naXJsaWVfYWxsaWU=" class="link-button link-twitter">
+            <a href="https://x.com/girlie_allie" class="link-button link-twitter" target="_blank" rel="noopener noreferrer" onclick="return handleLinkClick(event, this.href, 'My Private X 😘')">
                 <span class="link-icon">𝕏</span>
                 <span class="link-text">My Private X 😘</span>
             </a>
@@ -125,40 +107,40 @@
         </div>
     </div>
 
-    <!-- Age Verification Modal - Proper Consent Gate (No Auto-redirect) -->
-    <div id="age-consent-modal" class="modal-overlay">
+    <!-- Age Verification Modal -->
+    <div id="age-warning-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Age Verification Required</h2>
+                <span class="warning-icon">⚠️</span>
+                <h2>18+ Content Warning</h2>
             </div>
             
             <div class="modal-body">
                 <p class="warning-text">
-                    <strong>This link contains content intended for adults 18+ only.</strong>
+                    <strong>You must be 18 years or older to access this content.</strong>
                 </p>
                 <p class="disclaimer-text">
-                    By clicking "I Agree", you confirm that:
+                    This link contains adult content intended for mature audiences only. By clicking "I'm 18 or Older", you confirm that:
                 </p>
                 <ul class="disclaimer-list">
                     <li>You are at least 18 years of age or the legal age of majority in your jurisdiction</li>
-                    <li>You agree to view adult/mature content</li>
+                    <li>You agree to view adult/sensitive content</li>
+                    <li>You understand this content may contain explicit material</li>
                     <li>Viewing such content is legal in your location</li>
                 </ul>
                 <p class="disclaimer-footer">
-                    This notice is required by platform policies.
+                    This warning is provided in compliance with platform policies and applicable laws.
                 </p>
             </div>
             
             <div class="modal-buttons">
-                <button class="btn-confirm" id="age-confirm-btn">I Agree & Continue</button>
+                <button class="btn-confirm" id="age-confirm-btn">I'm 18 or Older</button>
                 <button class="btn-cancel" id="age-cancel-btn">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Analytics & Safe Tracking Script -->
+    <!-- META-SAFE: Using safe tracking script -->
     <script src="script-safe.js"></script>
 </body>
 </html>
-
-
