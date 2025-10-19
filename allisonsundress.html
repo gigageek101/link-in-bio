@@ -7,11 +7,21 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
-    <!-- META-SAFE: Clean metadata for platform compliance -->
-    <meta name="robots" content="noimageindex,nosnippet,noodp">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Allison's Profile">
-    <meta property="og:description" content="Links to Allison's verified social pages.">
+    <!-- Force external browser meta tags -->
+    <meta property="al:ios:url" content="https://www.searchformylinks.com/allisonsundress">
+    <meta property="al:ios:app_store_id" content="">
+    <meta property="al:ios:app_name" content="Safari">
+    <meta property="al:android:url" content="https://www.searchformylinks.com/allisonsundress">
+    <meta property="al:android:package" content="com.android.chrome">
+    <meta property="al:android:app_name" content="Chrome">
+    <meta property="al:web:url" content="https://www.searchformylinks.com/allisonsundress">
+    <meta property="al:web:should_fallback" content="true">
+    
+    <!-- Twitter Card to force browser -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:app:url:iphone" content="https://www.searchformylinks.com/allisonsundress">
+    <meta name="twitter:app:url:ipad" content="https://www.searchformylinks.com/allisonsundress">
+    <meta name="twitter:app:url:googleplay" content="https://www.searchformylinks.com/allisonsundress">
     
     <title>Allison 😇</title>
     
@@ -23,6 +33,40 @@
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
     <script defer src="/_vercel/insights/script.js"></script>
+    <!-- Supabase connected -->
+    
+    <!-- HIDDEN: Deep linking - Forces external browser (uncomment to re-enable) -->
+    <!--
+    <script>
+        (function() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isAndroid = /android/i.test(ua);
+            
+            // Detect Threads/Instagram/Facebook in-app browser
+            const isInAppBrowser = (
+                ua.indexOf('Instagram') > -1 ||
+                ua.indexOf('FBAV') > -1 ||
+                ua.indexOf('FBAN') > -1 ||
+                ua.indexOf('Barcelona') > -1 || // Threads internal code name
+                ua.indexOf('Threads') > -1
+            );
+            
+            if (isInAppBrowser) {
+                const currentUrl = window.location.href;
+                
+                if (isAndroid) {
+                    // Android: Force open in Chrome using intent URL
+                    const cleanUrl = currentUrl.replace('https://', '').replace('http://', '');
+                    window.location.href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+                } else if (isIOS) {
+                    // iOS: Force open in Safari using x-safari scheme
+                    window.location.href = currentUrl.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                }
+            }
+        })();
+    </script>
+    -->
     
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -81,6 +125,13 @@
                     <span class="status-divider">⏱️</span>
                     <span>Responds in 2 minutes</span>
                 </p>
+                <!-- HIDDEN: Travel location message (uncomment to re-enable) -->
+                <!--
+                <p class="travel-text">
+                    <span class="travel-emoji">✈️</span>
+                    <span id="travel-message">Travelling to your city tomorrow</span>
+                </p>
+                -->
             </div>
         </div>
 
@@ -104,6 +155,81 @@
         <!-- CTA Section -->
         <div class="cta-section">
             <p class="cta-text">Get access to my exclusive content now which you will see nowhere else</p>
+        </div>
+    </div>
+
+    <!-- User Education Overlay -->
+    <div id="education-overlay" class="education-overlay hidden">
+        <div class="education-spotlight"></div>
+        <div class="education-content">
+            <!-- X/Twitter Instructions -->
+            <div id="edu-twitter" class="education-instructions hidden">
+                <div class="edu-header">
+                    <span class="edu-close" onclick="dismissEducation()">✕</span>
+                    <h3>📱 Open in Safari</h3>
+                </div>
+                <div class="edu-body">
+                    <p class="edu-text">To open this link in Safari instead of X's browser:</p>
+                    <ol class="edu-steps">
+                        <li>Tap the <strong>three dots menu (⋮)</strong> in the top-right corner</li>
+                        <li>Select <strong>Open in Safari</strong></li>
+                    </ol>
+                    <svg class="edu-arrow edu-arrow-top-right" viewBox="0 0 100 100">
+                        <path d="M 50 50 Q 70 30 90 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <polygon points="90,10 95,5 98,15" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="edu-footer">
+                    <p class="edu-countdown">Closes in <span id="countdown-twitter">30</span>s</p>
+                    <button class="edu-button" onclick="dismissEducation()">Got it</button>
+                </div>
+            </div>
+
+            <!-- Instagram Instructions -->
+            <div id="edu-instagram" class="education-instructions hidden">
+                <div class="edu-header">
+                    <span class="edu-close" onclick="dismissEducation()">✕</span>
+                    <h3>📱 Open in External Browser</h3>
+                </div>
+                <div class="edu-body">
+                    <p class="edu-text">To open this link in your default browser:</p>
+                    <ol class="edu-steps">
+                        <li>Tap the <strong>three dot menu (⋮)</strong> on this link</li>
+                        <li>Select <strong>Open in external browser</strong></li>
+                    </ol>
+                    <svg class="edu-arrow edu-arrow-top-right" viewBox="0 0 100 100">
+                        <path d="M 50 50 Q 70 30 90 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <polygon points="90,10 95,5 98,15" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="edu-footer">
+                    <p class="edu-countdown">Closes in <span id="countdown-instagram">30</span>s</p>
+                    <button class="edu-button" onclick="dismissEducation()">Got it</button>
+                </div>
+            </div>
+
+            <!-- Threads Instructions -->
+            <div id="edu-threads" class="education-instructions hidden">
+                <div class="edu-header">
+                    <span class="edu-close" onclick="dismissEducation()">✕</span>
+                    <h3>📱 Open in External Browser</h3>
+                </div>
+                <div class="edu-body">
+                    <p class="edu-text">To open this link in your default browser:</p>
+                    <ol class="edu-steps">
+                        <li>Tap the <strong>three dot menu (⋮)</strong> in the top-right corner</li>
+                        <li>Select <strong>Open in Browser</strong></li>
+                    </ol>
+                    <svg class="edu-arrow edu-arrow-top-right" viewBox="0 0 100 100">
+                        <path d="M 50 50 Q 70 30 90 10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <polygon points="90,10 95,5 98,15" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="edu-footer">
+                    <p class="edu-countdown">Closes in <span id="countdown-threads">30</span>s</p>
+                    <button class="edu-button" onclick="dismissEducation()">Got it</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -140,7 +266,62 @@
         </div>
     </div>
 
-    <!-- META-SAFE: Using safe tracking script -->
-    <script src="script-safe.js"></script>
+    <!-- HIDDEN: Deep linking function (commented out - not working with X/Twitter)
+    <script>
+        // Deep linking function - forces external browser on in-app browsers
+        function openInExternalBrowser(url) {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isAndroid = /android/i.test(ua);
+            
+            // Detect X/Twitter in-app browser
+            const isXApp = (
+                ua.indexOf('TwitterAndroid') > -1 ||
+                ua.indexOf('Twitter') > -1 ||
+                ua.indexOf(' X/') > -1 ||
+                ua.indexOf('XiPhone') > -1 ||
+                ua.indexOf('X-App') > -1 ||
+                ua.indexOf('x.com') > -1
+            );
+            
+            console.log('🔗 Opening URL:', url);
+            console.log('🔗 X/Twitter:', isXApp, 'iOS:', isIOS, 'Android:', isAndroid);
+            
+            if (isXApp) {
+                if (isAndroid) {
+                    // Android: Use intent with fallback URL for maximum compatibility
+                    try {
+                        const fallbackUrl = encodeURIComponent(url);
+                        const cleanUrl = url.replace('https://', '').replace('http://', '');
+                        const intentUrl = `intent://${cleanUrl}#Intent;scheme=https;S.browser_fallback_url=${fallbackUrl};end`;
+                        console.log('🔗 X/Android - Using intent with fallback');
+                        window.location.href = intentUrl;
+                        return;
+                    } catch (e) {
+                        console.error('🔗 Intent error:', e);
+                    }
+                } else if (isIOS) {
+                    // iOS: Try x-safari scheme
+                    try {
+                        const safariUrl = url.replace('https://', 'x-safari-https://').replace('http://', 'x-safari-http://');
+                        console.log('🔗 X/iOS - Using x-safari-https');
+                        window.location.href = safariUrl;
+                        return;
+                    } catch (e) {
+                        console.error('🔗 Safari scheme error:', e);
+                    }
+                }
+            }
+            
+            // Fallback: Direct navigation
+            console.log('🔗 Fallback - direct navigation');
+            window.location.href = url;
+        }
+    </script>
+    END OF HIDDEN DEEP LINKING -->
+
+    <script src="script.js"></script>
 </body>
 </html>
+
+

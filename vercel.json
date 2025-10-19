@@ -1,0 +1,49 @@
+{
+  "rewrites": [
+    {
+      "source": "/allisonsundress",
+      "destination": "/allisonsundress.html"
+    },
+    {
+      "source": "/allisonsundress/(.*)",
+      "destination": "/$1"
+    },
+    {
+      "source": "/preview",
+      "destination": "/preview.html"
+    },
+    {
+      "source": "/analytics",
+      "destination": "/analytics.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
+      "source": "/.well-known/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ]
+}
+
