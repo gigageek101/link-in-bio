@@ -5,10 +5,6 @@
       "destination": "/allisonsundress.html"
     },
     {
-      "source": "/allisonsundress/(.*)",
-      "destination": "/$1"
-    },
-    {
       "source": "/preview",
       "destination": "/preview.html"
     },
