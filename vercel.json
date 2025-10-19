@@ -1,49 +1,56 @@
 {
-  "rewrites": [
+  "version": 2,
+  "public": false,
+  "buildCommand": "echo 'No build needed'",
+  "routes": [
     {
-      "source": "/allisonsundress",
-      "destination": "/allisonsundress.html"
+      "src": "/robots.txt",
+      "dest": "/robots.txt",
+      "headers": {
+        "Cache-Control": "public, max-age=86400"
+      }
     },
     {
-      "source": "/allisonsundress/(.*)",
-      "destination": "/$1"
+      "src": "/meta-safe.txt",
+      "dest": "/meta-safe.txt",
+      "headers": {
+        "Content-Type": "text/plain",
+        "Cache-Control": "public, max-age=86400"
+      }
     },
     {
-      "source": "/preview",
-      "destination": "/preview.html"
+      "src": "/privacy",
+      "dest": "/privacy.html",
+      "headers": {
+        "Cache-Control": "public, max-age=86400"
+      }
     },
     {
-      "source": "/analytics",
-      "destination": "/analytics.html"
+      "src": "/terms",
+      "dest": "/terms.html",
+      "headers": {
+        "Cache-Control": "public, max-age=86400"
+      }
+    },
+    {
+      "src": "/redirect",
+      "dest": "/api/safe-redirect.js"
+    },
+    {
+      "src": "/api/analytics",
+      "dest": "/api/analytics-safe.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/allisonsundress.html",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
     }
   ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        }
-      ]
-    },
-    {
-      "source": "/.well-known/(.*)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
-    }
-  ]
+  "env": {
+    "DOMAIN": "@domain",
+    "TELEGRAM_BOT_TOKEN": "@telegram_bot_token",
+    "TELEGRAM_CHAT_ID": "@telegram_chat_id"
+  }
 }
-
